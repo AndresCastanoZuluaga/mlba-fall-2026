@@ -1,0 +1,46 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "70-467 MLBA Fall 2026"
+  site-url: "https://AndresCastanoZuluaga.github.io/mlba-fall-2026"
+  repo-url: "https://github.com/AndresCastanoZuluaga/mlba-fall-2026"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: syllabus.qmd
+        text: Syllabus
+      - href: schedule.qmd
+        text: Schedule
+      - href: setup/index.qmd
+        text: Setup
+      - text: Notes
+        menu:
+          - href: notes/index.qmd
+            text: Overview
+      - text: Labs
+        menu:
+          - href: labs/index.qmd
+            text: Overview
+      - text: Homework
+        menu:
+          - href: hw/index.qmd
+            text: Overview
+      - href: project/index.qmd
+        text: Project
+  page-footer: |
+    70-467 - Machine Learning for Business Analytics · CMU-Q Fall 2026 ·
+    Materials site (not for submissions — use Canvas)
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    code-fold: false
+    code-tools: true
+    css: styles.css
+
+execute:
+  freeze: auto

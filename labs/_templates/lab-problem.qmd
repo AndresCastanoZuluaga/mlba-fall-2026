@@ -1,0 +1,37 @@
+---
+title: "Lab NN — Problem"
+subtitle: "70-467 · read before Wednesday · no code on this page"
+author: "Andrés Castaño Zuluaga"
+date: last-modified
+format:
+  html:
+    toc: false
+    body-classes: "mlba-page"
+---
+
+<!--
+COPY to site/labs/labNN-slug-problem.qmd
+Post BEFORE class. Problem only. No code dump.
+Same question language as that week's notes and Monday.
+The walkthrough notebook is a separate file (lab.qmd).
+Default meeting: Wednesday. Exceptions: see schedule.qmd.
+Approve LOOK before filling any week.
+-->
+
+## The situation
+
+{{Two or three sentences. Who faces a choice. No dataset invented here.}}
+
+## The question
+
+{{The same one-sentence question as the notes.}}
+
+## What you will have in class
+
+- A starter notebook with working chunks. You tweak; you do not start from a blank file.
+- The shipped table for that lab (when the week is real).
+- Four thinking questions: interpret, picture, what you would tell the desk.
+
+## Come ready to
+
+Read the notes. Bring a laptop. You do not need to write code before class.

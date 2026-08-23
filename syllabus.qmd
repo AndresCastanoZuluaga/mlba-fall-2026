@@ -1,0 +1,258 @@
+---
+title: "70-467 — Machine Learning for Business Analytics"
+subtitle: "Fall 2026 · Carnegie Mellon University in Qatar"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    toc-location: right
+    body-classes: "mlba-page"
+    code-tools: false
+---
+
+::: {.identity-card}
+<p class="id-name"><strong>Professor:</strong> Andrés Castaño Zuluaga</p>
+<p><strong>Email:</strong> <a href="mailto:acastano@andrew.cmu.edu">acastano@andrew.cmu.edu</a></p>
+<p><strong>Office:</strong> 2160</p>
+<p><strong>Office hours:</strong> Wednesdays, 5:30–6:45 pm, in person, 15-minute slots. Book office hours using this <a href="https://calendar.app.google/iGp728AgHLWhjR199">link</a> (also on Canvas). I will also be available outside of office hours. If you see my office door open and want to stop by and chat about the class or to say hello, you are more than welcome to do so. You can also schedule a time outside of office hours by email. Please send the request with reasonable notice so I can set aside time to help you.</p>
+<p><strong>Course Meetings:</strong> Mondays and Wednesdays, 2:30–3:45 pm. Classroom: CMB 1190.</p>
+:::
+
+**Course Web Page:** Lecture notes, labs, the schedule, and the slide PDFs after class are on the course website. Submissions and grades will be managed through Canvas. If Canvas and the website schedule disagree, follow the website and email me so we can fix Canvas.
+
+---
+
+## Course Description
+
+Organizations that turn data into good decisions need people who can do more than just run scripts in a given software or use AI to do the job for them. They need analysts who can start from a business problem, choose an appropriate method, evaluate a model honestly, interpret the result carefully, and recommend an action, including what the model cannot do.
+
+This course introduces the core machine learning tools used in modern business analytics, with applications from marketing, finance, operations, and related areas. You will implement methods in R, work from real-world datasets, and practice professional communication through slide decks, recorded presentations, and an individual project presented in class at the end of the course. The course prepares you for consulting and analytics-oriented roles in finance, operations, marketing, and similar fields.
+
+Because generative AI is now part of how technical work gets done, you will also learn how to use it to improve your understanding of the methods and their software implementation, while remaining responsible for verification, judgment, and academic integrity.
+
+**Prerequisites:** Statistics (70-207 or 36-200 or 36-220 or equivalent). Comfort with R and basic regression is expected. Prior machine learning is not required.
+
+---
+
+## Learning Objectives
+
+On completing the course, you should be able to:
+
+1. Build analytics models using R and use them for business decision-making.
+2. Translate a data-driven business problem into analytical models based on its purpose, available data, solution methods, evaluation metrics, and business decision-making.
+3. Exercise judgment when choosing among supervised and unsupervised methods, model families, features, validation strategies, and regularization techniques, always letting the problem and the data determine the choice rather than habit.
+4. Communicate the results of technical business data analysis models to a business audience to convince them of its value, validity, effectiveness, and potential limitations.
+5. Learn how to use AI effectively to improve your coding skills and to augment the quality of your work in translating data-driven business problems into analytical models and business decisions.
+
+---
+
+## Course Materials
+
+The main readings will be based on suggested readings from the main textbook, along with my notes. I write those notes from the parts of ISLR that we actually use that week, and I add the pieces ISLR does not cover. I will post class slides PDFs on the course website and Canvas after class.
+
+- **[ISLR]** James, Witten, Hastie, and Tibshirani. *[An Introduction to Statistical Learning with Applications in R](https://www.statlearning.com/) (2nd ed.).* The book is free online. The notes will point you to the sections we used in class.
+- Additional notes and readings will be posted on the website and Canvas as needed. Check that you can open the materials and let me know if something does not work.
+- We will use R and RStudio (Posit). Labs and homeworks start from scripts I provide: your job is to understand them, interpret the results, and modify them based on the problem at hand. Bring a laptop to every lab.
+- There is a [setup page](setup/index.qmd) on the website with the packages to install. Please do this before the first lab and email me if something doesn't work, so we can use lab time for methods rather than troubleshooting installation. **Make sure you do this after the first class and reach out if there are issues to solve.**
+
+---
+
+## Delivery of Lectures and Labs
+
+Our lectures and labs are in person. They will not be recorded. A typical week looks like this:
+
+- **Monday:** Most weeks, a student pair opens with a short presentation introducing the method through a business problem. I then continue with the discussion and the details (formulas, short code, and interpretation).
+- **Wednesday:** Lab in R. You will get the problem before class and a starter notebook with parts already working. In the hour we work on approach, interpretation, figures, and what the results mean for the decision.
+
+---
+
+## Class Attendance
+
+Being on time for each class is expected. Students must arrive on time to be allowed to enter the classroom; late means arriving after 2:30. Arriving at 2:31 is considered late. Attendance and participation are part of the final grade, so plan on attending every class (more details on the evaluation components below). If you foresee needing to miss a class for any excusable reason, please notify me immediately. If you miss a class because you were ill (take care of yourself!), please notify me and your designated CA, and send the medical excuse to Amie Rollins so her office can forward it to me.
+
+Important note about leaving the room during a class session: If you need to leave the room during class, do so without disrupting the class flow, and return within a reasonable time (less than 5 minutes). Prolonged absences during class time will also affect your attendance and participation grades.
+
+This is a small class. Coming ready to discuss, engaging with the pair presentations, and working in the labs all matter. By mid-semester, I will share your participation and attendance standing so you have time to adjust in the second part of the term.
+
+**Project presentation week (30 November and 2 December):**
+
+Attendance is expected both days. Missing a presentation session carries a 15-point penalty on the presentation component of the project grade. Plan to attend both days, not only your own slot. The final wording of the penalty will be in the project guidelines.
+
+### Absence Policy
+
+If absenteeism (with or without excuse) has reached seven (7) classes, you will not be eligible for the midterm and/or the final project presentation. Treat seven absences as a serious threshold. It is your responsibility to keep track of your absences; I am not required to warn you when you approach seven.
+
+---
+
+## Assessments
+
+The final cumulative score for this class is computed using the categories below.
+
+::: {.weight-grid}
+<div class="weight-tile"><span class="w-pct">24%</span><span class="w-label">4 Homeworks</span></div>
+<div class="weight-tile"><span class="w-pct">16%</span><span class="w-label">4 Quizzes</span></div>
+<div class="weight-tile"><span class="w-pct">10%</span><span class="w-label">Pair presentations</span></div>
+<div class="weight-tile"><span class="w-pct">22%</span><span class="w-label">Midterm · 7 Oct</span></div>
+<div class="weight-tile"><span class="w-pct">20%</span><span class="w-label">Final project</span></div>
+<div class="weight-tile"><span class="w-pct">8%</span><span class="w-label">Attendance and participation</span></div>
+:::
+
+| Category | Weight | Details |
+|----------|--------|---------|
+| Homeworks (4) | 24% | 6% each. Individual. Typical deliverables for each homework would include R notebook + at most 5-6 slides + a video of at most 5 minutes. More details below. |
+| Quizzes (4) | 16% | 4% each. In class, designed for 10–15 minutes. |
+| Pair presentations | 10% | About twice in the semester. 8–10 minutes and a short deck, introducing a topic in the context of a business problem. |
+| Midterm exam | 22% | Wednesday 7 October, in class, closed notes. Weeks 1–5 only. Monday 5 October is review. |
+| Final project | 20% | Individual. Brief 28 October. Checkpoint 18 November. Presentations 30 November and 2 December. No final exam. |
+| Attendance and participation | 8% | Come ready, contribute, and work in the labs. |
+
+### Assessment Descriptions
+
+**Homeworks.** There will be four individual homeworks. Each one is a new case using the methods we have covered, not a repeat of the lab. I will give you a case, the data, a codebook, and starter code. You submit three pieces on Canvas: a runnable R notebook, at most six slides, and a video of at most five minutes. The slides and the video should tell the same story as the notebook: the problem, the evidence, the decision, and the limit. More details about the expectations will be available on Canvas.
+
+You may study with classmates. The write-up, the code you submit, and the recommendation have to be yours. AI is allowed on homework if you disclose it (see below). You must run the code and be able to explain the important parts of how you reached the decision. If you hide AI use, or you cannot explain the work in the video, or I suspect you used AI inappropriately, I will ask you to present in person. Depending on how you handle the questions in person, the grade on that homework can go as low as 0, and you may be reported for an academic integrity violation.
+
+**Quizzes.** There will be four short in-class paper quizzes, designed for about 10–15 minutes. They test whether you understand the ideas and can apply the methods to understand and make business decisions. There is no make-up for quizzes.
+
+**Pair presentations.** Because this is a small class, participation matters. Student pairs will prepare a short presentation (about 8–10 minutes, compact slide deck) at least twice in the semester to introduce that week's topic. We will then transition into a lecture about the method and the empirical implementation. The rubric will be on the course site / Canvas. The official pairing will be set once we know with certainty how many students are in the course.
+
+**The midterm** will be in person during class on Wednesday 7 October (75 minutes). Closed notes. No electronic devices. The exam covers weeks 1–5 only: linear regression, metrics, train/test and generalization, regularization, and cross-validation/model selection.
+
+**Final project.** The final project is an individual project. It's based on a business problem coming from a real-world dataset. The student will then build models in R to better understand the problem, present a recommendation, and discuss the decisions in an in-class presentation at the end of the semester. I will publish the project brief (including data and problem options once they are ready) by 28 October. I will share exact instructions for what's expected at checkpoint 1 and during the final presentations later in the semester. Presentations are 30 November and 2 December.
+
+**Attendance and participation** are part of the grading and will be combined. Please come to each class ready to participate in the discussion of the material or bring questions that could benefit the rest of the group. By mid-semester, I will share your participation and attendance grades, so you have time to adjust appropriately during the second part of the semester, if needed.
+
+How will attendance and participation be graded? If you have various excused or unexcused absences, that counts toward limited participation because you need to be in the classroom to participate. Similarly, if you attend all the classes but rarely participate during class, don't expect your grade to be solely based on attendance. Finally, if you arrive to class early, but leave the classroom for long periods, don't expect your grade to be based on arriving on time. I acknowledge that grading participation could be subjective. Still, I will do my best to evaluate students not only on quantity but also on the quality of their participation.
+
+### Final grades
+
+Final grades are based on your cumulative score using the weights above. Students with 90–100% receive an A; 80–89% a B; 70–79% a C; 60–69% a D; below 60% an R.
+
+A quick note on calculating your cumulative score: Please use the grade distribution above to calculate your final grade. Canvas is not always reliable when computing final grades after dropping the lowest grades.
+
+In the interests of fairness, we apply the same rules to everyone. Therefore, we cannot modify the cumulative score formula or offer extra work to raise your grade to accommodate your circumstances. The only exception is for midterms missed due to documented illness or a family emergency. Some students will inevitably fall close to, but below, a cutoff when we assign grades. Such students sometimes ask for cutoffs to be reduced. Please do not do this. If you are just below a cutoff, you may be close to the lowest A or B but still some way from the average A or B, and we consider these when assigning cutoffs.
+
+---
+
+## Guidelines for Late or Missed Work
+
+We do not accept late submissions for quizzes or homework. There are two reasons for this. First, we will post or discuss solutions within 3-5 days after the deadline. Grades will be available within 5-10 days after submission. Second, to be fair to everyone, we want to give all students the same amount of time to complete the work (and it is impossible for us to verify whether work was done late or just turned in late).
+
+There is no make-up opportunity for missed quizzes.
+
+---
+
+## Course Schedule
+
+Below is a working plan. Class discussion can run longer or shorter than expected, so treat this as a rough schedule. I reserve the right to adjust time on topics to meet the learning goals. The detailed meeting-by-meeting page on the course website is the source of truth. Check the website (and Canvas announcements) for updates.
+
+**[Schedule](schedule.qmd)** — meeting-by-meeting dates and due / out.
+
+### Important University-related dates
+
+**Thursday 1 October:** Course drop deadline. After this date, withdrawing from the course results in a W.
+
+**Thursday 5 November:** Course withdrawal and pass/no-pass deadline. After this date, students may not withdraw or convert the grade to pass/no-pass.
+
+---
+
+## Student Recording Policy
+
+No student may record or take a picture of any classroom activity without written consent from the course instructor. If you have (or think you may have) a disability such that you need to record classroom activities, contact the Office of Disability Resources to request an appropriate accommodation.
+
+---
+
+## QBA Classroom Conduct — Fall 2026
+
+The Qatar Business Administration Program maintains high expectations for student classroom conduct. Your professors will hold you to these standards. We believe these standards create an environment most conducive to learning. This behavior also reflects common business culture. As CMU Qatar Business Administration students, part of your business education is to model the behavior that you will demonstrate in the workplace.
+
+**QBA students attend all scheduled classes.** Unless I explicitly state that another way of completing the work is acceptable, you must attend. If you cannot attend, contact me in advance when possible, and as soon as possible if not. You are responsible for obtaining notes and materials.
+
+**QBA students attend class on time.** Be in class before 2:30 pm. I reserve the right to deny late admission to avoid disrupting the session.
+
+**QBA students remain in class once it has begun.** Leaving in the middle disrupts peers and presenters. During quizzes and the midterm, you may not be allowed to reenter if you leave.
+
+**QBA students come to class prepared.** Complete the lecture notes before class. On lab days, read the problem before you sit down. Bring a laptop to labs.
+
+**QBA students use electronics only for class purposes.** On Mondays, laptops are closed unless I ask you to open them for a short demonstration. On Wednesdays, laptops are required for R. Phones are silent and put away. Do not check email, message, or browse during class.
+
+**QBA students adhere to the CMU Policy on Academic Integrity.** Representing someone else's work as your own, or helping someone else to do so, violates academic integrity. Copying a classmate's notebook, using a past year's submission, or taking credit for a partner's pair talk while contributing nothing are examples. Sharing unauthorized answer keys is unauthorized assistance for both parties. I determine what is appropriate in this course; if you are unsure, ask before you act.
+
+Please see CMU's policies on cheating and plagiarism:
+
+<https://www.cmu.edu/policies/student-and-student-life/academic-integrity.html>
+
+If you are under pressure, talk to me early. There is almost always a better path than a bad decision. Your academic and behavioral responsibilities are detailed in the Q-Word Student Handbook and the CMU Undergraduate Catalog.
+
+---
+
+## Use of Generative AI Tools
+
+Certain assignments in this course will permit or even encourage the use of AI tools, such as ChatGPT, Gemini, Grok, and others, to improve your coding and understanding. When AI use is allowed, it will be clearly stated in the assignment. Otherwise, AI is not allowed by default.
+
+When AI is allowed, you must acknowledge how you used it. For instance: "I used Gemini to debug an error in my glmnet call and edited the code for correctness." You are responsible for assessing whether the output is valid. You may not earn full credit if inaccurate or invalid information is found in your work. Misrepresenting AI use is an academic integrity violation. Expectations differ across courses; email me if you are unsure what is allowed on a given assignment.
+
+**Two ways to think about the use of AI in this course. Depending on the assignment, AI is accepted with caution or not allowed.**
+
+### Yellow level: AI with caution
+
+Homework and the project (when the assignment allows it). You may use AI to learn, debug, and clarify concepts. The analysis, interpretation, and recommendation must be yours. You must run the code, understand the results, and make sure the figures in the video match the notebook.
+
+| Do | Don't |
+|----|--------|
+| Disclose how you used AI | Hide that you used AI |
+| Verify every number and chart | Paste answers you do not understand |
+| Use AI to explain an error you then fix | Let AI invent results, metrics, or a business claim |
+| Make the decision yours | Outsource the recommendation |
+
+### Red level: No AI assistance is permitted for this assignment
+
+Quizzes and the midterm. No AI tools for any purpose on these assessments. The oral defense of the project and the in-class Q&A also require that you can explain the work without AI in the room.
+
+| Do | Don't |
+|----|--------|
+| Prepare from notes, labs, and your own practice | Use chatbots or AI coding assistants on the assessment |
+| Ask me if you are unsure about the rules | Risk an integrity violation |
+| Show your own understanding |  |
+
+---
+
+## Accommodations for Students with Disabilities
+
+Carnegie Mellon University is committed to providing reasonable accommodations for all persons with disabilities. If you have a disability and have an accommodations letter from the Office of Disability Resources, I encourage you to discuss your accommodations and needs with me as early in the semester as possible. I will work with you to ensure that accommodations are provided as appropriate.
+
+If you suspect that you may have a disability and would benefit from accommodations but are not yet registered with the Office of Disability Resources (<https://www.cmu.edu/disabilityresources/students/>), contact them at access@andrew.cmu.edu or through the CMU-Q Office of Health & Wellness or CaPS-Q.
+
+If you have approved accommodations you intend to use in this course, please discuss them with me as soon as possible. After our meeting, email me a summary of what we agreed. If accommodations involve taking exams in the ARC, email the ARC at least one week before the test date.
+
+---
+
+## Take Care of Yourself
+
+We all feel stress at different times and for various reasons, and when we do, it is good to reach out for support. Do your best to maintain a healthy lifestyle by eating well, exercising, getting enough sleep, and taking some time to relax.
+
+Please know that you are not alone. There are many helpful resources on campus, and an essential part of the college experience is learning how to ask for help. Asking for support sooner rather than later can often prevent a situation from getting more complicated.
+
+If you or any of your CMUQ peers are experiencing academic stress, difficult life events, or feelings like anxiety or depression, we strongly encourage you to seek support. Student Affairs staff can help—call 4454 8526 or email:
+
+- Amie Rollins, Office of Health and Wellness (CMB 1103), amier@andrew.cmu.edu
+- Atorina Benjamin, Psychologist (CMB 1104), atorinab@qatar.cmu.edu
+- Dalia Rehal, Associate Dean of Student Affairs (CMB 1068), drehal@qatar.cmu.edu
+
+Consider also reaching out to a friend, faculty member, staff member, or family member you trust. For trained mental health support day or night, call the ProtoCall hotline at 5554 7913. If the situation is life-threatening, call 999.
+
+---
+
+## CMU-Q Library
+
+The Library provides access to articles, books, statistics, and other sources onsite and remotely: <https://www.library.cmu.edu/qatar>. Librarians Reya Saliba (rsaliba@andrew.cmu.edu) and Tatiana Usova (tusova@qatar.cmu.edu) can help you locate, evaluate, and cite sources. For citations, ZoteroBib (<https://zbib.org/>) and Zotero (<https://www.zotero.org/>) are excellent. Seek help at least a week before major deadlines when you need library support.
+
+---
+
+## Inclusive Excellence
+
+We must treat every individual with respect. We are diverse in many ways, and recognizing this diversity is fundamental to building and maintaining an inclusive campus community. Diversity can refer to our different perspectives, lived experiences and our identities, including but not limited to race, color, national origin, sex, disability, age, sexual orientation, gender identity, pregnancy or related condition, family status, marital status, parental status, religion, ancestry, veteran status, or genetic information. What makes us different can shape the perspectives our students, faculty, and staff bring to our campus. Each of us is responsible for creating a safer, more inclusive environment.
+
+---
+
+*This syllabus may be updated. Material changes will be announced on the course website and Canvas. For detailed dates, use the course website [schedule](schedule.qmd).*

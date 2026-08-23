@@ -1,0 +1,49 @@
+---
+title: "Final project"
+subtitle: "Individual · defend your analysis"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    toc-location: right
+    body-classes: "mlba-page"
+    code-tools: false
+---
+
+
+::: {.sch-chip-row}
+<span class="sch-chip">Individual</span>
+<span class="sch-chip">R + decision story</span>
+<span class="sch-chip">Live defense</span>
+<span class="sch-chip sch-chip-soft">20% of course grade</span>
+:::
+
+<p class="page-lead"><strong>Individual</strong> applied project: a real business decision, appropriate methods in R, clear recommendation, and a live presentation with Q&amp;A.</p>
+
+::: {.callout-warn}
+<span class="status-badge status-wip">WIP</span> <strong>Tracks and datasets are not finalized.</strong> Do not invent a proposal format until the brief is published (<strong>28 Oct</strong>). The brief must include the short <strong>prediction is not the same as acting</strong> reminder (locked 2026-08-13).
+:::
+
+## Milestones
+
+| Milestone | Date | Notes | Status |
+|-----------|------|-------|--------|
+| Project brief published | **28 Oct** | Tracks / data / rules | TBD |
+| **Graded checkpoint** | **18 Nov** | Same day as the PCA lab. Criteria published **with the brief** | TBD |
+| Presentations | **30 Nov & 2 Dec** | ~10–12 min + Q&A | Slots after roster |
+
+The split of the project grade ships with the brief. The course grade for the project is **20%**.
+
+## Attendance (presentation week)
+
+Attendance is expected both days. Missing a presentation session carries a 15-point penalty on the presentation component of the project grade. Plan to attend both days, not only your own slot. The final wording of the penalty will be in the project guidelines.
+
+## What the brief will cover (placeholder)
+
+- Allowed tracks / decision types (when locked)  
+- Provided data packs (course ships data — CONTENT_DEFAULTS)  
+- Checkpoint deliverable  
+- Final materials packet, including a **replication package** documenting decisions from receiving the dataset to the final recommendation  
+- Rubrics for presentation and defense  
+
+Nothing above invents tracks or datasets. See [Syllabus](../syllabus.qmd) and [Schedule](../schedule.qmd).

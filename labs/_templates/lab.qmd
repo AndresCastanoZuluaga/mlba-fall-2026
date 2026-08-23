@@ -1,0 +1,109 @@
+---
+title: "Lab NN — Short title"
+subtitle: "70-467 · ~75 minutes · bring a laptop"
+author: "Andrés Castaño Zuluaga"
+date: last-modified
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    toc-location: right
+    body-classes: "mlba-page"
+    code-fold: false
+    code-tools: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+<!--
+COPY to site/labs/labNN-slug.qmd
+E2E-style starter walkthrough (PICKS: Lab A + thinking questions).
+Not from-scratch. Not coding-TODO blanks as the hour.
+Setup filled. Demo chunks filled. Students tweak and answer Think 1–4.
+Default: no Canvas submit for lab.
+Default meeting: Wednesday. Exceptions: see schedule.qmd.
+
+Locks:
+- Week 3 / 5 / 8 honesty in a Think item or a tweak comment.
+- Week 8: cutoff as a cost; who you would treat differently.
+- Week 12: clustering + short modern-AI. No market-basket exercise.
+- Same question language as the pre-class problem and the notes.
+- Homework is a different case.
+
+Approve LOOK before filling any week.
+-->
+
+## Setup
+
+```{r}
+#| label: setup
+#| message: false
+# library(tidyverse)
+# When this lab is real: shipped file next to the notebook.
+# dat <- read.csv("data/WEEK-FILE.csv")
+
+# Placeholder so the starter knits. Replace with this week's table.
+n <- 20
+y <- c(1:n)
+```
+
+Confirm the file reads. Look at the first rows when the csv is real.
+
+## Walkthrough
+
+Same question as the one-pager: {{paste the one sentence}}.
+
+```{r}
+#| label: demo-1
+# Filled on purpose. Run it. Then stop.
+# tweak: change this number once and say what moved
+k <- 5
+mean(y[seq_len(k)])
+```
+
+{{One line: what this chunk is doing for the question. Not a new method.}}
+
+```{r}
+#| label: demo-2
+# Filled. This is the honest version of the idea above, when the week is real.
+# tweak: if this is week 3, 5, or 8 — change the split / fold / cutoff,
+#         not the model family
+mean(y)
+```
+
+## Think 1
+
+{{Interpret what you just ran. What does the number or picture say?}}
+
+Write two or three sentences here.
+
+## Think 2
+
+{{A picture. Sketch it in R or on paper. What should a manager see?}}
+
+```{r}
+#| label: think-2
+# Hint, not a blank hour. Tweak the plot; do not start from zero.
+# plot(y)
+```
+
+## Think 3
+
+{{What would you tell the desk? One recommendation and one limit.}}
+
+## Think 4
+
+{{Second interpret or business ask. Week 3 / 5: one sentence on leakage
+or "available at decision time." Week 8: pick a cutoff using costs, not
+0.5, and say who you treat differently. Week 12: what a neural net /
+chatbot is *not*.}}
+
+## Last 10 minutes
+
+Someone says **Think 1** out loud. Then we hear one limit from Think 3.
+
+## After class
+
+{{What "done enough" looks like.}} No Canvas submit for lab unless that week says otherwise. This file is not the homework.

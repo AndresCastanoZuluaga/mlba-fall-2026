@@ -1,0 +1,249 @@
+---
+title: "70-467 - Machine Learning for Business Analytics"
+subtitle: "CMU-Q · Fall 2026"
+toc: false
+format:
+  html:
+    toc: false
+    body-classes: "home-proto home-proto2 mlba-home"
+    code-tools: false
+---
+
+::: {.hero .hero-proto}
+::: {.hero-kicker}
+CMU-Q · Fall 2026 · 70-467
+:::
+
+# 70-467 - Machine Learning for Business Analytics
+
+::: {.hero-instructor}
+**Instructor:** Andrés Castaño Zuluaga
+:::
+
+::: {.hero-lead}
+Welcome to 70-467 Machine Learning for Business Analytics!
+:::
+
+::: {.hero-sub}
+In an era when AI can write code faster than most people, writing code is not the scarce skill. The bottleneck in productive analytics is **understanding**, **verification**, and **judgment**: knowing what to ask the tools to do, checking whether the answer is good enough to act on, and explaining both the recommendation and its limits. AI will not replace your job. Someone who can use it and is prepared to work those bottlenecks will.
+
+This course prepares you for that. You cannot evaluate the tools, or incorporate them into how you work, until you understand the methods. That is what sharpens judgment and makes the communication defensible. We incentivize responsible use of AI: tools that augment you, not substitutes that replace the thinking. You will learn to turn data into decisions you can stand behind. Choose the method, check it carefully, and explain the recommendation and its limits. The emphasis is business judgment under real problems, not model fitting as an end in itself. We work in R, with real datasets.
+:::
+
+::: {.hero-meta}
+[Mon & Wed · 2:30–3:45 PM · CMB 1190]{.hero-chip}
+[Concepts + R labs]{.hero-chip}
+[Build · evaluate · defend]{.hero-chip}
+:::
+:::
+
+```{=html}
+<section class="start-here start-here-v2 start-here-v3 start-here-icons" aria-label="Start here">
+  <p class="start-here-label">Start here</p>
+  <p class="start-here-hint">Orient yourself on the course, then get your machine ready by following the instructions in the Setup page.</p>
+  <div class="start-here-tiles" role="list">
+    <a href="syllabus.html" class="start-tile start-tile-primary" role="listitem">
+      <span class="start-tile-icon" aria-hidden="true">
+        <svg viewBox="0 0 40 40" width="40" height="40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="6" width="20" height="28" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M13 13h10M13 18h10M13 23h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="start-tile-text">
+        <span class="start-tile-title">Syllabus</span>
+        <span class="start-tile-sub">Policies &amp; grading</span>
+      </span>
+    </a>
+    <a href="schedule.html" class="start-tile start-tile-primary" role="listitem">
+      <span class="start-tile-icon" aria-hidden="true">
+        <svg viewBox="0 0 40 40" width="40" height="40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="7" y="9" width="26" height="24" rx="3" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M7 16h26M14 6v6M26 6v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="15" cy="23" r="1.6" fill="currentColor"/>
+          <circle cx="20" cy="23" r="1.6" fill="currentColor"/>
+          <circle cx="25" cy="23" r="1.6" fill="currentColor"/>
+        </svg>
+      </span>
+      <span class="start-tile-text">
+        <span class="start-tile-title">Schedule</span>
+        <span class="start-tile-sub">Weeks &amp; deadlines</span>
+      </span>
+    </a>
+    <a href="setup/" class="start-tile start-tile-secondary" role="listitem">
+      <span class="start-tile-icon" aria-hidden="true">
+        <svg viewBox="0 0 40 40" width="40" height="40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="5" y="10" width="30" height="20" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M12 30h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M14 17l3 3 5-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span class="start-tile-text">
+        <span class="start-tile-title">Setup R</span>
+        <span class="start-tile-sub">Install &amp; packages</span>
+      </span>
+    </a>
+    <a href="https://calendar.app.google/iGp728AgHLWhjR199" class="start-tile start-tile-oh" role="listitem" rel="noopener noreferrer" target="_blank">
+      <span class="start-tile-icon" aria-hidden="true">
+        <svg viewBox="0 0 40 40" width="40" height="40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20" cy="20" r="12" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M20 13v8l5 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span class="start-tile-text">
+        <span class="start-tile-title">Book office hours</span>
+        <span class="start-tile-sub">Wed 5:30–6:45 · 2160</span>
+      </span>
+    </a>
+  </div>
+</section>
+
+<!-- P1.2 Canvas early -->
+<div class="canvas-banner canvas-banner-proto canvas-banner-early">
+  <strong>Submit homework and check grades on Canvas.</strong> This website is for scheduling and learning materials. All the HW and final project instructions will be available on Canvas.
+</div>
+
+<!-- P0.2 + P0.5: softer Where we are + static fallback (no Loading…) -->
+<section class="current-focus current-focus-soft" id="where-we-are" aria-label="Where we are" data-term-year="2026">
+  <p class="cf-badge">Where we are</p>
+  <p class="cf-title" id="cf-title">Before classes</p>
+  <div class="cf-body" id="cf-body">
+    <p>Finish <a href="setup/">Setup</a> after the first class and before the first lab (<strong>Wed 2 Sep</strong>). First class: <strong>Mon 24 Aug</strong> — introduction and linear regression. Full plan: <a href="schedule.html">Schedule</a>.</p>
+  </div>
+</section>
+<script>
+(function () {
+  var phases = [
+    { id: "preterm", until: "2026-08-24", title: "Before classes",
+      html: 'Finish <a href="setup/">Setup</a> after the first class and before the first lab (<strong>Wed 2 Sep</strong>). First class: <strong>Mon 24 Aug</strong> — introduction and linear regression. Full plan: <a href="schedule.html">Schedule</a>.' },
+    { id: "premidterm", until: "2026-10-05", title: "Weeks 1–5 · building toward the midterm",
+      html: 'Focus: regression, evaluation, regularization, and CV (incl. leakage habits). Prepare from <a href="notes/">Notes</a> and <a href="labs/">Labs</a>. Midterm: <strong>Wed 7 Oct</strong> (weeks 1–5 only). Details: <a href="schedule.html">Schedule</a>.' },
+    { id: "midtermweek", until: "2026-10-08", title: "Midterm week",
+      html: '<strong>Mon 5 Oct</strong> review · <strong>Wed 7 Oct</strong> midterm (closed notes, weeks 1–5). No other homework/quiz dues this week. <a href="schedule.html">Schedule</a>.' },
+    { id: "fallbreak", until: "2026-10-16", title: "Fall break",
+      html: 'No classes <strong>11–15 Oct</strong>. When we return: logistic regression. <a href="schedule.html">Schedule</a>.' },
+    { id: "postmidterm", until: "2026-10-28", title: "After midterm · classification block",
+      html: 'Logistic models, metrics/thresholds, then trees. Project brief publishes <strong>28 Oct</strong>. <a href="schedule.html">Schedule</a>.' },
+    { id: "projectopen", until: "2026-11-22", title: "Project season · trees, ensembles, PCA",
+      html: 'Project brief is live; checkpoint <strong>18 Nov</strong> (PCA lab day). Methods through trees, ensembles, and the <strong>PCA lab (18 Nov)</strong>. <a href="project/">Project</a> · <a href="schedule.html">Schedule</a>.' },
+    { id: "presentations", until: "2026-12-03", title: "Project presentations",
+      html: 'Presentations <strong>30 Nov &amp; 2 Dec</strong> — attendance expected both days. <a href="project/">Project</a> · <a href="schedule.html">Schedule</a>.' },
+    { id: "after", until: "2099-01-01", title: "Term wrap-up",
+      html: 'Classes are done for this offering. Materials remain on this site for reference.' }
+  ];
+  function ymd(d) {
+    return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+  }
+  function pickPhase(today) {
+    var t = ymd(today);
+    for (var i = 0; i < phases.length; i++) if (t < phases[i].until) return phases[i];
+    return phases[phases.length - 1];
+  }
+  var root = document.getElementById("where-we-are");
+  if (!root) return;
+  var phase = pickPhase(new Date());
+  var titleEl = document.getElementById("cf-title");
+  var bodyEl = document.getElementById("cf-body");
+  if (titleEl) titleEl.textContent = phase.title;
+  if (bodyEl) bodyEl.innerHTML = "<p>" + phase.html + "</p>";
+  root.setAttribute("data-phase", phase.id);
+})();
+</script>
+```
+
+::: {.warm-note .warm-note-proto}
+**A note from me.** If my office door is open (office **2160**), stop by—even to say hello or to discuss course related issues. If something is unclear in the notes, a lab, or a homework say so early so that i can better support you. Small classes work when we show up ready to engage. *(Office hours: book a slot from **Start here** above, or see the Syllabus.)*
+:::
+
+## Methods you will see and use
+
+We move from simple, interpretable models to richer tools, always starting from a **business problem** and emphasizing business **understanding**, method feasibility and limitations, and **judgement** in decision-making. 
+
+```{=html}
+<div class="method-grid method-grid-proto">
+  <div class="method-card">
+    <svg viewBox="0 0 140 88" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="140" height="88" rx="8" fill="#f0f6fa"/><line x1="18" y1="70" x2="122" y2="70" stroke="#0e2841" stroke-width="1.5"/><line x1="18" y1="70" x2="18" y2="18" stroke="#0e2841" stroke-width="1.5"/><circle cx="32" cy="58" r="3.5" fill="#156082"/><circle cx="48" cy="48" r="3.5" fill="#156082"/><circle cx="62" cy="52" r="3.5" fill="#156082"/><circle cx="78" cy="36" r="3.5" fill="#156082"/><circle cx="94" cy="30" r="3.5" fill="#156082"/><circle cx="110" cy="22" r="3.5" fill="#156082"/><line x1="24" y1="64" x2="118" y2="16" stroke="#e97132" stroke-width="2.5" stroke-linecap="round"/></svg>
+    <p class="method-name">Linear regression</p>
+    <p class="method-tag">Using regression for prediction and understanding its implication</p>
+  </div>
+  <div class="method-card">
+    <svg viewBox="0 0 140 88" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="140" height="88" rx="8" fill="#f0f6fa"/><line x1="18" y1="70" x2="122" y2="70" stroke="#0e2841" stroke-width="1.5"/><line x1="18" y1="70" x2="18" y2="18" stroke="#0e2841" stroke-width="1.5"/><path d="M22 66 C40 66, 48 62, 58 48 S90 18, 118 16" fill="none" stroke="#156082" stroke-width="2.8" stroke-linecap="round"/><circle cx="40" cy="62" r="2.8" fill="#e97132"/><circle cx="70" cy="38" r="2.8" fill="#e97132"/><circle cx="100" cy="20" r="2.8" fill="#e97132"/></svg>
+    <p class="method-name">Logistic &amp; metrics</p>
+    <p class="method-tag">Probabilities, ROC, decision thresholds</p>
+  </div>
+  <div class="method-card">
+    <svg viewBox="0 0 140 88" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="140" height="88" rx="8" fill="#f0f6fa"/><line x1="70" y1="14" x2="70" y2="28" stroke="#0e2841" stroke-width="2"/><rect x="52" y="28" width="36" height="14" rx="3" fill="#156082"/><line x1="60" y1="42" x2="40" y2="54" stroke="#0e2841" stroke-width="2"/><line x1="80" y1="42" x2="100" y2="54" stroke="#0e2841" stroke-width="2"/><rect x="24" y="54" width="32" height="12" rx="3" fill="#0f9ed5"/><rect x="84" y="54" width="32" height="12" rx="3" fill="#e97132"/><circle cx="24" cy="80" r="3" fill="#196b24"/><circle cx="52" cy="80" r="3" fill="#196b24"/><circle cx="100" cy="80" r="3" fill="#196b24"/><line x1="32" y1="66" x2="24" y2="78" stroke="#0e2841" stroke-width="1.5"/><line x1="48" y1="66" x2="52" y2="78" stroke="#0e2841" stroke-width="1.5"/><line x1="100" y1="66" x2="100" y2="78" stroke="#0e2841" stroke-width="1.5"/></svg>
+    <p class="method-name">Trees &amp; forests</p>
+    <p class="method-tag">Readable rules and strong ensembles</p>
+  </div>
+  <div class="method-card">
+    <svg viewBox="0 0 140 88" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="140" height="88" rx="8" fill="#f0f6fa"/><ellipse cx="70" cy="44" rx="48" ry="28" fill="none" stroke="#c5d5e0" stroke-width="1"/><ellipse cx="70" cy="44" rx="32" ry="18" fill="none" stroke="#8eb4cc" stroke-width="1.2"/><ellipse cx="70" cy="44" rx="16" ry="9" fill="none" stroke="#156082" stroke-width="1.5"/><line x1="70" y1="44" x2="108" y2="28" stroke="#e97132" stroke-width="2"/><line x1="70" y1="44" x2="95" y2="58" stroke="#0f9ed5" stroke-width="2"/><circle cx="70" cy="44" r="4" fill="#0e2841"/></svg>
+    <p class="method-name">PCA</p>
+    <p class="method-tag">Directions that matter in messy data</p>
+  </div>
+  <div class="method-card">
+    <svg viewBox="0 0 140 88" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="140" height="88" rx="8" fill="#f0f6fa"/><circle cx="42" cy="36" r="14" fill="none" stroke="#156082" stroke-width="1.5" stroke-dasharray="3 2"/><circle cx="95" cy="52" r="16" fill="none" stroke="#e97132" stroke-width="1.5" stroke-dasharray="3 2"/><circle cx="38" cy="32" r="3.5" fill="#156082"/><circle cx="48" cy="38" r="3.5" fill="#156082"/><circle cx="36" cy="42" r="3.5" fill="#156082"/><circle cx="50" cy="28" r="3.5" fill="#156082"/><circle cx="90" cy="48" r="3.5" fill="#e97132"/><circle cx="102" cy="54" r="3.5" fill="#e97132"/><circle cx="88" cy="58" r="3.5" fill="#e97132"/><circle cx="100" cy="44" r="3.5" fill="#e97132"/></svg>
+    <p class="method-name">Clustering</p>
+    <p class="method-tag">Segment customers and behavior</p>
+  </div>
+  <div class="method-card">
+    <svg viewBox="0 0 140 88" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="140" height="88" rx="8" fill="#f0f6fa"/><circle cx="28" cy="28" r="6" fill="#156082"/><circle cx="28" cy="44" r="6" fill="#156082"/><circle cx="28" cy="60" r="6" fill="#156082"/><circle cx="70" cy="36" r="6" fill="#0f9ed5"/><circle cx="70" cy="52" r="6" fill="#0f9ed5"/><circle cx="112" cy="44" r="7" fill="#e97132"/><line x1="34" y1="28" x2="64" y2="36" stroke="#0e2841" stroke-width="1.2" opacity="0.5"/><line x1="34" y1="44" x2="64" y2="36" stroke="#0e2841" stroke-width="1.2" opacity="0.5"/><line x1="34" y1="44" x2="64" y2="52" stroke="#0e2841" stroke-width="1.2" opacity="0.5"/><line x1="34" y1="60" x2="64" y2="52" stroke="#0e2841" stroke-width="1.2" opacity="0.5"/><line x1="76" y1="36" x2="105" y2="44" stroke="#0e2841" stroke-width="1.2" opacity="0.5"/><line x1="76" y1="52" x2="105" y2="44" stroke="#0e2841" stroke-width="1.2" opacity="0.5"/></svg>
+    <p class="method-name">Neural nets &amp; LLMs</p>
+    <p class="method-tag">Modern tools: Deep Learning if time allows</p>
+  </div>
+</div>
+<p class="methods-foot">Full week-by-week plan: <a href="schedule.html">Schedule</a>.</p>
+```
+
+## How we work
+
+A simple weekly rhythm so you always know how to prepare.
+
+```{=html}
+<div class="path-grid-proto path-grid-2x2 path-with-icons">
+  <div class="path-card-proto">
+    <span class="path-icon" aria-hidden="true">
+      <svg viewBox="0 0 32 32" width="28" height="28" fill="none"><rect x="6" y="4" width="16" height="22" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M10 10h8M10 14h8M10 18h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </span>
+    <span class="path-num">01 · Before class</span>
+    <h3>Lecture notes</h3>
+    <p>Read the assigned textbook sections and, when assigned, run the Quarto notes. Those notes are in Quarto, so complete the setup instructions early. You need a working machine for the week to week flow of the course.</p>
+  </div>
+  <div class="path-card-proto accent-orange">
+    <span class="path-icon" aria-hidden="true">
+      <svg viewBox="0 0 32 32" width="28" height="28" fill="none"><circle cx="11" cy="12" r="3.5" stroke="currentColor" stroke-width="1.6"/><circle cx="21" cy="12" r="3.5" stroke="currentColor" stroke-width="1.6"/><path d="M6 24c1.2-3.5 3.5-5 5-5s3.8 1.5 5 5M16 24c1.2-3.5 3.5-5 5-5s3.8 1.5 5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </span>
+    <span class="path-num">02 · Monday</span>
+    <h3>Concepts &amp; decisions</h3>
+    <p> Mondays are for understanding the method, always starting from a business problem. You prepare a short introduction to that method and present it. I then take over and finish the lecture. The presentation schedule comes in week two, once enrollment is set.</p>
+  </div>
+  <div class="path-card-proto accent-green">
+    <span class="path-icon" aria-hidden="true">
+      <svg viewBox="0 0 32 32" width="28" height="28" fill="none"><rect x="4" y="8" width="24" height="15" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M10 26h12M12 14l2.5 2.5L19 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </span>
+    <span class="path-num">03 · Wednesday</span>
+    <h3>R lab</h3>
+    <p>Wednesdays are labs, and we start from a problem, not from the code. The problem is posted before class. Come prepared. In class we work through guided notebooks: some of the code is already there, you complete the TODOs, we run it, and we interpret the output together. Then we argue the merits of the analysis and how to make it stronger.</p>
+  </div>
+  <div class="path-card-proto accent-cyan">
+    <span class="path-icon" aria-hidden="true">
+      <svg viewBox="0 0 32 32" width="28" height="28" fill="none"><path d="M8 22V10l8-4 8 4v12l-8 4-8-4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M16 14v8M12 18h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </span>
+    <span class="path-num">04 · Outside class</span>
+    <h3>Build and defend</h3>
+    <p>HW: For homework, you get real data, a problem, and starter code. Youy will be required to turn that into a decision you can defend: the problem, the method, the checks, the recommendation and its limits. The notebook is the analysis. The 5 to 6 slides are the brief. The video of at most 5 minutes is you walking a decision maker through it. If those pieces do not match, it is not done. The final project is the same standard with more effort. It is individual and ends in a in class presentation at the end of the semester. For more details see thye syllabus.</p>
+  </div>
+</div>
+```
+
+## Learn & deliver
+
+Materials you will use throughout the term (orient yourself with **Start here** above).
+
+```{=html}
+<div class="nav-grid-proto nav-grid-4 nav-learn-only">
+  <a class="nav-card-proto nav-learn" href="notes/"><strong>Lecture Notes</strong><span>Prepare before every class</span></a>
+  <a class="nav-card-proto nav-learn" href="labs/"><strong>Labs</strong><span>In-class R notebooks</span></a>
+  <a class="nav-card-proto nav-learn" href="hw/"><strong>Homework</strong><span>Specs and expectations</span></a>
+  <a class="nav-card-proto nav-learn" href="project/"><strong>Final Project</strong><span>Checkpoint and presentations</span></a>
+</div>
+```

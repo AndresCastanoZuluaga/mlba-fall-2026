@@ -1,0 +1,379 @@
+---
+title: "Setup: R and RStudio"
+subtitle: "Windows, macOS, and Linux"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    toc-location: right
+    body-classes: "mlba-page"
+    code-tools: false
+---
+
+::: {.sch-chip-row}
+<span class="sch-chip">R 4.3+</span>
+<span class="sch-chip">RStudio / Posit</span>
+<span class="sch-chip">Quarto</span>
+<span class="sch-chip sch-chip-soft">Finish before Week 1 lab</span>
+:::
+
+::: {.callout-warn}
+<strong>Deadlines:</strong> Please do this after the first class (<strong>Mon 24 Aug</strong>) and before the first lab (<strong>Wed 2 Sep</strong>). Email me if something doesn't work, so we can use lab time for methods rather than troubleshooting installation.
+:::
+
+## Why this matters
+
+Labs and homeworks use **R**. Please do this before the first lab and email me if something doesn't work, so we can use lab time for methods rather than troubleshooting installation. Make sure you do this after the first class and reach out if there are issues to solve.
+
+- **After the first class:** Monday 24 August  
+- **Before the first lab:** Wednesday 2 September
+
+If something fails, email me or stop by—we will get you unstuck. **Do not** wait until the night before a homework is due.
+
+This page is written for **Windows**, **macOS**, and **Linux**. Most CMU-Q students use Windows or Mac; follow the section for your system.
+
+---
+
+## 0. Before you start (all systems)
+
+| Check | Why |
+|-------|-----|
+| **~2–4 GB free disk space** | R + RStudio + packages add up |
+| **Stable internet** (campus Wi‑Fi is fine) | Package downloads are large |
+| **Administrator rights** on your laptop | Needed for installers (Windows especially) |
+| **Close other heavy apps** | Installs can take 10–30 minutes |
+| **R version 4.3 or newer** recommended | Matches current CRAN binaries |
+
+---
+
+## 1. Install R
+
+### Windows
+
+1. Go to [https://cran.r-project.org/bin/windows/base/](https://cran.r-project.org/bin/windows/base/).  
+2. Download **“Download R-x.x.x for Windows”**.  
+3. Run the installer.  
+   - Accept the default install location (usually `C:\Program Files\R\...`).  
+   - You can leave the 32-bit option **unchecked** (64-bit only is fine).  
+4. Finish the installer.
+
+**Strongly recommended on Windows — Rtools** (needed if a package must compile from source, e.g. some updates of `xgboost` or `glmnet`):
+
+1. Go to [https://cran.r-project.org/bin/windows/Rtools/](https://cran.r-project.org/bin/windows/Rtools/).  
+2. Install the **Rtools version that matches your R version** (the page explains which).  
+3. Use the default options so Rtools is on the system `PATH`.
+
+Without Rtools, many packages still install as **pre-built binaries**. If install fails with messages about `g++`, `make`, or “compilation failed,” install Rtools and try again.
+
+### macOS
+
+1. Go to [https://cran.r-project.org/bin/macosx/](https://cran.r-project.org/bin/macosx/).  
+2. Download the installer for **your chip**:
+   - **Apple Silicon** (M1/M2/M3/M4): usually labeled **arm64**  
+   - **Intel**: usually labeled **x86_64**  
+3. To check your chip: Apple menu → **About This Mac**.  
+4. Open the `.pkg` and complete installation.  
+5. If macOS blocks the installer: **System Settings → Privacy & Security** → allow the app, or right-click → Open.
+
+### Linux
+
+Use your distribution’s instructions on CRAN, or install from [https://cran.r-project.org/](https://cran.r-project.org/) for your distro. On Ubuntu/Debian you typically need build tools (`build-essential`) for source packages.
+
+### Quick check
+
+In **RStudio** later, run:
+
+```r
+R.version.string
+```
+
+You should see a recent version (4.3+ preferred).
+
+---
+
+## 2. Install RStudio Desktop (Posit)
+
+**All systems:**
+
+1. Go to [https://posit.co/download/rstudio-desktop/](https://posit.co/download/rstudio-desktop/).  
+2. Download **RStudio Desktop Free** for your OS.  
+3. Install and open RStudio.  
+4. Confirm the **Console** shows an R version and a `>` prompt.
+
+### Windows tips
+
+- Install R **before** RStudio.  
+- If RStudio says it cannot find R:  
+  **Tools → Global Options → General → R version → Change** and point to your R install under `C:\Program Files\R\`.  
+- Prefer installing to a path **without unusual characters**. Default paths are fine.  
+- Run RStudio as a normal user for daily work (not always “as Administrator”).
+
+### macOS tips
+
+- Drag RStudio into **Applications**.  
+- First launch: right-click → **Open** if Gatekeeper blocks it.  
+- If you have both Intel and ARM R, keep one clear default.
+
+You will do almost all course work in RStudio: open `.qmd` files, run code chunks, and Knit/Render when asked.
+
+---
+
+## 3. Install Quarto (recommended)
+
+Quarto powers our lecture notes and labs (`.qmd` files).
+
+1. Go to [https://quarto.org/docs/get-started/](https://quarto.org/docs/get-started/).  
+2. Install Quarto for **Windows / macOS / Linux**.  
+3. **Fully quit and reopen RStudio** after installing.
+
+### Check
+
+- **Windows:** open **Command Prompt** or **PowerShell** (not only R):  
+  `quarto --version`  
+- **macOS / Linux:** Terminal:  
+  `quarto --version`
+
+If this fails but RStudio still runs code chunks, you can work day-to-day; full website/render features may need Quarto fixed. Ask me early if `quarto` is not found after install (Windows PATH issues are common—restart the PC once after installing Quarto).
+
+---
+
+## 4. Install course packages
+
+### 4.1 Easiest method
+
+1. Download [`install-packages.R`](install-packages.R) from this Setup page (or copy from the course site).  
+2. In RStudio: **File → Open File** → select `install-packages.R`.  
+3. Click **Source**, or run:
+
+```r
+source("install-packages.R", echo = TRUE)
+```
+
+(Adjust the path if the file is in Downloads, e.g. on Windows: `source("C:/Users/YourName/Downloads/install-packages.R")`.)
+
+### 4.2 Or paste this in the RStudio console
+
+This can take **10–30 minutes**. Stay online.
+
+```{r}
+#| eval: false
+#| label: install-course-packages
+
+# Prefer binaries when possible (especially Windows)
+options(install.packages.check.source = "no")
+options(pkgType = ifelse(.Platform$OS.type == "windows", "binary", getOption("pkgType")))
+
+# --- CORE (required for most of the course) ---
+core <- c(
+  "tidyverse",     # data wrangling + ggplot2
+  "scales",
+  "tidymodels",    # modeling workflow
+  "glmnet",        # ridge / lasso
+  "rpart",         # decision trees
+  "rpart.plot",
+  "ranger",        # random forests
+  "vip",
+  "cluster",
+  "factoextra",
+  "ggfortify",
+  "pROC",          # ROC / AUC
+  "nnet",          # simple neural nets (intro)
+  "rmarkdown",
+  "knitr",
+  "gt",
+  "broom",
+  "here"
+)
+
+# --- RECOMMENDED (used later; install now if you can) ---
+recommended <- c(
+  "xgboost"        # boosting — sometimes needs Rtools on Windows
+)
+
+install_set <- function(pkgs) {
+  missing <- pkgs[!pkgs %in% rownames(installed.packages())]
+  if (!length(missing)) {
+    message("Already installed: ", paste(pkgs, collapse = ", "))
+    return(invisible(TRUE))
+  }
+  message("Installing: ", paste(missing, collapse = ", "))
+  for (p in missing) {
+    message("--> ", p)
+    tryCatch(
+      install.packages(p, dependencies = TRUE),
+      error = function(e) message("FAILED: ", p, " — ", conditionMessage(e))
+    )
+  }
+}
+
+install_set(core)
+install_set(recommended)
+
+# Report status
+all_pkgs <- c(core, recommended)
+ok <- vapply(all_pkgs, requireNamespace, quietly = TRUE, FUN.VALUE = logical(1))
+print(ok)
+if (!all(ok[core])) {
+  stop("Core packages still missing: ", paste(names(ok[core])[!ok[core]], collapse = ", "))
+}
+if (!ok["xgboost"]) {
+  message("NOTE: xgboost failed. You can still start the course; we will revisit before boosting week. On Windows, install Rtools and retry.")
+} else {
+  message("All core + recommended packages look good.")
+}
+```
+
+### 4.3 Optional later (do **not** block Week 1)
+
+Only if we announce them for neural-net / API demos:
+
+```{r}
+#| eval: false
+# install.packages("torch")   # heavy; Windows/macOS have specific install docs
+# install.packages("luz")
+# install.packages(c("httr2", "jsonlite"))
+```
+
+---
+
+## 5. Verify your setup (must pass)
+
+Run in the RStudio console—**no red errors**:
+
+```{r}
+#| eval: false
+#| label: verify-setup
+
+need <- c(
+  "tidyverse", "tidymodels", "glmnet", "rpart", "ranger",
+  "cluster", "pROC", "nnet", "broom", "here"
+)
+
+ok <- vapply(need, requireNamespace, quietly = TRUE, FUN.VALUE = logical(1))
+print(ok)
+
+if (!all(ok)) {
+  stop("Missing packages: ", paste(names(ok)[!ok], collapse = ", "))
+} else {
+  message("Core packages OK.")
+}
+
+# Smoke test: tiny linear model
+library(tidymodels)
+set.seed(467)
+dat <- data.frame(x = rnorm(50), y = NA_real_)
+dat$y <- 1 + 2 * dat$x + rnorm(50)
+fit <- linear_reg() |> set_engine("lm") |> fit(y ~ x, data = dat)
+print(broom::tidy(fit))
+message("Smoke test passed — modeling stack works.")
+```
+
+You should see a small table of coefficients (intercept and `x`).
+
+---
+
+## 6. Files and folders (Windows note)
+
+| Type | Role |
+|------|------|
+| `.qmd` | Notes, labs, homework **source** |
+| `.html` | Built view after **Knit / Render** |
+| Data (`.csv`, etc.) | Provided with each assignment |
+
+**Create one course folder**, e.g.:
+
+- Windows: `C:\Users\YourName\Documents\mlba-f26\`  
+- macOS: `~/Documents/mlba-f26/`
+
+If you use cloud sync (OneDrive, Dropbox, etc.), avoid working only on **online-only** files—knitr can fail when files are not fully on disk. Keep a full local copy of the assignment folder while you work; submit on **Canvas**.
+
+**Windows paths:** In R, prefer forward slashes:
+
+```r
+source("C:/Users/YourName/Downloads/install-packages.R")
+```
+
+---
+
+## 7. Troubleshooting (by symptom)
+
+### Windows
+
+| Problem | What to try |
+|---------|-------------|
+| RStudio “No R version available” | Install R first; then Tools → Global Options → R version |
+| `install.packages` “compilation failed” / `g++` / `make` | Install **Rtools** matching your R version; restart RStudio; retry |
+| `xgboost` fails | Skip for now (course can start without it); install Rtools; `install.packages("xgboost")` later |
+| Install blocked by antivirus | Temporarily allow R/RStudio; or install on campus network |
+| Permission denied writing to library | Avoid installing into a protected system folder; use default user library; do not need Admin for packages if R is installed normally |
+| Path with spaces / OneDrive | Work in `Documents\mlba-f26`; if OneDrive “Files On-Demand” causes knit errors, mark the folder **Always keep on this device** |
+| Quarto not recognized in terminal | Restart PC after Quarto install; reinstall Quarto; confirm RStudio → Tools finds quarto |
+| Plots don’t show | Tools → Global Options → R Markdown → show output inline |
+
+### macOS
+
+| Problem | What to try |
+|---------|-------------|
+| Wrong chip installer (Intel vs Apple Silicon) | Reinstall R for your chip (About This Mac) |
+| “Developer tools” / command-line tools prompt | Install Xcode Command Line Tools when asked |
+| Package binary unavailable | Update R; retry; install CLT if compiling from source |
+| Gatekeeper blocks RStudio | System Settings → Privacy & Security → Open Anyway |
+
+### All systems
+
+| Problem | What to try |
+|---------|-------------|
+| Very slow installs | Stay on campus Wi‑Fi; install `core` list first; retry failed packages one by one |
+| `library()` errors after install | Session → Restart R; then `library(packageName)` |
+| Knit fails “package X not found” | Install X; check you knit with the same R version as the console |
+| Out of disk space | Free several GB; remove old package caches if needed |
+| Corporate / locked laptop | Contact IT for admin rights; use a personal machine if course work is blocked |
+
+### If you are completely stuck
+
+1. Screenshot the **full error** (red text).  
+2. Note: Windows or Mac, and R version (`R.version.string`).  
+3. Email me **before** the next lab.  
+4. On **26 August** bring the laptop to class for a live fix if needed (that day is still a lecture, not a lab).
+
+---
+
+## 8. Package policy for the semester
+
+- **Core packages** above are assumed for homeworks and most labs.  
+- **`xgboost`** is recommended early but **not** a Week-1 blocker if install fails on Windows without Rtools.  
+- Extra packages for a specific week will be listed in that week’s notes **and** added here.  
+- If a CRAN update breaks something mid-semester, tell me—we may pin versions.
+
+---
+
+## 9. Privacy and AI
+
+- Course materials: this website.  
+- **Submissions and grades: Canvas only.**  
+- You may use generative AI to **interpret install errors**, but you must still run the verification yourself (see syllabus AI policy).
+
+---
+
+## 10. Checklist before first lab
+
+### All students
+
+- [ ] R installed (recent version)  
+- [ ] RStudio opens and shows R in the console  
+- [ ] Quarto installed and RStudio restarted (recommended)  
+- [ ] Core packages installed  
+- [ ] Verify script + smoke test succeed  
+- [ ] Laptop charged for class  
+
+### Windows extras
+
+- [ ] Rtools installed (strongly recommended)  
+- [ ] RStudio finds the correct R version  
+- [ ] Course folder is **local** (not online-only cloud)  
+
+### macOS extras
+
+- [ ] R installer matches Apple Silicon vs Intel  
+
+If any **required** box is unchecked by **26 August**, contact me that day so we can fix it before the first lab on **2 September**.

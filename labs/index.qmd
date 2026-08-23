@@ -1,0 +1,51 @@
+---
+title: "Labs"
+subtitle: "Guided R notebooks"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    toc-location: right
+    body-classes: "mlba-page"
+    code-tools: false
+---
+
+
+::: {.sch-chip-row}
+<span class="sch-chip">Default: Wednesday lab</span>
+<span class="sch-chip">Starter + thinking questions</span>
+<span class="sch-chip sch-chip-soft">Bring laptop</span>
+:::
+
+<p class="page-lead">On lab days, read the problem before you sit down. Bring a laptop to labs. On Wednesdays, laptops are required for R. You will get the problem before class and a starter notebook with parts already working. In the hour we work on approach, interpretation, figures, and what the results mean for the decision.</p>
+
+::: {.callout-soft}
+<span class="status-badge status-wip">WIP</span> Lab files not built yet. Skeleton below follows the locked calendar.
+:::
+
+## Pattern
+
+| Pattern | When |
+|---------|------|
+| Default | Lab on **Wednesday** |
+| Exception | Midterm week, 11 Nov (no class), presentation week |
+| Midterm week | No lab (**Wed 7 Oct** = midterm) |
+| Presentation week | No lab (**30 Nov & 2 Dec**) |
+
+## Lab index
+
+| Lab | Meeting | Focus | Status |
+|-----|---------|-------|--------|
+| L0 / env | Wed 26 Aug | R ready / metrics light | Not yet built |
+| L1 Regression | **Wed 2 Sep** | Linear regression lab | Not yet built |
+| L2 Evaluation | Wed 9 Sep | Honest evaluation · leakage habits | Not yet built |
+| L3 Regularization | Wed 23 Sep | Ridge/lasso in R | Not yet built |
+| L4 CV / selection | Wed 30 Sep | CV · no leakage across folds | Not yet built |
+| L5 Logistic | Wed 21 Oct | Logistic in R | Not yet built |
+| L6 Metrics / cutoffs | Wed 28 Oct | ROC, AUC, **decision cutoffs** | Not yet built |
+| L7 Trees | Wed 4 Nov | Trees in R | Not yet built |
+| *(ensembles studio)* | Mon 9 Nov | Live R with concepts (no Wed lab) | Not yet built |
+| L8 PCA | **Wed 18 Nov** | **PCA lab** (locked) | Not yet built |
+| L9 Clustering + literacy | Wed 25 Nov | Clustering · short modern-AI talk | Not yet built |
+
+See [Schedule](../schedule.qmd) for the full calendar.

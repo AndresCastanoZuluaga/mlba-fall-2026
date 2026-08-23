@@ -1,0 +1,99 @@
+---
+title: "Week NN — Short title"
+subtitle: "70-467 · Machine Learning for Business Analytics"
+author: "Andrés Castaño Zuluaga"
+date: last-modified
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    toc-location: right
+    body-classes: "mlba-page"
+    code-fold: false
+    code-tools: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+<!--
+COPY to site/notes/weekNN-slug.qmd
+Do not add this file to public nav.
+
+ISLR-based notes master (PICKS 2026-08-15). Not the parked 8-section list
+(decision / intuition / method / worked example / honest checks /
+manager takeaway / bridge / seeds). That list is dead. Do not recreate it.
+
+Fill every {{placeholder}}. Keep these headings.
+Same question language as Monday and the Wednesday lab. Those are
+separate files. Homework is a new case, same method.
+
+Locks (CONTENT_DEFAULTS + PICKS):
+- R only. No invented dataset in the template.
+- 6–8 screens, not a 50-slide dump. Not "just read ISLR."
+- Week 3: leakage primary (train/test; available at decision time).
+- Week 5: leakage across folds; do not tune on the final test.
+- Week 8: cutoff as a costed decision; prediction ≠ acting.
+- Week 12: clustering + short modern-AI only. No market basket.
+  No named nearest-neighbors block.
+- Midterm 7 Oct, W1–5 only. PCA lab 18 Nov.
+
+Approve LOOK before filling any week.
+-->
+
+## This week's ISLR
+
+{{ISLR chapter}}, {{pages}}. 2nd ed., James, Witten, Hastie, Tibshirani.
+
+Read those pages. These notes are the cut we will use — the formulas, the picture, and the one business add-on ISLR does not carry. You are not being asked to read the whole chapter instead of this file.
+
+## One business question
+
+{{One sentence. Same words on Monday and in the lab problem.}}
+
+A good answer is a recommendation plus a limit. Not a leaderboard.
+
+## What those pages give you
+
+{{Name the method at ISL level. One key formula if the pages have one. What each piece means for the question above. No extra methods.}}
+
+## Run this
+
+We ship the data when the week is real. Do not pull a vendor terminal.
+
+```{r}
+#| label: sketch
+#| message: false
+# When this week is real: read the shipped file next to the notes.
+# dat <- read.csv("data/WEEK-FILE.csv")
+
+# Tiny numeric sketch so the notes knit. Replace with this week's method.
+x <- c(1, 2, 3, 4, 5)
+mean(x)
+```
+
+{{One sentence on what the output is answering. Not a second method.}}
+
+## Honesty — keep only if this is week 3, 5, or 8
+
+<!-- Delete this whole section in other weeks. -->
+
+::: {.callout-note}
+<!-- Week 3 (primary): train/test honesty; leakage as using future info,
+     peeking at test, or a column you would not have at decision time. -->
+<!-- Week 5: leakage across folds; selection vs test; do not tune on the
+     final test. -->
+<!-- Week 8: available-at-decision-time features; cutoff is a cost
+     (false alarm vs miss); prediction is not the same as acting. -->
+
+{{One short hook for *this* week only. Week 3 / 5 / 8 as above. Optional one line in week 3: predicting is not the same as asking what happens if we act.}}
+:::
+
+## Monday
+
+{{What we will do with the question above. Pair talk sits on the agenda. Slides follow these same ISLR pages. PDF after class.}}
+
+## Wednesday
+
+{{What the lab will run. The problem one-pager is a separate post. You tweak a starter; you do not write the hour from scratch.}}

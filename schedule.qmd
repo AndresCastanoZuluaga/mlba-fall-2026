@@ -1,0 +1,240 @@
+---
+title: "Schedule"
+subtitle: "70-467 · Fall 2026 · Mon & Wed 14:30–15:45 · CMB 1190"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    toc-location: right
+    body-classes: "schedule-page"
+    code-tools: false
+---
+
+<p class="schedule-meta"><strong>Canonical student-facing calendar</strong> (source of truth for all dates). If this page disagrees with the syllabus, Canvas, or anything else, <strong>this page wins</strong>—then those places are updated to match.</p>
+
+::: {.sch-chip-row}
+<span class="sch-chip">Mon = concepts</span>
+<span class="sch-chip">Wed = R lab</span>
+<span class="sch-chip">Pair talks most Mondays</span>
+<span class="sch-chip sch-chip-soft">Notes before · slides after</span>
+:::
+
+## Quick reference
+
+### Homeworks
+
+| HW | Released | Deadline | Focus |
+|----|----------|----------|--------|
+| HW1 | **2 Sep** | **9 Sep** | Regression + metrics / basic evaluation |
+| HW2 | **21 Sep** | **28 Sep** | Train/test + regularization |
+| HW3 | **21 Oct** | **28 Oct** | Logistic + classification metrics |
+| HW4 | **2 Nov** | **9 Nov** | Trees + boosting + PCA if needed |
+
+### Quizzes (paper, ~10–15 min)
+
+| Quiz | Date |
+|------|------|
+| Q1 | **Mon 31 Aug** |
+| Q2 | **Mon 21 Sep** |
+| Q3 | **Wed 21 Oct** |
+| Q4 | **Wed 25 Nov** |
+
+### Exam & project
+
+| Item | Date |
+|------|------|
+| Midterm review | **Mon 5 Oct** |
+| **Midterm** | **Wed 7 Oct** (closed notes; weeks 1–5 only) |
+| Project brief published | **Wed 28 Oct** |
+| Project checkpoint | **Wed 18 Nov** (PCA lab day; criteria with brief) |
+| Project presentations | **Mon 30 Nov & Wed 2 Dec** |
+
+<p class="sch-note-line"><strong>No homework/quiz/project dues:</strong> 5–7 Oct (midterm week).</p>
+
+---
+
+## Week-by-week
+
+### Week 1 — Launch + linear regression
+
+| Date | Type | Content | Due / out |
+|------|------|---------|-----------|
+| **Mon 24 Aug** | Concepts | Decision-first ML; AI snapshot; **linear regression** + running example | — |
+| **Wed 26 Aug** | Concepts + light R | Regression metrics; interpretation; R ready | — |
+
+### Week 2 — Regression lab
+
+| Date | Type | Content | Due / out |
+|------|------|---------|-----------|
+| **Mon 31 Aug** | Concepts + quiz | **Quiz 1**; continue linear regression | **Quiz 1** |
+| **Wed 2 Sep** | Lab | Linear regression lab in R | **HW1 out** |
+
+### Week 3 — Train/test & generalization
+
+| Date | Type | Content | Due / out |
+|------|------|---------|-----------|
+| **Mon 7 Sep** | Concepts | Train/test; over/underfit; **leakage (primary)**; pair talks resume | — |
+| **Wed 9 Sep** | Lab | Honest evaluation in R (incl. leakage habits) | **HW1 due** |
+
+::: {.schedule-break}
+**Mon 14 Sep** · **No class**
+:::
+
+### Week 4 — Regularization
+
+| Date | Type | Content | Due / out |
+|------|------|---------|-----------|
+| **Wed 16 Sep** | Concepts | Ridge/lasso; complexity | — |
+| **Mon 21 Sep** | Concepts | Shrinkage, λ, pitfalls; pair presentation | **Quiz 2** · **HW2 out** |
+| **Wed 23 Sep** | Lab | Ridge/lasso in R | — |
+
+### Week 5 — Cross-validation & model selection
+
+| Date | Type | Content | Due / out |
+|------|------|---------|-----------|
+| **Mon 28 Sep** | Concepts | k-fold CV; selection vs test; **leakage reinforced**; pair presentation | **HW2 due** |
+| **Wed 30 Sep** | Lab | CV / selection in R (no leakage across folds) | — |
+
+### Week 6 — Midterm week (no other dues)
+
+| Date | Type | Content | Due / out |
+|------|------|---------|-----------|
+| **Mon 5 Oct** | **Review** | Weeks 1–5; interpret→decide; logistics; Q&A | — |
+| **Wed 7 Oct** | **MIDTERM** | Closed notes, in class | **Midterm** |
+
+::: {.schedule-break}
+**11–15 Oct** · **Fall break** · No classes
+:::
+
+### Week 7 — Logistic regression
+
+| Date | Type | Content | Due / out |
+|------|------|---------|-----------|
+| **Mon 19 Oct** | Concepts | Logistic; odds; classification decisions; pair presentation | — |
+| **Wed 21 Oct** | Lab | Logistic in R | **Quiz 3** · **HW3 out** |
+
+### Week 8 — Classification metrics & thresholds
+
+| Date | Type | Content | Due / out |
+|------|------|---------|-----------|
+| **Mon 26 Oct** | Concepts | ROC, AUC; **cutoffs as decisions** (costs of being wrong); **prediction vs acting**; leakage / decision-time reminder; pair presentation | — |
+| **Wed 28 Oct** | Lab | Metrics / **decision cutoffs** in R | **HW3 due** · **Project brief** |
+
+### Week 9 — Decision trees
+
+| Date | Type | Content | Due / out |
+|------|------|---------|-----------|
+| **Mon 2 Nov** | Concepts | Trees; pair presentation | **HW4 out** |
+| **Wed 4 Nov** | Lab | Trees in R | — |
+
+### Week 10 — Random forests & boosting
+
+| Date | Type | Content | Due / out |
+|------|------|---------|-----------|
+| **Mon 9 Nov** | Concepts + studio | Forests + boosting; **live R: start one ensemble** (no Wed lab this week); pair presentation | **HW4 due** |
+| **Wed 11 Nov** | — | **No class** | — |
+
+### Week 11 — PCA
+
+| Date | Type | Content | Due / out |
+|------|------|---------|-----------|
+| **Mon 16 Nov** | Concepts | PCA for business / high-dim data | — |
+| **Wed 18 Nov** | Lab | **PCA lab** in R | **Project checkpoint** |
+
+### Week 12 — Clustering + short modern-AI talk
+
+| Date | Type | Content | Due / out |
+|------|------|---------|-----------|
+| **Mon 23 Nov** | Concepts | Clustering / segmentation; pair presentation | — |
+| **Wed 25 Nov** | Lab + module | Clustering lab; **short** modern-AI talk (neural nets + chatbots — literacy only) | **Quiz 4** |
+
+### Week 13 — Project presentations
+
+| Date | Type | Content | Due / out |
+|------|------|---------|-----------|
+| **Mon 30 Nov** | Presentations | Individual project presentations + Q&A | Project |
+| **Wed 2 Dec** | Presentations | Remaining presentations + Q&A | Project |
+
+<p class="schedule-footnote">Attendance expected both days (see syllabus for missed-session penalty on presentation grade).</p>
+
+---
+
+## Master deadline list
+
+| Date | Event |
+|------|--------|
+| 31 Aug | Quiz 1 |
+| 2 Sep | HW1 released |
+| 9 Sep | HW1 deadline |
+| 21 Sep | Quiz 2 · HW2 released |
+| 28 Sep | HW2 deadline |
+| 5 Oct | Midterm review |
+| 7 Oct | **Midterm** |
+| 21 Oct | Quiz 3 · HW3 released |
+| 28 Oct | HW3 deadline · Project brief published |
+| 2 Nov | HW4 released |
+| 9 Nov | HW4 deadline |
+| 18 Nov | Project checkpoint (PCA lab day) |
+| 25 Nov | Quiz 4 |
+| 30 Nov–2 Dec | Project presentations |
+
+---
+
+## CMU-Q calendar notes (instructor)
+
+- Mid-semester grades due ~**19 Oct** → grade midterm over fall break.  
+- Course withdrawal grade deadline **5 Nov**.  
+- Last day of classes **3 Dec**.  
+- Final grades due **15 Dec**.  
+
+```{=html}
+<script>
+/* Schedule enhancers: type pills + due chips. Does not change content. */
+(function () {
+  if (!document.body.classList.contains("schedule-page")) return;
+
+  function pillClass(text) {
+    var t = (text || "").toLowerCase();
+    if (t.indexOf("midterm") !== -1) return "sch-pill sch-pill-exam";
+    if (t.indexOf("quiz") !== -1 && t.indexOf("lab") !== -1) return "sch-pill sch-pill-quiz";
+    if (t.indexOf("lab") !== -1) return "sch-pill sch-pill-lab";
+    if (t.indexOf("async") !== -1) return "sch-pill sch-pill-async";
+    if (t.indexOf("review") !== -1) return "sch-pill sch-pill-review";
+    if (t.indexOf("presentation") !== -1) return "sch-pill sch-pill-present";
+    if (t.indexOf("studio") !== -1) return "sch-pill sch-pill-studio";
+    if (t.indexOf("concept") !== -1) return "sch-pill sch-pill-concepts";
+    if (t === "—" || t === "-" || t === "") return "sch-pill sch-pill-mute";
+    return "sch-pill sch-pill-default";
+  }
+
+  var week = document.getElementById("week-by-week");
+  if (week) {
+    week.querySelectorAll("table tbody tr").forEach(function (tr) {
+      var cells = tr.children;
+      if (cells.length < 4) return;
+      var typeCell = cells[1];
+      var dueCell = cells[3];
+      var typeText = typeCell.textContent.trim();
+      typeCell.innerHTML = '<span class="' + pillClass(typeText) + '">' + typeCell.innerHTML + "</span>";
+      var dueText = dueCell.textContent.trim();
+      if (dueText && dueText !== "—") {
+        dueCell.innerHTML = '<span class="sch-due">' + dueCell.innerHTML + "</span>";
+      } else {
+        dueCell.classList.add("sch-due-empty");
+      }
+      if (/midterm/i.test(typeText) || /midterm/i.test(dueText)) {
+        tr.classList.add("sch-row-exam");
+      }
+    });
+  }
+
+  /* Soft card wrap: each week h3 + following table already in section — add class */
+  document.querySelectorAll("#week-by-week > section.level3").forEach(function (sec) {
+    sec.classList.add("sch-week-card");
+  });
+  document.querySelectorAll("#quick-reference > section.level3").forEach(function (sec) {
+    sec.classList.add("sch-ref-card");
+  });
+})();
+</script>
+```

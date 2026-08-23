@@ -1,0 +1,118 @@
+---
+title: "Homework N — Short title"
+subtitle: "70-467 · individual · notebook + at most six slides + at most five minutes video"
+author: "Andrés Castaño Zuluaga"
+date: last-modified
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    toc-location: right
+    body-classes: "mlba-page"
+    code-fold: false
+    code-tools: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+<!--
+COPY when writing a real homework (M8 / M11).
+Individual (locked 2026-08-15). Four separate cases. No Lending Club
+semester machine. New case, same method as the week — not the lab table.
+
+Package: runnable R notebook + at most six slides + a video of at most five minutes. Canvas only.
+
+Approve LOOK before filling any homework.
+-->
+
+<!-- HW3 required: cutoff is a decision. Parts must price a false alarm
+     vs a miss and say who you flag. Do not treat 0.5 as the answer. -->
+<!-- HW4: trees + boosting + PCA if needed.
+     Trees stay in scope. Dimension reduction only as covered.
+     Do not add extra methods to fill the missing Wednesday. -->
+
+## Due
+
+| | |
+|--|--|
+| Released | {{date from schedule.qmd}} |
+| Due | {{date}} · Canvas · 23:59 |
+| Work | Individual |
+| Time budget | About one focused evening plus the short video |
+
+## The case
+
+{{One manager question. What should they do this week?}}
+
+You recommend and you state a limit. A model score is not the recommendation.
+
+## Data
+
+We ship the files with this homework. Do not use a private vendor pull. Do not reuse a previous homework's table.
+
+| File | Role |
+|------|------|
+| `data/{{HW-FILE.csv}}` | The table (when the homework is real) |
+| `codebook.md` | Variable, type, meaning, known at decision time? |
+
+## Codebook
+
+See `codebook.md` in this pack. Before you fit anything, mark which columns would be known at the moment of the decision.
+
+## Starter
+
+Setup is filled. The analysis below is incomplete on purpose — you have to decide the split (and, on HW3, the cutoff).
+
+```{r}
+#| label: setup
+#| message: false
+# library(tidyverse)
+# dat <- read.csv("data/HW-FILE.csv")
+
+# Placeholder so the starter knits. Replace with the shipped table.
+```
+
+```{r}
+#| label: incomplete
+# This fits on all rows. That is not the answer.
+# You decide: how to split, what to keep, what to tell the desk.
+# HW3: the cutoff is a choice. HW4: trees + boosting + PCA if needed.
+```
+
+## Parts
+
+Numbered. Each part leaves a pick a chatbot cannot finish for you.
+
+### 1.
+
+{{Look at the table in a way that serves the case — not a fishing trip. Name one column you would drop, and why.}}
+
+### 2.
+
+{{Fit the method for *this* homework only. State the one modeling choice you made (split, penalty, cutoff, …).}}
+
+### 3.
+
+{{Honesty check for this homework. HW2: a full cross-validation pipeline is not required. HW3: costs of a false alarm vs a miss; who you flag. HW4: trees + boosting + PCA if needed.}}
+
+### 4.
+
+{{The call. Who you treat differently, and one thing you must not claim.}}
+
+Write the manager paragraph here, not only in the slides.
+
+## Submit
+
+Three pieces, Canvas only.
+
+1. **This notebook**, knitted, all code runnable.
+2. **At most six slides:** the problem, the evidence, the decision, and the limit.
+3. **≤ 5:00 video** of the same story. Phone recording is fine.
+
+## AI
+
+Allowed as an assistant **with disclosure**. Write what you used and what you changed. You verify every number. You must be able to explain every chart in an oral without the tool in the room.
+
+<!-- Rubric: M2. Do not invent weights in the template. -->

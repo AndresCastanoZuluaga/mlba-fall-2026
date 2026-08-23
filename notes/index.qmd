@@ -1,0 +1,56 @@
+---
+title: "Lecture notes"
+subtitle: "Primary learning resource"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    toc-location: right
+    body-classes: "mlba-page"
+    code-tools: false
+---
+
+
+::: {.sch-chip-row}
+<span class="sch-chip">Before class: read &amp; run</span>
+<span class="sch-chip">Notes = durable book</span>
+<span class="sch-chip sch-chip-soft">Slides PDF after class</span>
+:::
+
+<p class="page-lead"><strong>Lecture notes</strong> are Quarto notebooks: theory, applications, short problems, and <strong>runnable R</strong>. Slides are the live teaching layer; notes are what you keep.</p>
+
+::: {.callout-soft}
+<span class="status-badge status-wip">WIP</span> Week notebooks are not built yet (after templates <strong>M1</strong>). This page is the <strong>index skeleton</strong> aligned to the locked schedule.
+:::
+
+## How to use notes
+
+| When | What to do |
+|------|------------|
+| **Before class** | Read and run the assigned notes |
+| **In class** | Keep notes open as reference if useful |
+| **After class** | Revisit for homework and exams |
+
+## Notes index
+
+| Week | Topic (from schedule) | Status | Link |
+|------|----------------------|--------|------|
+| 01 | Launch + linear regression | Not yet built | — |
+| 02 | *(Lab week — see Labs; notes track evaluation path)* | Not yet built | — |
+| 03 | Train/test & generalization · **leakage primary** | Not yet built | — |
+| 04 | Regularization | Not yet built | — |
+| 05 | CV & model selection · **leakage reinforced** | Not yet built | — |
+| 06 | Midterm week (review + exam — no new notes package) | Review sheet TBD | — |
+| 07 | Logistic regression | Not yet built | — |
+| 08 | Classification metrics & **decision cutoffs** · prediction vs acting · leakage reminder | Not yet built | — |
+| 09 | Decision trees | Not yet built | — |
+| 10 | Random forests & boosting | Not yet built | — |
+| 11 | PCA | Not yet built | — |
+| 12 | Clustering · short modern-AI literacy | Not yet built | — |
+| 13 | Project presentations | n/a | — |
+
+Full meeting dates: [Schedule](../schedule.qmd).
+
+## Author note (instructors / agents)
+
+**M1 template:** `notes/_templates/week_notes.qmd` — ISLR-based spine (this week's ISLR → one business question → what those pages give you → run this → honesty if week 3/5/8 → Monday → Wednesday). The parked 8-section list is dead. Voice: Andrés. Approve look before filling week 1.

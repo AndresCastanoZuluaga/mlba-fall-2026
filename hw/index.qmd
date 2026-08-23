@@ -1,0 +1,53 @@
+---
+title: "Homework"
+subtitle: "Notebook + deck + video"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    toc-location: right
+    body-classes: "mlba-page"
+    code-tools: false
+---
+
+
+::: {.sch-chip-row}
+<span class="sch-chip">Individual</span>
+<span class="sch-chip">R notebook</span>
+<span class="sch-chip">At most six slides</span>
+<span class="sch-chip">≤ 5 min video</span>
+<span class="sch-chip sch-chip-soft">Submit on Canvas</span>
+:::
+
+<p class="page-lead">Every homework is <strong>individual</strong>. You submit three pieces on Canvas: a runnable R notebook, at most six slides, and a video of at most five minutes. The slides and the video should tell the same story as the notebook: the problem, the evidence, the decision, and the limit.</p>
+
+::: {.callout-soft}
+<span class="status-badge status-wip">WIP</span> Detailed prompts and datasets not written yet. Package shape is locked. Dates are a working plan (see [Schedule](../schedule.qmd)); homework content can change during the term.
+:::
+
+## Package (every HW)
+
+1. **R notebook** — analysis must run  
+2. **At most six slides** — the problem, the evidence, the decision, and the limit  
+3. **≤ 5:00 video** — same story; simple recording is fine  
+
+Submit on **Canvas** only (not this site).
+
+## Schedule
+
+| HW | Released | Deadline | Status |
+|----|----------|----------|--------|
+| **HW1** | **2 Sep** | **9 Sep** | Spec TBD |
+| **HW2** | **21 Sep** | **28 Sep** | Spec TBD |
+| **HW3** | **21 Oct** | **28 Oct** | Spec TBD |
+| **HW4** | **2 Nov** | **9 Nov** | Spec TBD |
+
+::: {.callout-warn}
+<strong>No HW dues midterm week</strong> (5–7 Oct). HW4 is due **9 Nov** (ensembles studio day)—plan ahead.
+:::
+
+Full calendar: [Schedule](../schedule.qmd).
+
+## AI
+
+AI is allowed on homework if you disclose it (Yellow level, when the assignment allows it). You must run the code and be able to explain the important parts of how you reached the decision. If you hide AI use, or you cannot explain the work in the video, or I suspect you used AI inappropriately, I will ask you to present in person. Depending on how you handle the questions in person, the grade on that homework can go as low as 0, and you may be reported for an academic integrity violation. See [Syllabus](../syllabus.qmd).
