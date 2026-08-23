@@ -18,7 +18,7 @@
     "href": "schedule.html#week-by-week",
     "title": "Schedule",
     "section": "Week-by-week",
-    "text": "Week-by-week\n\nWeek 1 — Launch + linear regression\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 24 Aug\nConcepts\nDecision-first ML; AI snapshot; linear regression + running example\n—\n\n\nWed 26 Aug\nConcepts + light R\nRegression metrics; interpretation; R ready\n—\n\n\n\n\n\nWeek 2 — Regression lab\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 31 Aug\nConcepts + quiz\nQuiz 1; continue linear regression\nQuiz 1\n\n\nWed 2 Sep\nLab\nLinear regression lab in R\nHW1 out\n\n\n\n\n\nWeek 3 — Train/test & generalization\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 7 Sep\nConcepts\nTrain/test; over/underfit; leakage (primary); pair talks resume\n—\n\n\nWed 9 Sep\nLab\nHonest evaluation in R (incl. leakage habits)\nHW1 due\n\n\n\n\nMon 14 Sep · No class\n\n\n\nWeek 4 — Regularization\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nWed 16 Sep\nConcepts\nRidge/lasso; complexity\n—\n\n\nMon 21 Sep\nConcepts\nShrinkage, λ, pitfalls; pair presentation\nQuiz 2 · HW2 out\n\n\nWed 23 Sep\nLab\nRidge/lasso in R\n—\n\n\n\n\n\nWeek 5 — Cross-validation & model selection\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 28 Sep\nConcepts\nk-fold CV; selection vs test; leakage reinforced; pair presentation\nHW2 due\n\n\nWed 30 Sep\nLab\nCV / selection in R (no leakage across folds)\n—\n\n\n\n\n\nWeek 6 — Midterm week (no other dues)\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 5 Oct\nReview\nWeeks 1–5; interpret→decide; logistics; Q&A\n—\n\n\nWed 7 Oct\nMIDTERM\nClosed notes, in class\nMidterm\n\n\n\n\n11–15 Oct · Fall break · No classes\n\n\n\nWeek 7 — Logistic regression\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 19 Oct\nConcepts\nLogistic; odds; classification decisions; pair presentation\n—\n\n\nWed 21 Oct\nLab\nLogistic in R\nQuiz 3 · HW3 out\n\n\n\n\n\nWeek 8 — Classification metrics & thresholds\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 26 Oct\nConcepts\nROC, AUC; cutoffs as decisions (costs of being wrong); prediction vs acting; leakage / decision-time reminder; pair presentation\n—\n\n\nWed 28 Oct\nLab\nMetrics / decision cutoffs in R\nHW3 due · Project brief\n\n\n\n\n\nWeek 9 — Decision trees\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 2 Nov\nConcepts\nTrees; pair presentation\nHW4 out\n\n\nWed 4 Nov\nLab\nTrees in R\n—\n\n\n\n\n\nWeek 10 — Random forests & boosting\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 9 Nov\nConcepts + studio\nForests + boosting; live R: start one ensemble (no Wed lab this week); pair presentation\nHW4 due\n\n\nWed 11 Nov\n—\nNo class\n—\n\n\n\n\n\nWeek 11 — PCA\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 16 Nov\nConcepts\nPCA for business / high-dim data\n—\n\n\nWed 18 Nov\nLab\nPCA lab in R\nProject checkpoint\n\n\n\n\n\nWeek 12 — Clustering + short modern-AI talk\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 23 Nov\nConcepts\nClustering / segmentation; pair presentation\n—\n\n\nWed 25 Nov\nLab + module\nClustering lab; short modern-AI talk (neural nets + chatbots — literacy only)\nQuiz 4\n\n\n\n\n\nWeek 13 — Project presentations\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 30 Nov\nPresentations\nIndividual project presentations + Q&A\nProject\n\n\nWed 2 Dec\nPresentations\nRemaining presentations + Q&A\nProject\n\n\n\n\nAttendance expected both days (see syllabus for missed-session penalty on presentation grade)."
+    "text": "Week-by-week\n\nWeek 1 — Launch + linear regression\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 24 Aug\nConcepts\nIntroduction; AI and jobs; a first look at the 400-store file\n—\n\n\nWed 26 Aug\nConcepts + light R\nRegression metrics; interpretation; R ready\n—\n\n\n\n\n\nWeek 2 — Regression lab\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 31 Aug\nConcepts + quiz\nQuiz 1; continue linear regression\nQuiz 1\n\n\nWed 2 Sep\nLab\nLinear regression lab in R\nHW1 out\n\n\n\n\n\nWeek 3 — Train/test & generalization\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 7 Sep\nConcepts\nTrain/test; over/underfit; leakage (primary); pair talks resume\n—\n\n\nWed 9 Sep\nLab\nHonest evaluation in R (incl. leakage habits)\nHW1 due\n\n\n\n\nMon 14 Sep · No class\n\n\n\nWeek 4 — Regularization\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nWed 16 Sep\nConcepts\nRidge/lasso; complexity\n—\n\n\nMon 21 Sep\nConcepts\nShrinkage, λ, pitfalls; pair presentation\nQuiz 2 · HW2 out\n\n\nWed 23 Sep\nLab\nRidge/lasso in R\n—\n\n\n\n\n\nWeek 5 — Cross-validation & model selection\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 28 Sep\nConcepts\nk-fold CV; selection vs test; leakage reinforced; pair presentation\nHW2 due\n\n\nWed 30 Sep\nLab\nCV / selection in R (no leakage across folds)\n—\n\n\n\n\n\nWeek 6 — Midterm week (no other dues)\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 5 Oct\nReview\nWeeks 1–5; interpret→decide; logistics; Q&A\n—\n\n\nWed 7 Oct\nMIDTERM\nClosed notes, in class\nMidterm\n\n\n\n\n11–15 Oct · Fall break · No classes\n\n\n\nWeek 7 — Logistic regression\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 19 Oct\nConcepts\nLogistic; odds; classification decisions; pair presentation\n—\n\n\nWed 21 Oct\nLab\nLogistic in R\nQuiz 3 · HW3 out\n\n\n\n\n\nWeek 8 — Classification metrics & thresholds\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 26 Oct\nConcepts\nROC, AUC; cutoffs as decisions (costs of being wrong); prediction vs acting; leakage / decision-time reminder; pair presentation\n—\n\n\nWed 28 Oct\nLab\nMetrics / decision cutoffs in R\nHW3 due · Project brief\n\n\n\n\n\nWeek 9 — Decision trees\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 2 Nov\nConcepts\nTrees; pair presentation\nHW4 out\n\n\nWed 4 Nov\nLab\nTrees in R\n—\n\n\n\n\n\nWeek 10 — Random forests & boosting\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 9 Nov\nConcepts + studio\nForests + boosting; live R: start one ensemble (no Wed lab this week); pair presentation\nHW4 due\n\n\nWed 11 Nov\n—\nNo class\n—\n\n\n\n\n\nWeek 11 — PCA\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 16 Nov\nConcepts\nPCA for business / high-dim data\n—\n\n\nWed 18 Nov\nLab\nPCA lab in R\nProject checkpoint\n\n\n\n\n\nWeek 12 — Clustering + short modern-AI talk\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 23 Nov\nConcepts\nClustering / segmentation; pair presentation\n—\n\n\nWed 25 Nov\nLab + module\nClustering lab; short modern-AI talk (neural nets + chatbots — literacy only)\nQuiz 4\n\n\n\n\n\nWeek 13 — Project presentations\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 30 Nov\nPresentations\nIndividual project presentations + Q&A\nProject\n\n\nWed 2 Dec\nPresentations\nRemaining presentations + Q&A\nProject\n\n\n\n\nAttendance expected both days (see syllabus for missed-session penalty on presentation grade)."
   },
   {
     "objectID": "schedule.html#master-deadline-list",
@@ -28,18 +28,11 @@
     "text": "Master deadline list\n\n\n\nDate\nEvent\n\n\n\n\n31 Aug\nQuiz 1\n\n\n2 Sep\nHW1 released\n\n\n9 Sep\nHW1 deadline\n\n\n21 Sep\nQuiz 2 · HW2 released\n\n\n28 Sep\nHW2 deadline\n\n\n5 Oct\nMidterm review\n\n\n7 Oct\nMidterm\n\n\n21 Oct\nQuiz 3 · HW3 released\n\n\n28 Oct\nHW3 deadline · Project brief published\n\n\n2 Nov\nHW4 released\n\n\n9 Nov\nHW4 deadline\n\n\n18 Nov\nProject checkpoint (PCA lab day)\n\n\n25 Nov\nQuiz 4\n\n\n30 Nov–2 Dec\nProject presentations"
   },
   {
-    "objectID": "schedule.html#cmu-q-calendar-notes-instructor",
-    "href": "schedule.html#cmu-q-calendar-notes-instructor",
-    "title": "Schedule",
-    "section": "CMU-Q calendar notes (instructor)",
-    "text": "CMU-Q calendar notes (instructor)\n\nMid-semester grades due ~19 Oct → grade midterm over fall break.\n\nCourse withdrawal grade deadline 5 Nov.\n\nLast day of classes 3 Dec.\n\nFinal grades due 15 Dec."
-  },
-  {
     "objectID": "notes/index.html",
     "href": "notes/index.html",
     "title": "Lecture notes",
     "section": "",
-    "text": "Before class: read & run Notes = durable book Slides PDF after class\nLecture notes are Quarto notebooks: theory, applications, short problems, and runnable R. Slides are the live teaching layer; notes are what you keep."
+    "text": "Before class: read & run Notes = durable book Slides PDF after class\nLecture notes will appear here before class. They are notebooks: the ideas, short problems, and R you can run. Slides are what we use in the room; notes are what you keep. Nothing is posted yet. I will put each week up before you need it."
   },
   {
     "objectID": "notes/index.html#how-to-use-notes",
@@ -56,88 +49,18 @@
     "text": "Notes index\n\n\n\n\n\n\n\n\n\nWeek\nTopic (from schedule)\nStatus\nLink\n\n\n\n\n01\nLaunch + linear regression\nNot yet built\n—\n\n\n02\n(Lab week — see Labs; notes track evaluation path)\nNot yet built\n—\n\n\n03\nTrain/test & generalization · leakage primary\nNot yet built\n—\n\n\n04\nRegularization\nNot yet built\n—\n\n\n05\nCV & model selection · leakage reinforced\nNot yet built\n—\n\n\n06\nMidterm week (review + exam — no new notes package)\nReview sheet TBD\n—\n\n\n07\nLogistic regression\nNot yet built\n—\n\n\n08\nClassification metrics & decision cutoffs · prediction vs acting · leakage reminder\nNot yet built\n—\n\n\n09\nDecision trees\nNot yet built\n—\n\n\n10\nRandom forests & boosting\nNot yet built\n—\n\n\n11\nPCA\nNot yet built\n—\n\n\n12\nClustering · short modern-AI literacy\nNot yet built\n—\n\n\n13\nProject presentations\nn/a\n—\n\n\n\nFull meeting dates: Schedule."
   },
   {
-    "objectID": "notes/index.html#author-note-instructors-agents",
-    "href": "notes/index.html#author-note-instructors-agents",
-    "title": "Lecture notes",
-    "section": "Author note (instructors / agents)",
-    "text": "Author note (instructors / agents)\nM1 template: notes/_templates/week_notes.qmd — ISLR-based spine (this week’s ISLR → one business question → what those pages give you → run this → honesty if week 3/5/8 → Monday → Wednesday). The parked 8-section list is dead. Voice: Andrés. Approve look before filling week 1."
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "70-467 - Machine Learning for Business Analytics",
+    "objectID": "slides/index.html",
+    "href": "slides/index.html",
+    "title": "Slides",
     "section": "",
-    "text": "CMU-Q · Fall 2026 · 70-467\n\n\n\n\nInstructor: Andrés Castaño Zuluaga\n\n\nWelcome to 70-467 Machine Learning for Business Analytics!\n\n\nIn an era when AI can write code faster than most people, writing code is not the scarce skill. The bottleneck in productive analytics is understanding, verification, and judgment: knowing what to ask the tools to do, checking whether the answer is good enough to act on, and explaining both the recommendation and its limits. AI will not replace your job. Someone who can use it and is prepared to work those bottlenecks will.\nThis course prepares you for that. You cannot evaluate the tools, or incorporate them into how you work, until you understand the methods. That is what sharpens judgment and makes the communication defensible. We incentivize responsible use of AI: tools that augment you, not substitutes that replace the thinking. You will learn to turn data into decisions you can stand behind. Choose the method, check it carefully, and explain the recommendation and its limits. The emphasis is business judgment under real problems, not model fitting as an end in itself. We work in R, with real datasets.\n\n\nMon & Wed · 2:30–3:45 PM · CMB 1190 Concepts + R labs Build · evaluate · defend"
+    "text": "I post a PDF of the slides after class, not before. Use the notes to prepare. If a PDF is not here yet, we have not finished that meeting."
   },
   {
-    "objectID": "index.html#methods-you-will-see-and-use",
-    "href": "index.html#methods-you-will-see-and-use",
-    "title": "70-467 - Machine Learning for Business Analytics",
-    "section": "Methods you will see and use",
-    "text": "Methods you will see and use\nWe move from simple, interpretable models to richer tools, always starting from a business problem and emphasizing business understanding, method feasibility and limitations, and judgement in decision-making.\n\n  \n    \n    Linear regression\n    Using regression for prediction and understanding its implication\n  \n  \n    \n    Logistic & metrics\n    Probabilities, ROC, decision thresholds\n  \n  \n    \n    Trees & forests\n    Readable rules and strong ensembles\n  \n  \n    \n    PCA\n    Directions that matter in messy data\n  \n  \n    \n    Clustering\n    Segment customers and behavior\n  \n  \n    \n    Neural nets & LLMs\n    Modern tools: Deep Learning if time allows\n  \n\nFull week-by-week plan: Schedule."
-  },
-  {
-    "objectID": "index.html#how-we-work",
-    "href": "index.html#how-we-work",
-    "title": "70-467 - Machine Learning for Business Analytics",
-    "section": "How we work",
-    "text": "How we work\nA simple weekly rhythm so you always know how to prepare.\n\n  \n    \n      \n    \n    01 · Before class\n    Lecture notes\n    Read the assigned textbook sections and, when assigned, run the Quarto notes. Those notes are in Quarto, so complete the setup instructions early. You need a working machine for the week to week flow of the course.\n  \n  \n    \n      \n    \n    02 · Monday\n    Concepts & decisions\n     Mondays are for understanding the method, always starting from a business problem. You prepare a short introduction to that method and present it. I then take over and finish the lecture. The presentation schedule comes in week two, once enrollment is set.\n  \n  \n    \n      \n    \n    03 · Wednesday\n    R lab\n    Wednesdays are labs, and we start from a problem, not from the code. The problem is posted before class. Come prepared. In class we work through guided notebooks: some of the code is already there, you complete the TODOs, we run it, and we interpret the output together. Then we argue the merits of the analysis and how to make it stronger.\n  \n  \n    \n      \n    \n    04 · Outside class\n    Build and defend\n    HW: For homework, you get real data, a problem, and starter code. Youy will be required to turn that into a decision you can defend: the problem, the method, the checks, the recommendation and its limits. The notebook is the analysis. The 5 to 6 slides are the brief. The video of at most 5 minutes is you walking a decision maker through it. If those pieces do not match, it is not done. The final project is the same standard with more effort. It is individual and ends in a in class presentation at the end of the semester. For more details see thye syllabus."
-  },
-  {
-    "objectID": "index.html#learn-deliver",
-    "href": "index.html#learn-deliver",
-    "title": "70-467 - Machine Learning for Business Analytics",
-    "section": "Learn & deliver",
-    "text": "Learn & deliver\nMaterials you will use throughout the term (orient yourself with Start here above).\n\n  Lecture NotesPrepare before every class\n  LabsIn-class R notebooks\n  HomeworkSpecs and expectations\n  Final ProjectCheckpoint and presentations"
-  },
-  {
-    "objectID": "hw/index.html",
-    "href": "hw/index.html",
-    "title": "Homework",
-    "section": "",
-    "text": "Individual R notebook At most six slides ≤ 5 min video Submit on Canvas\nEvery homework is individual. You submit three pieces on Canvas: a runnable R notebook, at most six slides, and a video of at most five minutes. The slides and the video should tell the same story as the notebook: the problem, the evidence, the decision, and the limit."
-  },
-  {
-    "objectID": "hw/index.html#package-every-hw",
-    "href": "hw/index.html#package-every-hw",
-    "title": "Homework",
-    "section": "Package (every HW)",
-    "text": "Package (every HW)\n\nR notebook — analysis must run\n\nAt most six slides — the problem, the evidence, the decision, and the limit\n\n≤ 5:00 video — same story; simple recording is fine\n\nSubmit on Canvas only (not this site)."
-  },
-  {
-    "objectID": "hw/index.html#schedule",
-    "href": "hw/index.html#schedule",
-    "title": "Homework",
-    "section": "Schedule",
-    "text": "Schedule\n\n\n\nHW\nReleased\nDeadline\nStatus\n\n\n\n\nHW1\n2 Sep\n9 Sep\nSpec TBD\n\n\nHW2\n21 Sep\n28 Sep\nSpec TBD\n\n\nHW3\n21 Oct\n28 Oct\nSpec TBD\n\n\nHW4\n2 Nov\n9 Nov\nSpec TBD\n\n\n\n\nNo HW dues midterm week (5–7 Oct). HW4 is due 9 Nov (ensembles studio day)—plan ahead.\n\nFull calendar: Schedule."
-  },
-  {
-    "objectID": "hw/index.html#ai",
-    "href": "hw/index.html#ai",
-    "title": "Homework",
-    "section": "AI",
-    "text": "AI\nAI is allowed on homework if you disclose it (Yellow level, when the assignment allows it). You must run the code and be able to explain the important parts of how you reached the decision. If you hide AI use, or you cannot explain the work in the video, or I suspect you used AI inappropriately, I will ask you to present in person. Depending on how you handle the questions in person, the grade on that homework can go as low as 0, and you may be reported for an academic integrity violation. See Syllabus."
-  },
-  {
-    "objectID": "labs/index.html",
-    "href": "labs/index.html",
-    "title": "Labs",
-    "section": "",
-    "text": "Default: Wednesday lab Starter + thinking questions Bring laptop\nOn lab days, read the problem before you sit down. Bring a laptop to labs. On Wednesdays, laptops are required for R. You will get the problem before class and a starter notebook with parts already working. In the hour we work on approach, interpretation, figures, and what the results mean for the decision."
-  },
-  {
-    "objectID": "labs/index.html#pattern",
-    "href": "labs/index.html#pattern",
-    "title": "Labs",
-    "section": "Pattern",
-    "text": "Pattern\n\n\n\nPattern\nWhen\n\n\n\n\nDefault\nLab on Wednesday\n\n\nException\nMidterm week, 11 Nov (no class), presentation week\n\n\nMidterm week\nNo lab (Wed 7 Oct = midterm)\n\n\nPresentation week\nNo lab (30 Nov & 2 Dec)"
-  },
-  {
-    "objectID": "labs/index.html#lab-index",
-    "href": "labs/index.html#lab-index",
-    "title": "Labs",
-    "section": "Lab index",
-    "text": "Lab index\n\n\n\n\n\n\n\n\n\nLab\nMeeting\nFocus\nStatus\n\n\n\n\nL0 / env\nWed 26 Aug\nR ready / metrics light\nNot yet built\n\n\nL1 Regression\nWed 2 Sep\nLinear regression lab\nNot yet built\n\n\nL2 Evaluation\nWed 9 Sep\nHonest evaluation · leakage habits\nNot yet built\n\n\nL3 Regularization\nWed 23 Sep\nRidge/lasso in R\nNot yet built\n\n\nL4 CV / selection\nWed 30 Sep\nCV · no leakage across folds\nNot yet built\n\n\nL5 Logistic\nWed 21 Oct\nLogistic in R\nNot yet built\n\n\nL6 Metrics / cutoffs\nWed 28 Oct\nROC, AUC, decision cutoffs\nNot yet built\n\n\nL7 Trees\nWed 4 Nov\nTrees in R\nNot yet built\n\n\n(ensembles studio)\nMon 9 Nov\nLive R with concepts (no Wed lab)\nNot yet built\n\n\nL8 PCA\nWed 18 Nov\nPCA lab (locked)\nNot yet built\n\n\nL9 Clustering + literacy\nWed 25 Nov\nClustering · short modern-AI talk\nNot yet built\n\n\n\nSee Schedule for the full calendar."
+    "objectID": "slides/index.html#this-term",
+    "href": "slides/index.html#this-term",
+    "title": "Slides",
+    "section": "This term",
+    "text": "This term\nNothing posted yet. After Monday 24 Aug I will put the introduction PDF here."
   },
   {
     "objectID": "setup/index.html",
@@ -231,32 +154,102 @@
     "text": "10. Checklist before first lab\n\nAll students\n\nR installed (recent version)\n\nRStudio opens and shows R in the console\n\nQuarto installed and RStudio restarted (recommended)\n\nCore packages installed\n\nVerify script + smoke test succeed\n\nLaptop charged for class\n\n\n\nWindows extras\n\nRtools installed (strongly recommended)\n\nRStudio finds the correct R version\n\nCourse folder is local (not online-only cloud)\n\n\n\nmacOS extras\n\nR installer matches Apple Silicon vs Intel\n\nIf any required box is unchecked by 26 August, contact me that day so we can fix it before the first lab on 2 September."
   },
   {
+    "objectID": "labs/index.html",
+    "href": "labs/index.html",
+    "title": "Labs",
+    "section": "",
+    "text": "Default: Wednesday lab Starter + thinking questions Bring laptop\nOn lab days, read the problem before you sit down. Bring a laptop to labs. On Wednesdays, laptops are required for R. You will get the problem before class and a starter notebook with parts already working. In the hour we work on approach, interpretation, figures, and what the results mean for the decision. Wednesday 26 Aug is still a lecture (linear regression, in R). The first lab is 2 September. Nothing is posted yet. I will put each lab here before you need it."
+  },
+  {
+    "objectID": "labs/index.html#pattern",
+    "href": "labs/index.html#pattern",
+    "title": "Labs",
+    "section": "Pattern",
+    "text": "Pattern\n\n\n\nPattern\nWhen\n\n\n\n\nDefault\nLab on Wednesday\n\n\nException\nMidterm week, 11 Nov (no class), presentation week\n\n\nMidterm week\nNo lab (Wed 7 Oct = midterm)\n\n\nPresentation week\nNo lab (30 Nov & 2 Dec)"
+  },
+  {
+    "objectID": "labs/index.html#lab-index",
+    "href": "labs/index.html#lab-index",
+    "title": "Labs",
+    "section": "Lab index",
+    "text": "Lab index\n\n\n\n\n\n\n\n\n\nLab\nMeeting\nFocus\nStatus\n\n\n\n\nL1 Regression\nWed 2 Sep\nLinear regression lab\nNot posted yet\n\n\nL2 Evaluation\nWed 9 Sep\nHonest evaluation · leakage habits\nNot posted yet\n\n\nL3 Regularization\nWed 23 Sep\nRidge/lasso in R\nNot posted yet\n\n\nL4 CV / selection\nWed 30 Sep\nCV · no leakage across folds\nNot posted yet\n\n\nL5 Logistic\nWed 21 Oct\nLogistic in R\nNot posted yet\n\n\nL6 Metrics / cutoffs\nWed 28 Oct\nROC, AUC, decision cutoffs\nNot posted yet\n\n\nL7 Trees\nWed 4 Nov\nTrees in R\nNot posted yet\n\n\n(ensembles studio)\nMon 9 Nov\nLive R with concepts (no Wed lab)\nNot posted yet\n\n\nL8 PCA\nWed 18 Nov\nPCA lab (locked)\nNot posted yet\n\n\nL9 Clustering + literacy\nWed 25 Nov\nClustering · short modern-AI talk\nNot posted yet\n\n\n\nSee Schedule for the full calendar."
+  },
+  {
+    "objectID": "hw/index.html",
+    "href": "hw/index.html",
+    "title": "Homework",
+    "section": "",
+    "text": "Individual R notebook At most six slides ≤ 5 min video Submit on Canvas\nEvery homework is individual. You submit three pieces on Canvas: a runnable R notebook, at most six slides, and a video of at most five minutes. The slides and the video should tell the same story as the notebook: the problem, the evidence, the decision, and the limit.\nNothing is posted yet. I will put each homework here before you need it. Dates are on the schedule."
+  },
+  {
+    "objectID": "hw/index.html#package-every-hw",
+    "href": "hw/index.html#package-every-hw",
+    "title": "Homework",
+    "section": "Package (every HW)",
+    "text": "Package (every HW)\n\nR notebook — analysis must run\n\nAt most six slides — the problem, the evidence, the decision, and the limit\n\n≤ 5:00 video — same story; simple recording is fine\n\nSubmit on Canvas only (not this site)."
+  },
+  {
+    "objectID": "hw/index.html#schedule",
+    "href": "hw/index.html#schedule",
+    "title": "Homework",
+    "section": "Schedule",
+    "text": "Schedule\n\n\n\nHW\nReleased\nDeadline\nStatus\n\n\n\n\nHW1\n2 Sep\n9 Sep\nNot posted yet\n\n\nHW2\n21 Sep\n28 Sep\nNot posted yet\n\n\nHW3\n21 Oct\n28 Oct\nNot posted yet\n\n\nHW4\n2 Nov\n9 Nov\nNot posted yet\n\n\n\n\nNo HW dues midterm week (5–7 Oct). HW4 is due 9 Nov (ensembles studio day)—plan ahead.\n\nFull calendar: Schedule."
+  },
+  {
+    "objectID": "hw/index.html#ai",
+    "href": "hw/index.html#ai",
+    "title": "Homework",
+    "section": "AI",
+    "text": "AI\nAI is allowed on homework if you disclose it (Yellow level, when the assignment allows it). You must run the code and be able to explain the important parts of how you reached the decision. If you hide AI use, or you cannot explain the work in the video, or I suspect you used AI inappropriately, I will ask you to present in person. Depending on how you handle the questions in person, the grade on that homework can go as low as 0, and you may be reported for an academic integrity violation. See Syllabus."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "70-467 - Machine Learning for Business Analytics",
+    "section": "",
+    "text": "CMU-Q · Fall 2026 · 70-467\n\n\n\n\nInstructor: Andrés Castaño Zuluaga\n\n\nWelcome to 70-467 Machine Learning for Business Analytics!\n\n\nIn an era when AI can write code faster than most people, writing code is not the scarce skill. The bottleneck in productive analytics is understanding, verification, and judgment: knowing what to ask the tools to do, checking whether the answer is good enough to act on, and explaining both the recommendation and its limits. AI will not replace your job. Someone who can use it and is prepared to work those bottlenecks will.\nThis course prepares you for that. You cannot evaluate the tools, or incorporate them into how you work, until you understand the methods. That is what sharpens judgment and makes the communication defensible. We incentivize responsible use of AI: tools that augment you, not substitutes that replace the thinking. You will learn to turn data into decisions you can stand behind. Choose the method, check it carefully, and explain the recommendation and its limits. The emphasis is business judgment under real problems, not model fitting as an end in itself. We work in R, with real datasets.\n\n\nMon & Wed · 2:30–3:45 PM · CMB 1190 Concepts + R labs"
+  },
+  {
+    "objectID": "index.html#methods-you-will-see-and-use",
+    "href": "index.html#methods-you-will-see-and-use",
+    "title": "70-467 - Machine Learning for Business Analytics",
+    "section": "Methods you will see and use",
+    "text": "Methods you will see and use\nWe move from simple, interpretable models to richer tools, always starting from a business problem and emphasizing business understanding, method feasibility and limitations, and judgement in decision-making.\n\n  \n    \n    Linear regression\n    Quantitative outcomes; the workhorse we start with\n  \n  \n    \n    Logistic regression\n    Classification when the outcome is a category\n  \n  \n    \n    Trees and ensembles\n    CART, random forests, boosting\n  \n  \n    \n    PCA\n    Reducing dimensions when you have many variables\n  \n  \n    \n    Clustering\n    Grouping without a pre-labeled outcome\n  \n  \n    \n    Neural nets\n    A short look, late in the term, if time allows\n  \n\nFull week-by-week plan: Schedule."
+  },
+  {
+    "objectID": "index.html#how-we-work",
+    "href": "index.html#how-we-work",
+    "title": "70-467 - Machine Learning for Business Analytics",
+    "section": "How we work",
+    "text": "How we work\nA simple weekly rhythm so you always know how to prepare.\n\n  \n    \n      \n    \n    01 · Before class\n    Lecture notes\n    Read the assigned textbook sections and, when assigned, run the Quarto notes. Those notes are in Quarto, so complete the setup instructions early. You need a working machine for the week to week flow of the course.\n  \n  \n    \n      \n    \n    02 · Monday\n    Concepts & decisions\n     Mondays are for understanding the method, always starting from a business problem. You prepare a short introduction to that method and present it. I then take over and finish the lecture. The presentation schedule comes in week two, once enrollment is set.\n  \n  \n    \n      \n    \n    03 · Wednesday\n    R lab\n    Wednesdays are labs, and we start from a problem, not from the code. The problem is posted before class. Come prepared. In class we work through guided notebooks: some of the code is already there, you complete the TODOs, we run it, and we interpret the output together. Then we argue the merits of the analysis and how to make it stronger.\n  \n  \n    \n      \n    \n    04 · Outside class\n    Build and defend\n    For homework you get real data, a problem, and starter code. You turn in a notebook, at most six slides, and a video of at most five minutes — same story in all three. The project is individual and ends with an in-class presentation; details are in the syllabus."
+  },
+  {
+    "objectID": "index.html#learn-deliver",
+    "href": "index.html#learn-deliver",
+    "title": "70-467 - Machine Learning for Business Analytics",
+    "section": "Learn & deliver",
+    "text": "Learn & deliver\nMaterials you will use throughout the term (orient yourself with Start here above).\n\n  Lecture NotesPrepare before every class\n  LabsIn-class R notebooks\n  HomeworkSpecs and expectations\n  Final ProjectCheckpoint and presentations"
+  },
+  {
     "objectID": "project/index.html",
     "href": "project/index.html",
     "title": "Final project",
     "section": "",
-    "text": "Individual R + decision story Live defense 20% of course grade\nIndividual applied project: a real business decision, appropriate methods in R, clear recommendation, and a live presentation with Q&A."
+    "text": "Individual R + decision story Live defense 20% of course grade\nIndividual applied project: a real business decision, appropriate methods in R, clear recommendation, and a live presentation with Q&A.\nThe project brief will be on this page on 28 October. Do not start a proposal before that. Nothing is posted yet."
   },
   {
     "objectID": "project/index.html#milestones",
     "href": "project/index.html#milestones",
     "title": "Final project",
     "section": "Milestones",
-    "text": "Milestones\n\n\n\n\n\n\n\n\n\nMilestone\nDate\nNotes\nStatus\n\n\n\n\nProject brief published\n28 Oct\nTracks / data / rules\nTBD\n\n\nGraded checkpoint\n18 Nov\nSame day as the PCA lab. Criteria published with the brief\nTBD\n\n\nPresentations\n30 Nov & 2 Dec\n~10–12 min + Q&A\nSlots after roster\n\n\n\nThe split of the project grade ships with the brief. The course grade for the project is 20%."
+    "text": "Milestones\n\n\n\n\n\n\n\n\n\nMilestone\nDate\nNotes\nStatus\n\n\n\n\nProject brief published\n28 Oct\nTracks / data / rules\nNot posted yet\n\n\nGraded checkpoint\n18 Nov\nSame day as the PCA lab. Criteria published with the brief\nNot posted yet\n\n\nPresentations\n30 Nov & 2 Dec\n~10–12 min + Q&A\nSlots after roster\n\n\n\nThe split of the project grade ships with the brief. The course grade for the project is 20%."
   },
   {
     "objectID": "project/index.html#attendance-presentation-week",
     "href": "project/index.html#attendance-presentation-week",
     "title": "Final project",
     "section": "Attendance (presentation week)",
-    "text": "Attendance (presentation week)\nAttendance is expected both days. Missing a presentation session carries a 15-point penalty on the presentation component of the project grade. Plan to attend both days, not only your own slot. The final wording of the penalty will be in the project guidelines."
-  },
-  {
-    "objectID": "project/index.html#what-the-brief-will-cover-placeholder",
-    "href": "project/index.html#what-the-brief-will-cover-placeholder",
-    "title": "Final project",
-    "section": "What the brief will cover (placeholder)",
-    "text": "What the brief will cover (placeholder)\n\nAllowed tracks / decision types (when locked)\n\nProvided data packs (course ships data — CONTENT_DEFAULTS)\n\nCheckpoint deliverable\n\nFinal materials packet, including a replication package documenting decisions from receiving the dataset to the final recommendation\n\nRubrics for presentation and defense\n\nNothing above invents tracks or datasets. See Syllabus and Schedule."
+    "text": "Attendance (presentation week)\nAttendance is expected both days. Missing a presentation session carries a 15-point penalty on the presentation component of the project grade. Plan to attend both days, not only your own slot. The final wording of the penalty will be in the project guidelines.\nThe brief will say what data you may use, what you turn in at the checkpoint, and how the presentation is graded. See the syllabus and the schedule."
   },
   {
     "objectID": "syllabus.html",
@@ -305,7 +298,7 @@
     "href": "syllabus.html#assessments",
     "title": "70-467 — Machine Learning for Business Analytics",
     "section": "Assessments",
-    "text": "Assessments\nThe final cumulative score for this class is computed using the categories below.\n\n\n24%4 Homeworks\n\n\n16%4 Quizzes\n\n\n10%Pair presentations\n\n\n22%Midterm · 7 Oct\n\n\n20%Final project\n\n\n8%Attendance and participation\n\n\n\n\n\n\n\n\n\n\nCategory\nWeight\nDetails\n\n\n\n\nHomeworks (4)\n24%\n6% each. Individual. Typical deliverables for each homework would include R notebook + at most 5-6 slides + a video of at most 5 minutes. More details below.\n\n\nQuizzes (4)\n16%\n4% each. In class, designed for 10–15 minutes.\n\n\nPair presentations\n10%\nAbout twice in the semester. 8–10 minutes and a short deck, introducing a topic in the context of a business problem.\n\n\nMidterm exam\n22%\nWednesday 7 October, in class, closed notes. Weeks 1–5 only. Monday 5 October is review.\n\n\nFinal project\n20%\nIndividual. Brief 28 October. Checkpoint 18 November. Presentations 30 November and 2 December. No final exam.\n\n\nAttendance and participation\n8%\nCome ready, contribute, and work in the labs.\n\n\n\n\nAssessment Descriptions\nHomeworks. There will be four individual homeworks. Each one is a new case using the methods we have covered, not a repeat of the lab. I will give you a case, the data, a codebook, and starter code. You submit three pieces on Canvas: a runnable R notebook, at most six slides, and a video of at most five minutes. The slides and the video should tell the same story as the notebook: the problem, the evidence, the decision, and the limit. More details about the expectations will be available on Canvas.\nYou may study with classmates. The write-up, the code you submit, and the recommendation have to be yours. AI is allowed on homework if you disclose it (see below). You must run the code and be able to explain the important parts of how you reached the decision. If you hide AI use, or you cannot explain the work in the video, or I suspect you used AI inappropriately, I will ask you to present in person. Depending on how you handle the questions in person, the grade on that homework can go as low as 0, and you may be reported for an academic integrity violation.\nQuizzes. There will be four short in-class paper quizzes, designed for about 10–15 minutes. They test whether you understand the ideas and can apply the methods to understand and make business decisions. There is no make-up for quizzes.\nPair presentations. Because this is a small class, participation matters. Student pairs will prepare a short presentation (about 8–10 minutes, compact slide deck) at least twice in the semester to introduce that week’s topic. We will then transition into a lecture about the method and the empirical implementation. The rubric will be on the course site / Canvas. The official pairing will be set once we know with certainty how many students are in the course.\nThe midterm will be in person during class on Wednesday 7 October (75 minutes). Closed notes. No electronic devices. The exam covers weeks 1–5 only: linear regression, metrics, train/test and generalization, regularization, and cross-validation/model selection.\nFinal project. The final project is an individual project. It’s based on a business problem coming from a real-world dataset. The student will then build models in R to better understand the problem, present a recommendation, and discuss the decisions in an in-class presentation at the end of the semester. I will publish the project brief (including data and problem options once they are ready) by 28 October. I will share exact instructions for what’s expected at checkpoint 1 and during the final presentations later in the semester. Presentations are 30 November and 2 December.\nAttendance and participation are part of the grading and will be combined. Please come to each class ready to participate in the discussion of the material or bring questions that could benefit the rest of the group. By mid-semester, I will share your participation and attendance grades, so you have time to adjust appropriately during the second part of the semester, if needed.\nHow will attendance and participation be graded? If you have various excused or unexcused absences, that counts toward limited participation because you need to be in the classroom to participate. Similarly, if you attend all the classes but rarely participate during class, don’t expect your grade to be solely based on attendance. Finally, if you arrive to class early, but leave the classroom for long periods, don’t expect your grade to be based on arriving on time. I acknowledge that grading participation could be subjective. Still, I will do my best to evaluate students not only on quantity but also on the quality of their participation.\n\n\nFinal grades\nFinal grades are based on your cumulative score using the weights above. Students with 90–100% receive an A; 80–89% a B; 70–79% a C; 60–69% a D; below 60% an R.\nA quick note on calculating your cumulative score: Please use the grade distribution above to calculate your final grade. Canvas is not always reliable when computing final grades after dropping the lowest grades.\nIn the interests of fairness, we apply the same rules to everyone. Therefore, we cannot modify the cumulative score formula or offer extra work to raise your grade to accommodate your circumstances. The only exception is for midterms missed due to documented illness or a family emergency. Some students will inevitably fall close to, but below, a cutoff when we assign grades. Such students sometimes ask for cutoffs to be reduced. Please do not do this. If you are just below a cutoff, you may be close to the lowest A or B but still some way from the average A or B, and we consider these when assigning cutoffs."
+    "text": "Assessments\nThe final cumulative score for this class is computed using the categories below.\n\n\n24%4 Homeworks\n\n\n16%4 Quizzes\n\n\n10%Pair presentations\n\n\n22%Midterm · 7 Oct\n\n\n20%Final project\n\n\n8%Attendance and participation\n\n\n\n\n\n\n\n\n\n\nCategory\nWeight\nDetails\n\n\n\n\nHomeworks (4)\n24%\n6% each. Individual. Typical deliverables for each homework would include R notebook + at most 5-6 slides + a video of at most 5 minutes. More details below.\n\n\nQuizzes (4)\n16%\n4% each. In class, designed for 10–15 minutes.\n\n\nPair presentations\n10%\nAbout twice in the semester. 8–10 minutes and a short deck, introducing a topic in the context of a business problem.\n\n\nMidterm exam\n22%\nWednesday 7 October, in class, closed notes. Weeks 1–5 only. Monday 5 October is review.\n\n\nFinal project\n20%\nIndividual. Brief 28 October. Checkpoint 18 November. Presentations 30 November and 2 December. No final exam.\n\n\nAttendance and participation\n8%\nCome ready, contribute, and work in the labs.\n\n\n\n\nAssessment Descriptions\nHomeworks. There will be four individual homeworks. Each one is a new case using the methods we have covered, not a repeat of the lab. I will give you a case, the data, a codebook, and starter code. You submit three pieces on Canvas: a runnable R notebook, at most six slides, and a video of at most five minutes. The slides and the video should tell the same story as the notebook: the problem, the evidence, the decision, and the limit. More details about the expectations will be available on Canvas.\nYou may study with classmates. The write-up, the code you submit, and the recommendation have to be yours. AI is allowed on homework if you disclose it (see below). You must run the code and be able to explain the important parts of how you reached the decision. If you hide AI use, or you cannot explain the work in the video, or I suspect you used AI inappropriately, I will ask you to present in person. Depending on how you handle the questions in person, the grade on that homework can go as low as 0, and you may be reported for an academic integrity violation.\nQuizzes. There will be four short in-class paper quizzes, designed for about 10–15 minutes. They test whether you understand the ideas and can apply the methods to understand and make business decisions. There is no make-up for quizzes.\nPair presentations. Because this is a small class, participation matters. Student pairs will prepare a short presentation (about 8–10 minutes, compact slide deck) at least twice in the semester to introduce that week’s topic. We will then transition into a lecture about the method and the empirical implementation. The rubric will be on the course site / Canvas. The official pairing will be set once we know with certainty how many students are in the course.\nThe midterm will be in person during class on Wednesday 7 October (75 minutes). Closed notes. No electronic devices. The exam covers weeks 1–5 only: linear regression, metrics, train/test and generalization, regularization, and cross-validation/model selection.\nFinal project. The final project is an individual project. It’s based on a business problem coming from a real-world dataset. The student will then build models in R to better understand the problem, present a recommendation, and discuss the decisions in an in-class presentation at the end of the semester. I will publish the project brief (including data and problem options once they are ready) by 28 October. I will share exact instructions for what’s expected at checkpoint 1 and during the final presentations later in the semester. Presentations are 30 November and 2 December.\nAttendance and participation are part of the grading and will be combined. Please come to each class ready to participate in the discussion of the material or bring questions that could benefit the rest of the group. By mid-semester, I will share your participation and attendance grades, so you have time to adjust appropriately during the second part of the semester, if needed.\nHow will attendance and participation be graded? If you have various excused or unexcused absences, that counts toward limited participation because you need to be in the classroom to participate. Similarly, if you attend all the classes but rarely participate during class, don’t expect your grade to be solely based on attendance. Finally, if you arrive to class early, but leave the classroom for long periods, don’t expect your grade to be based on arriving on time. I acknowledge that grading participation could be subjective. Still, I will do my best to evaluate students not only on quantity but also on the quality of their participation.\n\n\nFinal grades\nFinal grades are based on your cumulative score using the weights above. Students with 90–100% receive an A; 80–89% a B; 70–79% a C; 60–69% a D; below 60% an R.\nA quick note on calculating your cumulative score: Please use the weights in the table above. I compute the course grade from those weights. Canvas is not always reliable here. If Canvas and that calculation disagree, email me.\nIn the interests of fairness, we apply the same rules to everyone. Therefore, we cannot modify the cumulative score formula or offer extra work to raise your grade to accommodate your circumstances. The only exception is for midterms missed due to documented illness or a family emergency. Some students will inevitably fall close to, but below, a cutoff when we assign grades. Such students sometimes ask for cutoffs to be reduced. Please do not do this. If you are just below a cutoff, you may be close to the lowest A or B but still some way from the average A or B, and we consider these when assigning cutoffs."
   },
   {
     "objectID": "syllabus.html#guidelines-for-late-or-missed-work",
