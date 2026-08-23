@@ -128,7 +128,7 @@ How will attendance and participation be graded? If you have various excused or 
 
 Final grades are based on your cumulative score using the weights above. Students with 90–100% receive an A; 80–89% a B; 70–79% a C; 60–69% a D; below 60% an R.
 
-A quick note on calculating your cumulative score: Please use the grade distribution above to calculate your final grade. Canvas is not always reliable when computing final grades after dropping the lowest grades.
+A quick note on calculating your cumulative score: Please use the weights in the table above. I compute the course grade from those weights. Canvas is not always reliable here. If Canvas and that calculation disagree, email me.
 
 In the interests of fairness, we apply the same rules to everyone. Therefore, we cannot modify the cumulative score formula or offer extra work to raise your grade to accommodate your circumstances. The only exception is for midterms missed due to documented illness or a family emergency. Some students will inevitably fall close to, but below, a cutoff when we assign grades. Such students sometimes ask for cutoffs to be reduced. Please do not do this. If you are just below a cutoff, you may be close to the lowest A or B but still some way from the average A or B, and we consider these when assigning cutoffs.
 

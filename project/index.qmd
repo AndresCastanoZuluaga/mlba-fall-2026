@@ -20,16 +20,14 @@ format:
 
 <p class="page-lead"><strong>Individual</strong> applied project: a real business decision, appropriate methods in R, clear recommendation, and a live presentation with Q&amp;A.</p>
 
-::: {.callout-warn}
-<span class="status-badge status-wip">WIP</span> <strong>Tracks and datasets are not finalized.</strong> Do not invent a proposal format until the brief is published (<strong>28 Oct</strong>). The brief must include the short <strong>prediction is not the same as acting</strong> reminder (locked 2026-08-13).
-:::
+<p>The project brief will be on this page on <strong>28 October</strong>. Do not start a proposal before that. Nothing is posted yet.</p>
 
 ## Milestones
 
 | Milestone | Date | Notes | Status |
 |-----------|------|-------|--------|
-| Project brief published | **28 Oct** | Tracks / data / rules | TBD |
-| **Graded checkpoint** | **18 Nov** | Same day as the PCA lab. Criteria published **with the brief** | TBD |
+| Project brief published | **28 Oct** | Tracks / data / rules | Not posted yet |
+| **Graded checkpoint** | **18 Nov** | Same day as the PCA lab. Criteria published **with the brief** | Not posted yet |
 | Presentations | **30 Nov & 2 Dec** | ~10–12 min + Q&A | Slots after roster |
 
 The split of the project grade ships with the brief. The course grade for the project is **20%**.
@@ -38,12 +36,4 @@ The split of the project grade ships with the brief. The course grade for the pr
 
 Attendance is expected both days. Missing a presentation session carries a 15-point penalty on the presentation component of the project grade. Plan to attend both days, not only your own slot. The final wording of the penalty will be in the project guidelines.
 
-## What the brief will cover (placeholder)
-
-- Allowed tracks / decision types (when locked)  
-- Provided data packs (course ships data — CONTENT_DEFAULTS)  
-- Checkpoint deliverable  
-- Final materials packet, including a **replication package** documenting decisions from receiving the dataset to the final recommendation  
-- Rubrics for presentation and defense  
-
-Nothing above invents tracks or datasets. See [Syllabus](../syllabus.qmd) and [Schedule](../schedule.qmd).
+The brief will say what data you may use, what you turn in at the checkpoint, and how the presentation is graded. See the [syllabus](../syllabus.qmd) and the [schedule](../schedule.qmd).

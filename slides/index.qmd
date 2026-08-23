@@ -1,0 +1,15 @@
+---
+title: "Slides"
+subtitle: "PDF after class"
+format:
+  html:
+    toc: false
+    body-classes: "mlba-page"
+    code-tools: false
+---
+
+<p class="page-lead">I post a PDF of the slides <strong>after class</strong>, not before. Use the <a href="../notes/">notes</a> to prepare. If a PDF is not here yet, we have not finished that meeting.</p>
+
+## This term
+
+Nothing posted yet. After <strong>Monday 24 Aug</strong> I will put the introduction PDF here.

@@ -59,7 +59,7 @@ format:
 
 | Date | Type | Content | Due / out |
 |------|------|---------|-----------|
-| **Mon 24 Aug** | Concepts | Decision-first ML; AI snapshot; **linear regression** + running example | — |
+| **Mon 24 Aug** | Concepts | Introduction; AI and jobs; a first look at the 400-store file | — |
 | **Wed 26 Aug** | Concepts + light R | Regression metrics; interpretation; R ready | — |
 
 ### Week 2 — Regression lab
@@ -177,15 +177,6 @@ format:
 | 18 Nov | Project checkpoint (PCA lab day) |
 | 25 Nov | Quiz 4 |
 | 30 Nov–2 Dec | Project presentations |
-
----
-
-## CMU-Q calendar notes (instructor)
-
-- Mid-semester grades due ~**19 Oct** → grade midterm over fall break.  
-- Course withdrawal grade deadline **5 Nov**.  
-- Last day of classes **3 Dec**.  
-- Final grades due **15 Dec**.  
 
 ```{=html}
 <script>

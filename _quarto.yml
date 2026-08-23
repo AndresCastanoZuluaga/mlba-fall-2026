@@ -16,6 +16,8 @@ website:
         text: Schedule
       - href: setup/index.qmd
         text: Setup
+      - href: slides/index.qmd
+        text: Slides
       - text: Notes
         menu:
           - href: notes/index.qmd

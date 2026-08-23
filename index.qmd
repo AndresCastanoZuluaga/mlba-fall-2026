@@ -33,7 +33,6 @@ This course prepares you for that. You cannot evaluate the tools, or incorporate
 ::: {.hero-meta}
 [Mon & Wed · 2:30–3:45 PM · CMB 1190]{.hero-chip}
 [Concepts + R labs]{.hero-chip}
-[Build · evaluate · defend]{.hero-chip}
 :::
 :::
 
@@ -105,18 +104,18 @@ This course prepares you for that. You cannot evaluate the tools, or incorporate
 <!-- P0.2 + P0.5: softer Where we are + static fallback (no Loading…) -->
 <section class="current-focus current-focus-soft" id="where-we-are" aria-label="Where we are" data-term-year="2026">
   <p class="cf-badge">Where we are</p>
-  <p class="cf-title" id="cf-title">Before classes</p>
+  <p class="cf-title" id="cf-title">Week 1 · first meetings</p>
   <div class="cf-body" id="cf-body">
-    <p>Finish <a href="setup/">Setup</a> after the first class and before the first lab (<strong>Wed 2 Sep</strong>). First class: <strong>Mon 24 Aug</strong> — introduction and linear regression. Full plan: <a href="schedule.html">Schedule</a>.</p>
+    <p>Finish <a href="setup/">Setup</a> after today and before the first lab (<strong>Wed 2 Sep</strong>). Today was the introduction. <strong>Wednesday 26 Aug:</strong> we start linear regression. Notes and labs will appear here before you need them. Full plan: <a href="schedule.html">Schedule</a>.</p>
   </div>
 </section>
 <script>
 (function () {
   var phases = [
-    { id: "preterm", until: "2026-08-24", title: "Before classes",
-      html: 'Finish <a href="setup/">Setup</a> after the first class and before the first lab (<strong>Wed 2 Sep</strong>). First class: <strong>Mon 24 Aug</strong> — introduction and linear regression. Full plan: <a href="schedule.html">Schedule</a>.' },
+    { id: "week1open", until: "2026-08-27", title: "Week 1 · first meetings",
+      html: 'Finish <a href="setup/">Setup</a> after today and before the first lab (<strong>Wed 2 Sep</strong>). Today was the introduction. <strong>Wednesday 26 Aug:</strong> we start linear regression. Notes and labs will appear here before you need them. Full plan: <a href="schedule.html">Schedule</a>.' },
     { id: "premidterm", until: "2026-10-05", title: "Weeks 1–5 · building toward the midterm",
-      html: 'Focus: regression, evaluation, regularization, and CV (incl. leakage habits). Prepare from <a href="notes/">Notes</a> and <a href="labs/">Labs</a>. Midterm: <strong>Wed 7 Oct</strong> (weeks 1–5 only). Details: <a href="schedule.html">Schedule</a>.' },
+      html: 'Linear regression, evaluation, regularization, and cross-validation. Midterm: <strong>Wed 7 Oct</strong> (weeks 1–5 only). I will post notes and labs here before you need them. Details: <a href="schedule.html">Schedule</a>.' },
     { id: "midtermweek", until: "2026-10-08", title: "Midterm week",
       html: '<strong>Mon 5 Oct</strong> review · <strong>Wed 7 Oct</strong> midterm (closed notes, weeks 1–5). No other homework/quiz dues this week. <a href="schedule.html">Schedule</a>.' },
     { id: "fallbreak", until: "2026-10-16", title: "Fall break",
@@ -151,7 +150,7 @@ This course prepares you for that. You cannot evaluate the tools, or incorporate
 ```
 
 ::: {.warm-note .warm-note-proto}
-**A note from me.** If my office door is open (office **2160**), stop by—even to say hello or to discuss course related issues. If something is unclear in the notes, a lab, or a homework say so early so that i can better support you. Small classes work when we show up ready to engage. *(Office hours: book a slot from **Start here** above, or see the Syllabus.)*
+**A note from me.** This is a small class. It works when we show up for each other. Office hours are Wednesday 5:30–6:45 in 2160; book a slot, or knock if the door is open. If something is getting in the way, say so early.
 :::
 
 ## Methods you will see and use
@@ -161,34 +160,34 @@ We move from simple, interpretable models to richer tools, always starting from 
 ```{=html}
 <div class="method-grid method-grid-proto">
   <div class="method-card">
-    <svg viewBox="0 0 140 88" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="140" height="88" rx="8" fill="#f0f6fa"/><line x1="18" y1="70" x2="122" y2="70" stroke="#0e2841" stroke-width="1.5"/><line x1="18" y1="70" x2="18" y2="18" stroke="#0e2841" stroke-width="1.5"/><circle cx="32" cy="58" r="3.5" fill="#156082"/><circle cx="48" cy="48" r="3.5" fill="#156082"/><circle cx="62" cy="52" r="3.5" fill="#156082"/><circle cx="78" cy="36" r="3.5" fill="#156082"/><circle cx="94" cy="30" r="3.5" fill="#156082"/><circle cx="110" cy="22" r="3.5" fill="#156082"/><line x1="24" y1="64" x2="118" y2="16" stroke="#e97132" stroke-width="2.5" stroke-linecap="round"/></svg>
+    <svg viewBox="0 0 140 88" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="140" height="88" rx="8" fill="#f0f6fa"/><line x1="18" y1="70" x2="122" y2="70" stroke="#0e2841" stroke-width="1.5"/><line x1="18" y1="70" x2="18" y2="18" stroke="#0e2841" stroke-width="1.5"/><circle cx="32" cy="58" r="3.5" fill="#156082"/><circle cx="48" cy="48" r="3.5" fill="#156082"/><circle cx="62" cy="52" r="3.5" fill="#156082"/><circle cx="78" cy="36" r="3.5" fill="#156082"/><circle cx="94" cy="30" r="3.5" fill="#156082"/><circle cx="110" cy="22" r="3.5" fill="#156082"/><line x1="24" y1="64" x2="118" y2="16" stroke="#156082" stroke-width="2.5" stroke-linecap="round"/></svg>
     <p class="method-name">Linear regression</p>
-    <p class="method-tag">Using regression for prediction and understanding its implication</p>
+    <p class="method-tag">Quantitative outcomes; the workhorse we start with</p>
   </div>
   <div class="method-card">
-    <svg viewBox="0 0 140 88" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="140" height="88" rx="8" fill="#f0f6fa"/><line x1="18" y1="70" x2="122" y2="70" stroke="#0e2841" stroke-width="1.5"/><line x1="18" y1="70" x2="18" y2="18" stroke="#0e2841" stroke-width="1.5"/><path d="M22 66 C40 66, 48 62, 58 48 S90 18, 118 16" fill="none" stroke="#156082" stroke-width="2.8" stroke-linecap="round"/><circle cx="40" cy="62" r="2.8" fill="#e97132"/><circle cx="70" cy="38" r="2.8" fill="#e97132"/><circle cx="100" cy="20" r="2.8" fill="#e97132"/></svg>
-    <p class="method-name">Logistic &amp; metrics</p>
-    <p class="method-tag">Probabilities, ROC, decision thresholds</p>
+    <svg viewBox="0 0 140 88" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="140" height="88" rx="8" fill="#f0f6fa"/><line x1="18" y1="70" x2="122" y2="70" stroke="#0e2841" stroke-width="1.5"/><line x1="18" y1="70" x2="18" y2="18" stroke="#0e2841" stroke-width="1.5"/><path d="M22 66 C40 66, 48 62, 58 48 S90 18, 118 16" fill="none" stroke="#156082" stroke-width="2.8" stroke-linecap="round"/><circle cx="40" cy="62" r="2.8" fill="#156082"/><circle cx="70" cy="38" r="2.8" fill="#156082"/><circle cx="100" cy="20" r="2.8" fill="#156082"/></svg>
+    <p class="method-name">Logistic regression</p>
+    <p class="method-tag">Classification when the outcome is a category</p>
   </div>
   <div class="method-card">
-    <svg viewBox="0 0 140 88" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="140" height="88" rx="8" fill="#f0f6fa"/><line x1="70" y1="14" x2="70" y2="28" stroke="#0e2841" stroke-width="2"/><rect x="52" y="28" width="36" height="14" rx="3" fill="#156082"/><line x1="60" y1="42" x2="40" y2="54" stroke="#0e2841" stroke-width="2"/><line x1="80" y1="42" x2="100" y2="54" stroke="#0e2841" stroke-width="2"/><rect x="24" y="54" width="32" height="12" rx="3" fill="#0f9ed5"/><rect x="84" y="54" width="32" height="12" rx="3" fill="#e97132"/><circle cx="24" cy="80" r="3" fill="#196b24"/><circle cx="52" cy="80" r="3" fill="#196b24"/><circle cx="100" cy="80" r="3" fill="#196b24"/><line x1="32" y1="66" x2="24" y2="78" stroke="#0e2841" stroke-width="1.5"/><line x1="48" y1="66" x2="52" y2="78" stroke="#0e2841" stroke-width="1.5"/><line x1="100" y1="66" x2="100" y2="78" stroke="#0e2841" stroke-width="1.5"/></svg>
-    <p class="method-name">Trees &amp; forests</p>
-    <p class="method-tag">Readable rules and strong ensembles</p>
+    <svg viewBox="0 0 140 88" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="140" height="88" rx="8" fill="#f0f6fa"/><line x1="70" y1="14" x2="70" y2="28" stroke="#0e2841" stroke-width="2"/><rect x="52" y="28" width="36" height="14" rx="3" fill="#156082"/><line x1="60" y1="42" x2="40" y2="54" stroke="#0e2841" stroke-width="2"/><line x1="80" y1="42" x2="100" y2="54" stroke="#0e2841" stroke-width="2"/><rect x="24" y="54" width="32" height="12" rx="3" fill="#0f9ed5"/><rect x="84" y="54" width="32" height="12" rx="3" fill="#156082"/><circle cx="24" cy="80" r="3" fill="#196b24"/><circle cx="52" cy="80" r="3" fill="#196b24"/><circle cx="100" cy="80" r="3" fill="#196b24"/><line x1="32" y1="66" x2="24" y2="78" stroke="#0e2841" stroke-width="1.5"/><line x1="48" y1="66" x2="52" y2="78" stroke="#0e2841" stroke-width="1.5"/><line x1="100" y1="66" x2="100" y2="78" stroke="#0e2841" stroke-width="1.5"/></svg>
+    <p class="method-name">Trees and ensembles</p>
+    <p class="method-tag">CART, random forests, boosting</p>
   </div>
   <div class="method-card">
-    <svg viewBox="0 0 140 88" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="140" height="88" rx="8" fill="#f0f6fa"/><ellipse cx="70" cy="44" rx="48" ry="28" fill="none" stroke="#c5d5e0" stroke-width="1"/><ellipse cx="70" cy="44" rx="32" ry="18" fill="none" stroke="#8eb4cc" stroke-width="1.2"/><ellipse cx="70" cy="44" rx="16" ry="9" fill="none" stroke="#156082" stroke-width="1.5"/><line x1="70" y1="44" x2="108" y2="28" stroke="#e97132" stroke-width="2"/><line x1="70" y1="44" x2="95" y2="58" stroke="#0f9ed5" stroke-width="2"/><circle cx="70" cy="44" r="4" fill="#0e2841"/></svg>
+    <svg viewBox="0 0 140 88" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="140" height="88" rx="8" fill="#f0f6fa"/><ellipse cx="70" cy="44" rx="48" ry="28" fill="none" stroke="#c5d5e0" stroke-width="1"/><ellipse cx="70" cy="44" rx="32" ry="18" fill="none" stroke="#8eb4cc" stroke-width="1.2"/><ellipse cx="70" cy="44" rx="16" ry="9" fill="none" stroke="#156082" stroke-width="1.5"/><line x1="70" y1="44" x2="108" y2="28" stroke="#156082" stroke-width="2"/><line x1="70" y1="44" x2="95" y2="58" stroke="#0f9ed5" stroke-width="2"/><circle cx="70" cy="44" r="4" fill="#0e2841"/></svg>
     <p class="method-name">PCA</p>
-    <p class="method-tag">Directions that matter in messy data</p>
+    <p class="method-tag">Reducing dimensions when you have many variables</p>
   </div>
   <div class="method-card">
-    <svg viewBox="0 0 140 88" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="140" height="88" rx="8" fill="#f0f6fa"/><circle cx="42" cy="36" r="14" fill="none" stroke="#156082" stroke-width="1.5" stroke-dasharray="3 2"/><circle cx="95" cy="52" r="16" fill="none" stroke="#e97132" stroke-width="1.5" stroke-dasharray="3 2"/><circle cx="38" cy="32" r="3.5" fill="#156082"/><circle cx="48" cy="38" r="3.5" fill="#156082"/><circle cx="36" cy="42" r="3.5" fill="#156082"/><circle cx="50" cy="28" r="3.5" fill="#156082"/><circle cx="90" cy="48" r="3.5" fill="#e97132"/><circle cx="102" cy="54" r="3.5" fill="#e97132"/><circle cx="88" cy="58" r="3.5" fill="#e97132"/><circle cx="100" cy="44" r="3.5" fill="#e97132"/></svg>
+    <svg viewBox="0 0 140 88" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="140" height="88" rx="8" fill="#f0f6fa"/><circle cx="42" cy="36" r="14" fill="none" stroke="#156082" stroke-width="1.5" stroke-dasharray="3 2"/><circle cx="95" cy="52" r="16" fill="none" stroke="#156082" stroke-width="1.5" stroke-dasharray="3 2"/><circle cx="38" cy="32" r="3.5" fill="#156082"/><circle cx="48" cy="38" r="3.5" fill="#156082"/><circle cx="36" cy="42" r="3.5" fill="#156082"/><circle cx="50" cy="28" r="3.5" fill="#156082"/><circle cx="90" cy="48" r="3.5" fill="#156082"/><circle cx="102" cy="54" r="3.5" fill="#156082"/><circle cx="88" cy="58" r="3.5" fill="#156082"/><circle cx="100" cy="44" r="3.5" fill="#156082"/></svg>
     <p class="method-name">Clustering</p>
-    <p class="method-tag">Segment customers and behavior</p>
+    <p class="method-tag">Grouping without a pre-labeled outcome</p>
   </div>
   <div class="method-card">
-    <svg viewBox="0 0 140 88" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="140" height="88" rx="8" fill="#f0f6fa"/><circle cx="28" cy="28" r="6" fill="#156082"/><circle cx="28" cy="44" r="6" fill="#156082"/><circle cx="28" cy="60" r="6" fill="#156082"/><circle cx="70" cy="36" r="6" fill="#0f9ed5"/><circle cx="70" cy="52" r="6" fill="#0f9ed5"/><circle cx="112" cy="44" r="7" fill="#e97132"/><line x1="34" y1="28" x2="64" y2="36" stroke="#0e2841" stroke-width="1.2" opacity="0.5"/><line x1="34" y1="44" x2="64" y2="36" stroke="#0e2841" stroke-width="1.2" opacity="0.5"/><line x1="34" y1="44" x2="64" y2="52" stroke="#0e2841" stroke-width="1.2" opacity="0.5"/><line x1="34" y1="60" x2="64" y2="52" stroke="#0e2841" stroke-width="1.2" opacity="0.5"/><line x1="76" y1="36" x2="105" y2="44" stroke="#0e2841" stroke-width="1.2" opacity="0.5"/><line x1="76" y1="52" x2="105" y2="44" stroke="#0e2841" stroke-width="1.2" opacity="0.5"/></svg>
-    <p class="method-name">Neural nets &amp; LLMs</p>
-    <p class="method-tag">Modern tools: Deep Learning if time allows</p>
+    <svg viewBox="0 0 140 88" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="140" height="88" rx="8" fill="#f0f6fa"/><circle cx="28" cy="28" r="6" fill="#156082"/><circle cx="28" cy="44" r="6" fill="#156082"/><circle cx="28" cy="60" r="6" fill="#156082"/><circle cx="70" cy="36" r="6" fill="#0f9ed5"/><circle cx="70" cy="52" r="6" fill="#0f9ed5"/><circle cx="112" cy="44" r="7" fill="#156082"/><line x1="34" y1="28" x2="64" y2="36" stroke="#0e2841" stroke-width="1.2" opacity="0.5"/><line x1="34" y1="44" x2="64" y2="36" stroke="#0e2841" stroke-width="1.2" opacity="0.5"/><line x1="34" y1="44" x2="64" y2="52" stroke="#0e2841" stroke-width="1.2" opacity="0.5"/><line x1="34" y1="60" x2="64" y2="52" stroke="#0e2841" stroke-width="1.2" opacity="0.5"/><line x1="76" y1="36" x2="105" y2="44" stroke="#0e2841" stroke-width="1.2" opacity="0.5"/><line x1="76" y1="52" x2="105" y2="44" stroke="#0e2841" stroke-width="1.2" opacity="0.5"/></svg>
+    <p class="method-name">Neural nets</p>
+    <p class="method-tag">A short look, late in the term, if time allows</p>
   </div>
 </div>
 <p class="methods-foot">Full week-by-week plan: <a href="schedule.html">Schedule</a>.</p>
@@ -230,7 +229,7 @@ A simple weekly rhythm so you always know how to prepare.
     </span>
     <span class="path-num">04 · Outside class</span>
     <h3>Build and defend</h3>
-    <p>HW: For homework, you get real data, a problem, and starter code. Youy will be required to turn that into a decision you can defend: the problem, the method, the checks, the recommendation and its limits. The notebook is the analysis. The 5 to 6 slides are the brief. The video of at most 5 minutes is you walking a decision maker through it. If those pieces do not match, it is not done. The final project is the same standard with more effort. It is individual and ends in a in class presentation at the end of the semester. For more details see thye syllabus.</p>
+    <p>For homework you get real data, a problem, and starter code. You turn in a notebook, at most six slides, and a video of at most five minutes — same story in all three. The project is individual and ends with an in-class presentation; details are in the syllabus.</p>
   </div>
 </div>
 ```

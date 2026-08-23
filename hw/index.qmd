@@ -21,9 +21,7 @@ format:
 
 <p class="page-lead">Every homework is <strong>individual</strong>. You submit three pieces on Canvas: a runnable R notebook, at most six slides, and a video of at most five minutes. The slides and the video should tell the same story as the notebook: the problem, the evidence, the decision, and the limit.</p>
 
-::: {.callout-soft}
-<span class="status-badge status-wip">WIP</span> Detailed prompts and datasets not written yet. Package shape is locked. Dates are a working plan (see [Schedule](../schedule.qmd)); homework content can change during the term.
-:::
+<p>Nothing is posted yet. I will put each homework here before you need it. Dates are on the <a href="../schedule.qmd">schedule</a>.</p>
 
 ## Package (every HW)
 
@@ -37,10 +35,10 @@ Submit on **Canvas** only (not this site).
 
 | HW | Released | Deadline | Status |
 |----|----------|----------|--------|
-| **HW1** | **2 Sep** | **9 Sep** | Spec TBD |
-| **HW2** | **21 Sep** | **28 Sep** | Spec TBD |
-| **HW3** | **21 Oct** | **28 Oct** | Spec TBD |
-| **HW4** | **2 Nov** | **9 Nov** | Spec TBD |
+| **HW1** | **2 Sep** | **9 Sep** | Not posted yet |
+| **HW2** | **21 Sep** | **28 Sep** | Not posted yet |
+| **HW3** | **21 Oct** | **28 Oct** | Not posted yet |
+| **HW4** | **2 Nov** | **9 Nov** | Not posted yet |
 
 ::: {.callout-warn}
 <strong>No HW dues midterm week</strong> (5–7 Oct). HW4 is due **9 Nov** (ensembles studio day)—plan ahead.

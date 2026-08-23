@@ -17,11 +17,7 @@ format:
 <span class="sch-chip sch-chip-soft">Slides PDF after class</span>
 :::
 
-<p class="page-lead"><strong>Lecture notes</strong> are Quarto notebooks: theory, applications, short problems, and <strong>runnable R</strong>. Slides are the live teaching layer; notes are what you keep.</p>
-
-::: {.callout-soft}
-<span class="status-badge status-wip">WIP</span> Week notebooks are not built yet (after templates <strong>M1</strong>). This page is the <strong>index skeleton</strong> aligned to the locked schedule.
-:::
+<p class="page-lead">Lecture notes will appear here <strong>before class</strong>. They are notebooks: the ideas, short problems, and R you can run. Slides are what we use in the room; notes are what you keep. Nothing is posted yet. I will put each week up before you need it.</p>
 
 ## How to use notes
 
@@ -50,7 +46,3 @@ format:
 | 13 | Project presentations | n/a | — |
 
 Full meeting dates: [Schedule](../schedule.qmd).
-
-## Author note (instructors / agents)
-
-**M1 template:** `notes/_templates/week_notes.qmd` — ISLR-based spine (this week's ISLR → one business question → what those pages give you → run this → honesty if week 3/5/8 → Monday → Wednesday). The parked 8-section list is dead. Voice: Andrés. Approve look before filling week 1.
