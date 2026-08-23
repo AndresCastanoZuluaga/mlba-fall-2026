@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>70-467 - Machine Learning for Business Analytics – 70-467 MLBA Fall 2026</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed home-proto home-proto2 mlba-home fullcontent quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">70-467 MLBA Fall 2026</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./index.html" aria-current="page"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./syllabus.html"> 
+<span class="menu-text">Syllabus</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./schedule.html"> 
+<span class="menu-text">Schedule</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./setup/index.html"> 
+<span class="menu-text">Setup</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-notes" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Notes</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-notes">    
+        <li>
+    <a class="dropdown-item" href="./notes/index.html">
+ <span class="dropdown-text">Overview</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-labs" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Labs</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-labs">    
+        <li>
+    <a class="dropdown-item" href="./labs/index.html">
+ <span class="dropdown-text">Overview</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-homework" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Homework</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-homework">    
+        <li>
+    <a class="dropdown-item" href="./hw/index.html">
+ <span class="dropdown-text">Overview</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="./project/index.html"> 
+<span class="menu-text">Project</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">70-467 - Machine Learning for Business Analytics</h1>
+<p class="subtitle lead">CMU-Q · Fall 2026</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="hero hero-proto">
+<div class="hero-kicker">
+<p>CMU-Q · Fall 2026 · 70-467</p>
+</div>
+<section id="machine-learning-for-business-analytics" class="level1">
+<h1>70-467 - Machine Learning for Business Analytics</h1>
+<div class="hero-instructor">
+<p><strong>Instructor:</strong> Andrés Castaño Zuluaga</p>
+</div>
+<div class="hero-lead">
+<p>Welcome to 70-467 Machine Learning for Business Analytics!</p>
+</div>
+<div class="hero-sub">
+<p>In an era when AI can write code faster than most people, writing code is not the scarce skill. The bottleneck in productive analytics is <strong>understanding</strong>, <strong>verification</strong>, and <strong>judgment</strong>: knowing what to ask the tools to do, checking whether the answer is good enough to act on, and explaining both the recommendation and its limits. AI will not replace your job. Someone who can use it and is prepared to work those bottlenecks will.</p>
+<p>This course prepares you for that. You cannot evaluate the tools, or incorporate them into how you work, until you understand the methods. That is what sharpens judgment and makes the communication defensible. We incentivize responsible use of AI: tools that augment you, not substitutes that replace the thinking. You will learn to turn data into decisions you can stand behind. Choose the method, check it carefully, and explain the recommendation and its limits. The emphasis is business judgment under real problems, not model fitting as an end in itself. We work in R, with real datasets.</p>
+</div>
+<div class="hero-meta">
+<p><span class="hero-chip">Mon &amp; Wed · 2:30–3:45 PM · CMB 1190</span> <span class="hero-chip">Concepts + R labs</span> <span class="hero-chip">Build · evaluate · defend</span></p>
+</div>
+</section>
+</div>
+<section class="start-here start-here-v2 start-here-v3 start-here-icons" aria-label="Start here">
+  <p class="start-here-label">Start here</p>
+  <p class="start-here-hint">Orient yourself on the course, then get your machine ready by following the instructions in the Setup page.</p>
+  <div class="start-here-tiles" role="list">
+    <a href="syllabus.html" class="start-tile start-tile-primary" role="listitem">
+      <span class="start-tile-icon" aria-hidden="true">
+        <svg viewbox="0 0 40 40" width="40" height="40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="6" width="20" height="28" rx="2.5" stroke="currentColor" stroke-width="1.8"></rect>
+          <path d="M13 13h10M13 18h10M13 23h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+        </svg>
+      </span>
+      <span class="start-tile-text">
+        <span class="start-tile-title">Syllabus</span>
+        <span class="start-tile-sub">Policies &amp; grading</span>
+      </span>
+    </a>
+    <a href="schedule.html" class="start-tile start-tile-primary" role="listitem">
+      <span class="start-tile-icon" aria-hidden="true">
+        <svg viewbox="0 0 40 40" width="40" height="40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="7" y="9" width="26" height="24" rx="3" stroke="currentColor" stroke-width="1.8"></rect>
+          <path d="M7 16h26M14 6v6M26 6v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+          <circle cx="15" cy="23" r="1.6" fill="currentColor"></circle>
+          <circle cx="20" cy="23" r="1.6" fill="currentColor"></circle>
+          <circle cx="25" cy="23" r="1.6" fill="currentColor"></circle>
+        </svg>
+      </span>
+      <span class="start-tile-text">
+        <span class="start-tile-title">Schedule</span>
+        <span class="start-tile-sub">Weeks &amp; deadlines</span>
+      </span>
+    </a>
+    <a href="setup/" class="start-tile start-tile-secondary" role="listitem">
+      <span class="start-tile-icon" aria-hidden="true">
+        <svg viewbox="0 0 40 40" width="40" height="40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="5" y="10" width="30" height="20" rx="2.5" stroke="currentColor" stroke-width="1.8"></rect>
+          <path d="M12 30h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+          <path d="M14 17l3 3 5-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      </span>
+      <span class="start-tile-text">
+        <span class="start-tile-title">Setup R</span>
+        <span class="start-tile-sub">Install &amp; packages</span>
+      </span>
+    </a>
+    <a href="https://calendar.app.google/iGp728AgHLWhjR199" class="start-tile start-tile-oh" role="listitem" rel="noopener noreferrer" target="_blank">
+      <span class="start-tile-icon" aria-hidden="true">
+        <svg viewbox="0 0 40 40" width="40" height="40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20" cy="20" r="12" stroke="currentColor" stroke-width="1.8"></circle>
+          <path d="M20 13v8l5 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      </span>
+      <span class="start-tile-text">
+        <span class="start-tile-title">Book office hours</span>
+        <span class="start-tile-sub">Wed 5:30–6:45 · 2160</span>
+      </span>
+    </a>
+  </div>
+</section>
+
+<!-- P1.2 Canvas early -->
+<div class="canvas-banner canvas-banner-proto canvas-banner-early">
+  <strong>Submit homework and check grades on Canvas.</strong> This website is for scheduling and learning materials. All the HW and final project instructions will be available on Canvas.
+</div>
+
+<!-- P0.2 + P0.5: softer Where we are + static fallback (no Loading…) -->
+<section class="current-focus current-focus-soft" id="where-we-are" aria-label="Where we are" data-term-year="2026">
+  <p class="cf-badge">Where we are</p>
+  <p class="cf-title" id="cf-title">Before classes</p>
+  <div class="cf-body" id="cf-body">
+    <p>Finish <a href="setup/">Setup</a> after the first class and before the first lab (<strong>Wed 2 Sep</strong>). First class: <strong>Mon 24 Aug</strong> — introduction and linear regression. Full plan: <a href="schedule.html">Schedule</a>.</p>
+  </div>
+</section>
+<script>
+(function () {
+  var phases = [
+    { id: "preterm", until: "2026-08-24", title: "Before classes",
+      html: 'Finish <a href="setup/">Setup</a> after the first class and before the first lab (<strong>Wed 2 Sep</strong>). First class: <strong>Mon 24 Aug</strong> — introduction and linear regression. Full plan: <a href="schedule.html">Schedule</a>.' },
+    { id: "premidterm", until: "2026-10-05", title: "Weeks 1–5 · building toward the midterm",
+      html: 'Focus: regression, evaluation, regularization, and CV (incl. leakage habits). Prepare from <a href="notes/">Notes</a> and <a href="labs/">Labs</a>. Midterm: <strong>Wed 7 Oct</strong> (weeks 1–5 only). Details: <a href="schedule.html">Schedule</a>.' },
+    { id: "midtermweek", until: "2026-10-08", title: "Midterm week",
+      html: '<strong>Mon 5 Oct</strong> review · <strong>Wed 7 Oct</strong> midterm (closed notes, weeks 1–5). No other homework/quiz dues this week. <a href="schedule.html">Schedule</a>.' },
+    { id: "fallbreak", until: "2026-10-16", title: "Fall break",
+      html: 'No classes <strong>11–15 Oct</strong>. When we return: logistic regression. <a href="schedule.html">Schedule</a>.' },
+    { id: "postmidterm", until: "2026-10-28", title: "After midterm · classification block",
+      html: 'Logistic models, metrics/thresholds, then trees. Project brief publishes <strong>28 Oct</strong>. <a href="schedule.html">Schedule</a>.' },
+    { id: "projectopen", until: "2026-11-22", title: "Project season · trees, ensembles, PCA",
+      html: 'Project brief is live; checkpoint <strong>18 Nov</strong> (PCA lab day). Methods through trees, ensembles, and the <strong>PCA lab (18 Nov)</strong>. <a href="project/">Project</a> · <a href="schedule.html">Schedule</a>.' },
+    { id: "presentations", until: "2026-12-03", title: "Project presentations",
+      html: 'Presentations <strong>30 Nov &amp; 2 Dec</strong> — attendance expected both days. <a href="project/">Project</a> · <a href="schedule.html">Schedule</a>.' },
+    { id: "after", until: "2099-01-01", title: "Term wrap-up",
+      html: 'Classes are done for this offering. Materials remain on this site for reference.' }
+  ];
+  function ymd(d) {
+    return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+  }
+  function pickPhase(today) {
+    var t = ymd(today);
+    for (var i = 0; i < phases.length; i++) if (t < phases[i].until) return phases[i];
+    return phases[phases.length - 1];
+  }
+  var root = document.getElementById("where-we-are");
+  if (!root) return;
+  var phase = pickPhase(new Date());
+  var titleEl = document.getElementById("cf-title");
+  var bodyEl = document.getElementById("cf-body");
+  if (titleEl) titleEl.textContent = phase.title;
+  if (bodyEl) bodyEl.innerHTML = "<p>" + phase.html + "</p>";
+  root.setAttribute("data-phase", phase.id);
+})();
+</script>
+<div class="warm-note warm-note-proto">
+<p><strong>A note from me.</strong> If my office door is open (office <strong>2160</strong>), stop by—even to say hello or to discuss course related issues. If something is unclear in the notes, a lab, or a homework say so early so that i can better support you. Small classes work when we show up ready to engage. <em>(Office hours: book a slot from <strong>Start here</strong> above, or see the Syllabus.)</em></p>
+</div>
+<section id="methods-you-will-see-and-use" class="level2">
+<h2 class="anchored" data-anchor-id="methods-you-will-see-and-use">Methods you will see and use</h2>
+<p>We move from simple, interpretable models to richer tools, always starting from a <strong>business problem</strong> and emphasizing business <strong>understanding</strong>, method feasibility and limitations, and <strong>judgement</strong> in decision-making.</p>
+<div class="method-grid method-grid-proto">
+  <div class="method-card">
+    <svg viewbox="0 0 140 88" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="140" height="88" rx="8" fill="#f0f6fa"></rect><line x1="18" y1="70" x2="122" y2="70" stroke="#0e2841" stroke-width="1.5"></line><line x1="18" y1="70" x2="18" y2="18" stroke="#0e2841" stroke-width="1.5"></line><circle cx="32" cy="58" r="3.5" fill="#156082"></circle><circle cx="48" cy="48" r="3.5" fill="#156082"></circle><circle cx="62" cy="52" r="3.5" fill="#156082"></circle><circle cx="78" cy="36" r="3.5" fill="#156082"></circle><circle cx="94" cy="30" r="3.5" fill="#156082"></circle><circle cx="110" cy="22" r="3.5" fill="#156082"></circle><line x1="24" y1="64" x2="118" y2="16" stroke="#e97132" stroke-width="2.5" stroke-linecap="round"></line></svg>
+    <p class="method-name">Linear regression</p>
+    <p class="method-tag">Using regression for prediction and understanding its implication</p>
+  </div>
+  <div class="method-card">
+    <svg viewbox="0 0 140 88" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="140" height="88" rx="8" fill="#f0f6fa"></rect><line x1="18" y1="70" x2="122" y2="70" stroke="#0e2841" stroke-width="1.5"></line><line x1="18" y1="70" x2="18" y2="18" stroke="#0e2841" stroke-width="1.5"></line><path d="M22 66 C40 66, 48 62, 58 48 S90 18, 118 16" fill="none" stroke="#156082" stroke-width="2.8" stroke-linecap="round"></path><circle cx="40" cy="62" r="2.8" fill="#e97132"></circle><circle cx="70" cy="38" r="2.8" fill="#e97132"></circle><circle cx="100" cy="20" r="2.8" fill="#e97132"></circle></svg>
+    <p class="method-name">Logistic &amp; metrics</p>
+    <p class="method-tag">Probabilities, ROC, decision thresholds</p>
+  </div>
+  <div class="method-card">
+    <svg viewbox="0 0 140 88" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="140" height="88" rx="8" fill="#f0f6fa"></rect><line x1="70" y1="14" x2="70" y2="28" stroke="#0e2841" stroke-width="2"></line><rect x="52" y="28" width="36" height="14" rx="3" fill="#156082"></rect><line x1="60" y1="42" x2="40" y2="54" stroke="#0e2841" stroke-width="2"></line><line x1="80" y1="42" x2="100" y2="54" stroke="#0e2841" stroke-width="2"></line><rect x="24" y="54" width="32" height="12" rx="3" fill="#0f9ed5"></rect><rect x="84" y="54" width="32" height="12" rx="3" fill="#e97132"></rect><circle cx="24" cy="80" r="3" fill="#196b24"></circle><circle cx="52" cy="80" r="3" fill="#196b24"></circle><circle cx="100" cy="80" r="3" fill="#196b24"></circle><line x1="32" y1="66" x2="24" y2="78" stroke="#0e2841" stroke-width="1.5"></line><line x1="48" y1="66" x2="52" y2="78" stroke="#0e2841" stroke-width="1.5"></line><line x1="100" y1="66" x2="100" y2="78" stroke="#0e2841" stroke-width="1.5"></line></svg>
+    <p class="method-name">Trees &amp; forests</p>
+    <p class="method-tag">Readable rules and strong ensembles</p>
+  </div>
+  <div class="method-card">
+    <svg viewbox="0 0 140 88" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="140" height="88" rx="8" fill="#f0f6fa"></rect><ellipse cx="70" cy="44" rx="48" ry="28" fill="none" stroke="#c5d5e0" stroke-width="1"></ellipse><ellipse cx="70" cy="44" rx="32" ry="18" fill="none" stroke="#8eb4cc" stroke-width="1.2"></ellipse><ellipse cx="70" cy="44" rx="16" ry="9" fill="none" stroke="#156082" stroke-width="1.5"></ellipse><line x1="70" y1="44" x2="108" y2="28" stroke="#e97132" stroke-width="2"></line><line x1="70" y1="44" x2="95" y2="58" stroke="#0f9ed5" stroke-width="2"></line><circle cx="70" cy="44" r="4" fill="#0e2841"></circle></svg>
+    <p class="method-name">PCA</p>
+    <p class="method-tag">Directions that matter in messy data</p>
+  </div>
+  <div class="method-card">
+    <svg viewbox="0 0 140 88" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="140" height="88" rx="8" fill="#f0f6fa"></rect><circle cx="42" cy="36" r="14" fill="none" stroke="#156082" stroke-width="1.5" stroke-dasharray="3 2"></circle><circle cx="95" cy="52" r="16" fill="none" stroke="#e97132" stroke-width="1.5" stroke-dasharray="3 2"></circle><circle cx="38" cy="32" r="3.5" fill="#156082"></circle><circle cx="48" cy="38" r="3.5" fill="#156082"></circle><circle cx="36" cy="42" r="3.5" fill="#156082"></circle><circle cx="50" cy="28" r="3.5" fill="#156082"></circle><circle cx="90" cy="48" r="3.5" fill="#e97132"></circle><circle cx="102" cy="54" r="3.5" fill="#e97132"></circle><circle cx="88" cy="58" r="3.5" fill="#e97132"></circle><circle cx="100" cy="44" r="3.5" fill="#e97132"></circle></svg>
+    <p class="method-name">Clustering</p>
+    <p class="method-tag">Segment customers and behavior</p>
+  </div>
+  <div class="method-card">
+    <svg viewbox="0 0 140 88" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="140" height="88" rx="8" fill="#f0f6fa"></rect><circle cx="28" cy="28" r="6" fill="#156082"></circle><circle cx="28" cy="44" r="6" fill="#156082"></circle><circle cx="28" cy="60" r="6" fill="#156082"></circle><circle cx="70" cy="36" r="6" fill="#0f9ed5"></circle><circle cx="70" cy="52" r="6" fill="#0f9ed5"></circle><circle cx="112" cy="44" r="7" fill="#e97132"></circle><line x1="34" y1="28" x2="64" y2="36" stroke="#0e2841" stroke-width="1.2" opacity="0.5"></line><line x1="34" y1="44" x2="64" y2="36" stroke="#0e2841" stroke-width="1.2" opacity="0.5"></line><line x1="34" y1="44" x2="64" y2="52" stroke="#0e2841" stroke-width="1.2" opacity="0.5"></line><line x1="34" y1="60" x2="64" y2="52" stroke="#0e2841" stroke-width="1.2" opacity="0.5"></line><line x1="76" y1="36" x2="105" y2="44" stroke="#0e2841" stroke-width="1.2" opacity="0.5"></line><line x1="76" y1="52" x2="105" y2="44" stroke="#0e2841" stroke-width="1.2" opacity="0.5"></line></svg>
+    <p class="method-name">Neural nets &amp; LLMs</p>
+    <p class="method-tag">Modern tools: Deep Learning if time allows</p>
+  </div>
+</div>
+<p class="methods-foot">Full week-by-week plan: <a href="schedule.html">Schedule</a>.</p>
+</section>
+<section id="how-we-work" class="level2">
+<h2 class="anchored" data-anchor-id="how-we-work">How we work</h2>
+<p>A simple weekly rhythm so you always know how to prepare.</p>
+<div class="path-grid-proto path-grid-2x2 path-with-icons">
+  <div class="path-card-proto">
+    <span class="path-icon" aria-hidden="true">
+      <svg viewbox="0 0 32 32" width="28" height="28" fill="none"><rect x="6" y="4" width="16" height="22" rx="2" stroke="currentColor" stroke-width="1.6"></rect><path d="M10 10h8M10 14h8M10 18h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+    </span>
+    <span class="path-num">01 · Before class</span>
+    <h3 class="anchored">Lecture notes</h3>
+    <p>Read the assigned textbook sections and, when assigned, run the Quarto notes. Those notes are in Quarto, so complete the setup instructions early. You need a working machine for the week to week flow of the course.</p>
+  </div>
+  <div class="path-card-proto accent-orange">
+    <span class="path-icon" aria-hidden="true">
+      <svg viewbox="0 0 32 32" width="28" height="28" fill="none"><circle cx="11" cy="12" r="3.5" stroke="currentColor" stroke-width="1.6"></circle><circle cx="21" cy="12" r="3.5" stroke="currentColor" stroke-width="1.6"></circle><path d="M6 24c1.2-3.5 3.5-5 5-5s3.8 1.5 5 5M16 24c1.2-3.5 3.5-5 5-5s3.8 1.5 5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+    </span>
+    <span class="path-num">02 · Monday</span>
+    <h3 class="anchored">Concepts &amp; decisions</h3>
+    <p> Mondays are for understanding the method, always starting from a business problem. You prepare a short introduction to that method and present it. I then take over and finish the lecture. The presentation schedule comes in week two, once enrollment is set.</p>
+  </div>
+  <div class="path-card-proto accent-green">
+    <span class="path-icon" aria-hidden="true">
+      <svg viewbox="0 0 32 32" width="28" height="28" fill="none"><rect x="4" y="8" width="24" height="15" rx="2" stroke="currentColor" stroke-width="1.6"></rect><path d="M10 26h12M12 14l2.5 2.5L19 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </span>
+    <span class="path-num">03 · Wednesday</span>
+    <h3 class="anchored">R lab</h3>
+    <p>Wednesdays are labs, and we start from a problem, not from the code. The problem is posted before class. Come prepared. In class we work through guided notebooks: some of the code is already there, you complete the TODOs, we run it, and we interpret the output together. Then we argue the merits of the analysis and how to make it stronger.</p>
+  </div>
+  <div class="path-card-proto accent-cyan">
+    <span class="path-icon" aria-hidden="true">
+      <svg viewbox="0 0 32 32" width="28" height="28" fill="none"><path d="M8 22V10l8-4 8 4v12l-8 4-8-4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path><path d="M16 14v8M12 18h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+    </span>
+    <span class="path-num">04 · Outside class</span>
+    <h3 class="anchored">Build and defend</h3>
+    <p>HW: For homework, you get real data, a problem, and starter code. Youy will be required to turn that into a decision you can defend: the problem, the method, the checks, the recommendation and its limits. The notebook is the analysis. The 5 to 6 slides are the brief. The video of at most 5 minutes is you walking a decision maker through it. If those pieces do not match, it is not done. The final project is the same standard with more effort. It is individual and ends in a in class presentation at the end of the semester. For more details see thye syllabus.</p>
+  </div>
+</div>
+</section>
+<section id="learn-deliver" class="level2">
+<h2 class="anchored" data-anchor-id="learn-deliver">Learn &amp; deliver</h2>
+<p>Materials you will use throughout the term (orient yourself with <strong>Start here</strong> above).</p>
+<div class="nav-grid-proto nav-grid-4 nav-learn-only">
+  <a class="nav-card-proto nav-learn" href="notes/"><strong>Lecture Notes</strong><span>Prepare before every class</span></a>
+  <a class="nav-card-proto nav-learn" href="labs/"><strong>Labs</strong><span>In-class R notebooks</span></a>
+  <a class="nav-card-proto nav-learn" href="hw/"><strong>Homework</strong><span>Specs and expectations</span></a>
+  <a class="nav-card-proto nav-learn" href="project/"><strong>Final Project</strong><span>Checkpoint and presentations</span></a>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/AndresCastanoZuluaga\.github\.io\/mlba-fall-2026");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>70-467 - Machine Learning for Business Analytics · CMU-Q Fall 2026 · Materials site (not for submissions — use Canvas)</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

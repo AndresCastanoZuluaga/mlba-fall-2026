@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Setup: R and RStudio – 70-467 MLBA Fall 2026</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed mlba-page quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">70-467 MLBA Fall 2026</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../syllabus.html"> 
+<span class="menu-text">Syllabus</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../schedule.html"> 
+<span class="menu-text">Schedule</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../setup/index.html" aria-current="page"> 
+<span class="menu-text">Setup</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-notes" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Notes</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-notes">    
+        <li>
+    <a class="dropdown-item" href="../notes/index.html">
+ <span class="dropdown-text">Overview</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-labs" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Labs</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-labs">    
+        <li>
+    <a class="dropdown-item" href="../labs/index.html">
+ <span class="dropdown-text">Overview</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-homework" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Homework</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-homework">    
+        <li>
+    <a class="dropdown-item" href="../hw/index.html">
+ <span class="dropdown-text">Overview</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../project/index.html"> 
+<span class="menu-text">Project</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#why-this-matters" id="toc-why-this-matters" class="nav-link active" data-scroll-target="#why-this-matters">Why this matters</a></li>
+  <li><a href="#before-you-start-all-systems" id="toc-before-you-start-all-systems" class="nav-link" data-scroll-target="#before-you-start-all-systems">0. Before you start (all systems)</a></li>
+  <li><a href="#install-r" id="toc-install-r" class="nav-link" data-scroll-target="#install-r">1. Install R</a>
+  <ul class="collapse">
+  <li><a href="#windows" id="toc-windows" class="nav-link" data-scroll-target="#windows">Windows</a></li>
+  <li><a href="#macos" id="toc-macos" class="nav-link" data-scroll-target="#macos">macOS</a></li>
+  <li><a href="#linux" id="toc-linux" class="nav-link" data-scroll-target="#linux">Linux</a></li>
+  <li><a href="#quick-check" id="toc-quick-check" class="nav-link" data-scroll-target="#quick-check">Quick check</a></li>
+  </ul></li>
+  <li><a href="#install-rstudio-desktop-posit" id="toc-install-rstudio-desktop-posit" class="nav-link" data-scroll-target="#install-rstudio-desktop-posit">2. Install RStudio Desktop (Posit)</a>
+  <ul class="collapse">
+  <li><a href="#windows-tips" id="toc-windows-tips" class="nav-link" data-scroll-target="#windows-tips">Windows tips</a></li>
+  <li><a href="#macos-tips" id="toc-macos-tips" class="nav-link" data-scroll-target="#macos-tips">macOS tips</a></li>
+  </ul></li>
+  <li><a href="#install-quarto-recommended" id="toc-install-quarto-recommended" class="nav-link" data-scroll-target="#install-quarto-recommended">3. Install Quarto (recommended)</a>
+  <ul class="collapse">
+  <li><a href="#check" id="toc-check" class="nav-link" data-scroll-target="#check">Check</a></li>
+  </ul></li>
+  <li><a href="#install-course-packages" id="toc-install-course-packages" class="nav-link" data-scroll-target="#install-course-packages">4. Install course packages</a>
+  <ul class="collapse">
+  <li><a href="#easiest-method" id="toc-easiest-method" class="nav-link" data-scroll-target="#easiest-method">4.1 Easiest method</a></li>
+  <li><a href="#or-paste-this-in-the-rstudio-console" id="toc-or-paste-this-in-the-rstudio-console" class="nav-link" data-scroll-target="#or-paste-this-in-the-rstudio-console">4.2 Or paste this in the RStudio console</a></li>
+  <li><a href="#optional-later-do-not-block-week-1" id="toc-optional-later-do-not-block-week-1" class="nav-link" data-scroll-target="#optional-later-do-not-block-week-1">4.3 Optional later (do <strong>not</strong> block Week 1)</a></li>
+  </ul></li>
+  <li><a href="#verify-your-setup-must-pass" id="toc-verify-your-setup-must-pass" class="nav-link" data-scroll-target="#verify-your-setup-must-pass">5. Verify your setup (must pass)</a></li>
+  <li><a href="#files-and-folders-windows-note" id="toc-files-and-folders-windows-note" class="nav-link" data-scroll-target="#files-and-folders-windows-note">6. Files and folders (Windows note)</a></li>
+  <li><a href="#troubleshooting-by-symptom" id="toc-troubleshooting-by-symptom" class="nav-link" data-scroll-target="#troubleshooting-by-symptom">7. Troubleshooting (by symptom)</a>
+  <ul class="collapse">
+  <li><a href="#windows-1" id="toc-windows-1" class="nav-link" data-scroll-target="#windows-1">Windows</a></li>
+  <li><a href="#macos-1" id="toc-macos-1" class="nav-link" data-scroll-target="#macos-1">macOS</a></li>
+  <li><a href="#all-systems" id="toc-all-systems" class="nav-link" data-scroll-target="#all-systems">All systems</a></li>
+  <li><a href="#if-you-are-completely-stuck" id="toc-if-you-are-completely-stuck" class="nav-link" data-scroll-target="#if-you-are-completely-stuck">If you are completely stuck</a></li>
+  </ul></li>
+  <li><a href="#package-policy-for-the-semester" id="toc-package-policy-for-the-semester" class="nav-link" data-scroll-target="#package-policy-for-the-semester">8. Package policy for the semester</a></li>
+  <li><a href="#privacy-and-ai" id="toc-privacy-and-ai" class="nav-link" data-scroll-target="#privacy-and-ai">9. Privacy and AI</a></li>
+  <li><a href="#checklist-before-first-lab" id="toc-checklist-before-first-lab" class="nav-link" data-scroll-target="#checklist-before-first-lab">10. Checklist before first lab</a>
+  <ul class="collapse">
+  <li><a href="#all-students" id="toc-all-students" class="nav-link" data-scroll-target="#all-students">All students</a></li>
+  <li><a href="#windows-extras" id="toc-windows-extras" class="nav-link" data-scroll-target="#windows-extras">Windows extras</a></li>
+  <li><a href="#macos-extras" id="toc-macos-extras" class="nav-link" data-scroll-target="#macos-extras">macOS extras</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Setup: R and RStudio</h1>
+<p class="subtitle lead">Windows, macOS, and Linux</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="sch-chip-row">
+<p><span class="sch-chip">R 4.3+</span> <span class="sch-chip">RStudio / Posit</span> <span class="sch-chip">Quarto</span> <span class="sch-chip sch-chip-soft">Finish before Week 1 lab</span></p>
+</div>
+<div class="callout-warn">
+<p><strong>Deadlines:</strong> Please do this after the first class (<strong>Mon 24 Aug</strong>) and before the first lab (<strong>Wed 2 Sep</strong>). Email me if something doesn’t work, so we can use lab time for methods rather than troubleshooting installation.</p>
+</div>
+<section id="why-this-matters" class="level2">
+<h2 class="anchored" data-anchor-id="why-this-matters">Why this matters</h2>
+<p>Labs and homeworks use <strong>R</strong>. Please do this before the first lab and email me if something doesn’t work, so we can use lab time for methods rather than troubleshooting installation. Make sure you do this after the first class and reach out if there are issues to solve.</p>
+<ul>
+<li><strong>After the first class:</strong> Monday 24 August<br>
+</li>
+<li><strong>Before the first lab:</strong> Wednesday 2 September</li>
+</ul>
+<p>If something fails, email me or stop by—we will get you unstuck. <strong>Do not</strong> wait until the night before a homework is due.</p>
+<p>This page is written for <strong>Windows</strong>, <strong>macOS</strong>, and <strong>Linux</strong>. Most CMU-Q students use Windows or Mac; follow the section for your system.</p>
+<hr>
+</section>
+<section id="before-you-start-all-systems" class="level2">
+<h2 class="anchored" data-anchor-id="before-you-start-all-systems">0. Before you start (all systems)</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 58%">
+<col style="width: 41%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Check</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>~2–4 GB free disk space</strong></td>
+<td>R + RStudio + packages add up</td>
+</tr>
+<tr class="even">
+<td><strong>Stable internet</strong> (campus Wi‑Fi is fine)</td>
+<td>Package downloads are large</td>
+</tr>
+<tr class="odd">
+<td><strong>Administrator rights</strong> on your laptop</td>
+<td>Needed for installers (Windows especially)</td>
+</tr>
+<tr class="even">
+<td><strong>Close other heavy apps</strong></td>
+<td>Installs can take 10–30 minutes</td>
+</tr>
+<tr class="odd">
+<td><strong>R version 4.3 or newer</strong> recommended</td>
+<td>Matches current CRAN binaries</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="install-r" class="level2">
+<h2 class="anchored" data-anchor-id="install-r">1. Install R</h2>
+<section id="windows" class="level3">
+<h3 class="anchored" data-anchor-id="windows">Windows</h3>
+<ol type="1">
+<li>Go to <a href="https://cran.r-project.org/bin/windows/base/">https://cran.r-project.org/bin/windows/base/</a>.<br>
+</li>
+<li>Download <strong>“Download R-x.x.x for Windows”</strong>.<br>
+</li>
+<li>Run the installer.
+<ul>
+<li>Accept the default install location (usually <code>C:\Program Files\R\...</code>).<br>
+</li>
+<li>You can leave the 32-bit option <strong>unchecked</strong> (64-bit only is fine).<br>
+</li>
+</ul></li>
+<li>Finish the installer.</li>
+</ol>
+<p><strong>Strongly recommended on Windows — Rtools</strong> (needed if a package must compile from source, e.g.&nbsp;some updates of <code>xgboost</code> or <code>glmnet</code>):</p>
+<ol type="1">
+<li>Go to <a href="https://cran.r-project.org/bin/windows/Rtools/">https://cran.r-project.org/bin/windows/Rtools/</a>.<br>
+</li>
+<li>Install the <strong>Rtools version that matches your R version</strong> (the page explains which).<br>
+</li>
+<li>Use the default options so Rtools is on the system <code>PATH</code>.</li>
+</ol>
+<p>Without Rtools, many packages still install as <strong>pre-built binaries</strong>. If install fails with messages about <code>g++</code>, <code>make</code>, or “compilation failed,” install Rtools and try again.</p>
+</section>
+<section id="macos" class="level3">
+<h3 class="anchored" data-anchor-id="macos">macOS</h3>
+<ol type="1">
+<li>Go to <a href="https://cran.r-project.org/bin/macosx/">https://cran.r-project.org/bin/macosx/</a>.<br>
+</li>
+<li>Download the installer for <strong>your chip</strong>:
+<ul>
+<li><strong>Apple Silicon</strong> (M1/M2/M3/M4): usually labeled <strong>arm64</strong><br>
+</li>
+<li><strong>Intel</strong>: usually labeled <strong>x86_64</strong><br>
+</li>
+</ul></li>
+<li>To check your chip: Apple menu → <strong>About This Mac</strong>.<br>
+</li>
+<li>Open the <code>.pkg</code> and complete installation.<br>
+</li>
+<li>If macOS blocks the installer: <strong>System Settings → Privacy &amp; Security</strong> → allow the app, or right-click → Open.</li>
+</ol>
+</section>
+<section id="linux" class="level3">
+<h3 class="anchored" data-anchor-id="linux">Linux</h3>
+<p>Use your distribution’s instructions on CRAN, or install from <a href="https://cran.r-project.org/">https://cran.r-project.org/</a> for your distro. On Ubuntu/Debian you typically need build tools (<code>build-essential</code>) for source packages.</p>
+</section>
+<section id="quick-check" class="level3">
+<h3 class="anchored" data-anchor-id="quick-check">Quick check</h3>
+<p>In <strong>RStudio</strong> later, run:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>R.version.string</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You should see a recent version (4.3+ preferred).</p>
+<hr>
+</section>
+</section>
+<section id="install-rstudio-desktop-posit" class="level2">
+<h2 class="anchored" data-anchor-id="install-rstudio-desktop-posit">2. Install RStudio Desktop (Posit)</h2>
+<p><strong>All systems:</strong></p>
+<ol type="1">
+<li>Go to <a href="https://posit.co/download/rstudio-desktop/">https://posit.co/download/rstudio-desktop/</a>.<br>
+</li>
+<li>Download <strong>RStudio Desktop Free</strong> for your OS.<br>
+</li>
+<li>Install and open RStudio.<br>
+</li>
+<li>Confirm the <strong>Console</strong> shows an R version and a <code>&gt;</code> prompt.</li>
+</ol>
+<section id="windows-tips" class="level3">
+<h3 class="anchored" data-anchor-id="windows-tips">Windows tips</h3>
+<ul>
+<li>Install R <strong>before</strong> RStudio.<br>
+</li>
+<li>If RStudio says it cannot find R:<br>
+<strong>Tools → Global Options → General → R version → Change</strong> and point to your R install under <code>C:\Program Files\R\</code>.<br>
+</li>
+<li>Prefer installing to a path <strong>without unusual characters</strong>. Default paths are fine.<br>
+</li>
+<li>Run RStudio as a normal user for daily work (not always “as Administrator”).</li>
+</ul>
+</section>
+<section id="macos-tips" class="level3">
+<h3 class="anchored" data-anchor-id="macos-tips">macOS tips</h3>
+<ul>
+<li>Drag RStudio into <strong>Applications</strong>.<br>
+</li>
+<li>First launch: right-click → <strong>Open</strong> if Gatekeeper blocks it.<br>
+</li>
+<li>If you have both Intel and ARM R, keep one clear default.</li>
+</ul>
+<p>You will do almost all course work in RStudio: open <code>.qmd</code> files, run code chunks, and Knit/Render when asked.</p>
+<hr>
+</section>
+</section>
+<section id="install-quarto-recommended" class="level2">
+<h2 class="anchored" data-anchor-id="install-quarto-recommended">3. Install Quarto (recommended)</h2>
+<p>Quarto powers our lecture notes and labs (<code>.qmd</code> files).</p>
+<ol type="1">
+<li>Go to <a href="https://quarto.org/docs/get-started/">https://quarto.org/docs/get-started/</a>.<br>
+</li>
+<li>Install Quarto for <strong>Windows / macOS / Linux</strong>.<br>
+</li>
+<li><strong>Fully quit and reopen RStudio</strong> after installing.</li>
+</ol>
+<section id="check" class="level3">
+<h3 class="anchored" data-anchor-id="check">Check</h3>
+<ul>
+<li><strong>Windows:</strong> open <strong>Command Prompt</strong> or <strong>PowerShell</strong> (not only R):<br>
+<code>quarto --version</code><br>
+</li>
+<li><strong>macOS / Linux:</strong> Terminal:<br>
+<code>quarto --version</code></li>
+</ul>
+<p>If this fails but RStudio still runs code chunks, you can work day-to-day; full website/render features may need Quarto fixed. Ask me early if <code>quarto</code> is not found after install (Windows PATH issues are common—restart the PC once after installing Quarto).</p>
+<hr>
+</section>
+</section>
+<section id="install-course-packages" class="level2">
+<h2 class="anchored" data-anchor-id="install-course-packages">4. Install course packages</h2>
+<section id="easiest-method" class="level3">
+<h3 class="anchored" data-anchor-id="easiest-method">4.1 Easiest method</h3>
+<ol type="1">
+<li>Download <a href="install-packages.R"><code>install-packages.R</code></a> from this Setup page (or copy from the course site).<br>
+</li>
+<li>In RStudio: <strong>File → Open File</strong> → select <code>install-packages.R</code>.<br>
+</li>
+<li>Click <strong>Source</strong>, or run:</li>
+</ol>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"install-packages.R"</span>, <span class="at">echo =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>(Adjust the path if the file is in Downloads, e.g.&nbsp;on Windows: <code>source("C:/Users/YourName/Downloads/install-packages.R")</code>.)</p>
+</section>
+<section id="or-paste-this-in-the-rstudio-console" class="level3">
+<h3 class="anchored" data-anchor-id="or-paste-this-in-the-rstudio-console">4.2 Or paste this in the RStudio console</h3>
+<p>This can take <strong>10–30 minutes</strong>. Stay online.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prefer binaries when possible (especially Windows)</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">install.packages.check.source =</span> <span class="st">"no"</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">pkgType =</span> <span class="fu">ifelse</span>(.Platform<span class="sc">$</span>OS.type <span class="sc">==</span> <span class="st">"windows"</span>, <span class="st">"binary"</span>, <span class="fu">getOption</span>(<span class="st">"pkgType"</span>)))</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># --- CORE (required for most of the course) ---</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>core <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"tidyverse"</span>,     <span class="co"># data wrangling + ggplot2</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"scales"</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"tidymodels"</span>,    <span class="co"># modeling workflow</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"glmnet"</span>,        <span class="co"># ridge / lasso</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rpart"</span>,         <span class="co"># decision trees</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rpart.plot"</span>,</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ranger"</span>,        <span class="co"># random forests</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"vip"</span>,</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">"cluster"</span>,</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">"factoextra"</span>,</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ggfortify"</span>,</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">"pROC"</span>,          <span class="co"># ROC / AUC</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  <span class="st">"nnet"</span>,          <span class="co"># simple neural nets (intro)</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rmarkdown"</span>,</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  <span class="st">"knitr"</span>,</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>  <span class="st">"gt"</span>,</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  <span class="st">"broom"</span>,</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  <span class="st">"here"</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="co"># --- RECOMMENDED (used later; install now if you can) ---</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>recommended <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>  <span class="st">"xgboost"</span>        <span class="co"># boosting — sometimes needs Rtools on Windows</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>install_set <span class="ot">&lt;-</span> <span class="cf">function</span>(pkgs) {</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>  missing <span class="ot">&lt;-</span> pkgs[<span class="sc">!</span>pkgs <span class="sc">%in%</span> <span class="fu">rownames</span>(<span class="fu">installed.packages</span>())]</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">length</span>(missing)) {</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">message</span>(<span class="st">"Already installed: "</span>, <span class="fu">paste</span>(pkgs, <span class="at">collapse =</span> <span class="st">", "</span>))</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">invisible</span>(<span class="cn">TRUE</span>))</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"Installing: "</span>, <span class="fu">paste</span>(missing, <span class="at">collapse =</span> <span class="st">", "</span>))</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (p <span class="cf">in</span> missing) {</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>    <span class="fu">message</span>(<span class="st">"--&gt; "</span>, p)</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tryCatch</span>(</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>      <span class="fu">install.packages</span>(p, <span class="at">dependencies =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>      <span class="at">error =</span> <span class="cf">function</span>(e) <span class="fu">message</span>(<span class="st">"FAILED: "</span>, p, <span class="st">" — "</span>, <span class="fu">conditionMessage</span>(e))</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a><span class="fu">install_set</span>(core)</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a><span class="fu">install_set</span>(recommended)</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a><span class="co"># Report status</span></span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>all_pkgs <span class="ot">&lt;-</span> <span class="fu">c</span>(core, recommended)</span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>ok <span class="ot">&lt;-</span> <span class="fu">vapply</span>(all_pkgs, requireNamespace, <span class="at">quietly =</span> <span class="cn">TRUE</span>, <span class="at">FUN.VALUE =</span> <span class="fu">logical</span>(<span class="dv">1</span>))</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(ok)</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">all</span>(ok[core])) {</span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"Core packages still missing: "</span>, <span class="fu">paste</span>(<span class="fu">names</span>(ok[core])[<span class="sc">!</span>ok[core]], <span class="at">collapse =</span> <span class="st">", "</span>))</span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span>ok[<span class="st">"xgboost"</span>]) {</span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"NOTE: xgboost failed. You can still start the course; we will revisit before boosting week. On Windows, install Rtools and retry."</span>)</span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"All core + recommended packages look good."</span>)</span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="optional-later-do-not-block-week-1" class="level3">
+<h3 class="anchored" data-anchor-id="optional-later-do-not-block-week-1">4.3 Optional later (do <strong>not</strong> block Week 1)</h3>
+<p>Only if we announce them for neural-net / API demos:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("torch")   # heavy; Windows/macOS have specific install docs</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("luz")</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages(c("httr2", "jsonlite"))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+</section>
+</section>
+<section id="verify-your-setup-must-pass" class="level2">
+<h2 class="anchored" data-anchor-id="verify-your-setup-must-pass">5. Verify your setup (must pass)</h2>
+<p>Run in the RStudio console—<strong>no red errors</strong>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>need <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"tidyverse"</span>, <span class="st">"tidymodels"</span>, <span class="st">"glmnet"</span>, <span class="st">"rpart"</span>, <span class="st">"ranger"</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"cluster"</span>, <span class="st">"pROC"</span>, <span class="st">"nnet"</span>, <span class="st">"broom"</span>, <span class="st">"here"</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>ok <span class="ot">&lt;-</span> <span class="fu">vapply</span>(need, requireNamespace, <span class="at">quietly =</span> <span class="cn">TRUE</span>, <span class="at">FUN.VALUE =</span> <span class="fu">logical</span>(<span class="dv">1</span>))</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(ok)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">all</span>(ok)) {</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"Missing packages: "</span>, <span class="fu">paste</span>(<span class="fu">names</span>(ok)[<span class="sc">!</span>ok], <span class="at">collapse =</span> <span class="st">", "</span>))</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"Core packages OK."</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Smoke test: tiny linear model</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">467</span>)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> <span class="fu">rnorm</span>(<span class="dv">50</span>), <span class="at">y =</span> <span class="cn">NA_real_</span>)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>dat<span class="sc">$</span>y <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> dat<span class="sc">$</span>x <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">50</span>)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">|&gt;</span> <span class="fu">set_engine</span>(<span class="st">"lm"</span>) <span class="sc">|&gt;</span> <span class="fu">fit</span>(y <span class="sc">~</span> x, <span class="at">data =</span> dat)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(broom<span class="sc">::</span><span class="fu">tidy</span>(fit))</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Smoke test passed — modeling stack works."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>You should see a small table of coefficients (intercept and <code>x</code>).</p>
+<hr>
+</section>
+<section id="files-and-folders-windows-note" class="level2">
+<h2 class="anchored" data-anchor-id="files-and-folders-windows-note">6. Files and folders (Windows note)</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>.qmd</code></td>
+<td>Notes, labs, homework <strong>source</strong></td>
+</tr>
+<tr class="even">
+<td><code>.html</code></td>
+<td>Built view after <strong>Knit / Render</strong></td>
+</tr>
+<tr class="odd">
+<td>Data (<code>.csv</code>, etc.)</td>
+<td>Provided with each assignment</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Create one course folder</strong>, e.g.:</p>
+<ul>
+<li>Windows: <code>C:\Users\YourName\Documents\mlba-f26\</code><br>
+</li>
+<li>macOS: <code>~/Documents/mlba-f26/</code></li>
+</ul>
+<p>If you use cloud sync (OneDrive, Dropbox, etc.), avoid working only on <strong>online-only</strong> files—knitr can fail when files are not fully on disk. Keep a full local copy of the assignment folder while you work; submit on <strong>Canvas</strong>.</p>
+<p><strong>Windows paths:</strong> In R, prefer forward slashes:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"C:/Users/YourName/Downloads/install-packages.R"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<hr>
+</section>
+<section id="troubleshooting-by-symptom" class="level2">
+<h2 class="anchored" data-anchor-id="troubleshooting-by-symptom">7. Troubleshooting (by symptom)</h2>
+<section id="windows-1" class="level3">
+<h3 class="anchored" data-anchor-id="windows-1">Windows</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 40%">
+<col style="width: 59%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Problem</th>
+<th>What to try</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>RStudio “No R version available”</td>
+<td>Install R first; then Tools → Global Options → R version</td>
+</tr>
+<tr class="even">
+<td><code>install.packages</code> “compilation failed” / <code>g++</code> / <code>make</code></td>
+<td>Install <strong>Rtools</strong> matching your R version; restart RStudio; retry</td>
+</tr>
+<tr class="odd">
+<td><code>xgboost</code> fails</td>
+<td>Skip for now (course can start without it); install Rtools; <code>install.packages("xgboost")</code> later</td>
+</tr>
+<tr class="even">
+<td>Install blocked by antivirus</td>
+<td>Temporarily allow R/RStudio; or install on campus network</td>
+</tr>
+<tr class="odd">
+<td>Permission denied writing to library</td>
+<td>Avoid installing into a protected system folder; use default user library; do not need Admin for packages if R is installed normally</td>
+</tr>
+<tr class="even">
+<td>Path with spaces / OneDrive</td>
+<td>Work in <code>Documents\mlba-f26</code>; if OneDrive “Files On-Demand” causes knit errors, mark the folder <strong>Always keep on this device</strong></td>
+</tr>
+<tr class="odd">
+<td>Quarto not recognized in terminal</td>
+<td>Restart PC after Quarto install; reinstall Quarto; confirm RStudio → Tools finds quarto</td>
+</tr>
+<tr class="even">
+<td>Plots don’t show</td>
+<td>Tools → Global Options → R Markdown → show output inline</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="macos-1" class="level3">
+<h3 class="anchored" data-anchor-id="macos-1">macOS</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 40%">
+<col style="width: 59%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Problem</th>
+<th>What to try</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Wrong chip installer (Intel vs Apple Silicon)</td>
+<td>Reinstall R for your chip (About This Mac)</td>
+</tr>
+<tr class="even">
+<td>“Developer tools” / command-line tools prompt</td>
+<td>Install Xcode Command Line Tools when asked</td>
+</tr>
+<tr class="odd">
+<td>Package binary unavailable</td>
+<td>Update R; retry; install CLT if compiling from source</td>
+</tr>
+<tr class="even">
+<td>Gatekeeper blocks RStudio</td>
+<td>System Settings → Privacy &amp; Security → Open Anyway</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="all-systems" class="level3">
+<h3 class="anchored" data-anchor-id="all-systems">All systems</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 40%">
+<col style="width: 59%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Problem</th>
+<th>What to try</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Very slow installs</td>
+<td>Stay on campus Wi‑Fi; install <code>core</code> list first; retry failed packages one by one</td>
+</tr>
+<tr class="even">
+<td><code>library()</code> errors after install</td>
+<td>Session → Restart R; then <code>library(packageName)</code></td>
+</tr>
+<tr class="odd">
+<td>Knit fails “package X not found”</td>
+<td>Install X; check you knit with the same R version as the console</td>
+</tr>
+<tr class="even">
+<td>Out of disk space</td>
+<td>Free several GB; remove old package caches if needed</td>
+</tr>
+<tr class="odd">
+<td>Corporate / locked laptop</td>
+<td>Contact IT for admin rights; use a personal machine if course work is blocked</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="if-you-are-completely-stuck" class="level3">
+<h3 class="anchored" data-anchor-id="if-you-are-completely-stuck">If you are completely stuck</h3>
+<ol type="1">
+<li>Screenshot the <strong>full error</strong> (red text).<br>
+</li>
+<li>Note: Windows or Mac, and R version (<code>R.version.string</code>).<br>
+</li>
+<li>Email me <strong>before</strong> the next lab.<br>
+</li>
+<li>On <strong>26 August</strong> bring the laptop to class for a live fix if needed (that day is still a lecture, not a lab).</li>
+</ol>
+<hr>
+</section>
+</section>
+<section id="package-policy-for-the-semester" class="level2">
+<h2 class="anchored" data-anchor-id="package-policy-for-the-semester">8. Package policy for the semester</h2>
+<ul>
+<li><strong>Core packages</strong> above are assumed for homeworks and most labs.<br>
+</li>
+<li><strong><code>xgboost</code></strong> is recommended early but <strong>not</strong> a Week-1 blocker if install fails on Windows without Rtools.<br>
+</li>
+<li>Extra packages for a specific week will be listed in that week’s notes <strong>and</strong> added here.<br>
+</li>
+<li>If a CRAN update breaks something mid-semester, tell me—we may pin versions.</li>
+</ul>
+<hr>
+</section>
+<section id="privacy-and-ai" class="level2">
+<h2 class="anchored" data-anchor-id="privacy-and-ai">9. Privacy and AI</h2>
+<ul>
+<li>Course materials: this website.<br>
+</li>
+<li><strong>Submissions and grades: Canvas only.</strong><br>
+</li>
+<li>You may use generative AI to <strong>interpret install errors</strong>, but you must still run the verification yourself (see syllabus AI policy).</li>
+</ul>
+<hr>
+</section>
+<section id="checklist-before-first-lab" class="level2">
+<h2 class="anchored" data-anchor-id="checklist-before-first-lab">10. Checklist before first lab</h2>
+<section id="all-students" class="level3">
+<h3 class="anchored" data-anchor-id="all-students">All students</h3>
+<ul class="task-list">
+<li><label><input type="checkbox">R installed (recent version)<br>
+</label></li>
+<li><label><input type="checkbox">RStudio opens and shows R in the console<br>
+</label></li>
+<li><label><input type="checkbox">Quarto installed and RStudio restarted (recommended)<br>
+</label></li>
+<li><label><input type="checkbox">Core packages installed<br>
+</label></li>
+<li><label><input type="checkbox">Verify script + smoke test succeed<br>
+</label></li>
+<li><label><input type="checkbox">Laptop charged for class</label></li>
+</ul>
+</section>
+<section id="windows-extras" class="level3">
+<h3 class="anchored" data-anchor-id="windows-extras">Windows extras</h3>
+<ul class="task-list">
+<li><label><input type="checkbox">Rtools installed (strongly recommended)<br>
+</label></li>
+<li><label><input type="checkbox">RStudio finds the correct R version<br>
+</label></li>
+<li><label><input type="checkbox">Course folder is <strong>local</strong> (not online-only cloud)</label></li>
+</ul>
+</section>
+<section id="macos-extras" class="level3">
+<h3 class="anchored" data-anchor-id="macos-extras">macOS extras</h3>
+<ul class="task-list">
+<li><label><input type="checkbox">R installer matches Apple Silicon vs Intel</label></li>
+</ul>
+<p>If any <strong>required</strong> box is unchecked by <strong>26 August</strong>, contact me that day so we can fix it before the first lab on <strong>2 September</strong>.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/AndresCastanoZuluaga\.github\.io\/mlba-fall-2026");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>70-467 - Machine Learning for Business Analytics · CMU-Q Fall 2026 · Materials site (not for submissions — use Canvas)</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
