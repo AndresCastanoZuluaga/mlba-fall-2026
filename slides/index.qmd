@@ -8,10 +8,10 @@ format:
     code-tools: false
 ---
 
-<p class="page-lead">I post the slides <strong>after class</strong>, not before. Open the HTML file in <strong>Chrome</strong> — that is the same deck we used in the room. There is also a PDF if you want to print. If nothing is here yet, we have not finished that meeting.</p>
+<p class="page-lead">I post the slides <strong>after class</strong>, not before. Open the HTML in <strong>Chrome</strong> — that is the same deck we used in the room. There is also a PDF if you want to print.</p>
 
-## This term
+## Mon 24 Aug · Introduction
 
-| Date | Meeting | File |
-|------|---------|------|
-| **Mon 24 Aug** | Introduction | [HTML (open in Chrome)](70-467_MLBA_2026-08-24_Introduction.html) · [PDF](70-467_MLBA_2026-08-24_Introduction.pdf) |
+<p><a href="70-467_MLBA_2026-08-24_Introduction.html"><strong>Open the slides in Chrome</strong></a><br>
+<a href="70-467_MLBA_2026-08-24_Introduction.pdf">PDF (for printing)</a></p>
+
