@@ -12,4 +12,6 @@ format:
 
 ## This term
 
-Nothing posted yet. After <strong>Monday 24 Aug</strong> I will put the introduction PDF here.
+| Date | Meeting | File |
+|------|---------|------|
+| **Mon 24 Aug** | Introduction | [PDF](70-467_MLBA_2026-08-24_Introduction.pdf) |
