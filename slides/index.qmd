@@ -24,7 +24,7 @@ format:
 :::
 
 ::: {.sch-week-card}
-### Wed 26 Aug · Linear regression
+### Wed 26 Aug and Mon 31 Aug · Linear regression
 
 [Open in Chrome](70-467_MLBA_2026-08-26_LinearRegression.html) · [PDF](70-467_MLBA_2026-08-26_LinearRegression.pdf)
 :::
