@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Labs – 70-467 MLBA Fall 2026</title>
+<title>Lab 1: Asking prices for used Corollas – 70-467 MLBA Fall 2026</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -23,23 +23,23 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../site_libs/quarto-nav/headroom.min.js"></script>
-<script src="../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../">
-<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../site_libs/quarto-html/popper.min.js"></script>
-<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -69,17 +69,17 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
-<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed mlba-page quarto-light">
+<body class="nav-fixed mlba-page fullcontent quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="../index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">70-467 MLBA Fall 2026</span>
     </a>
   </div>
@@ -90,23 +90,23 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../index.html"> 
+    <a class="nav-link" href="../../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../syllabus.html"> 
+    <a class="nav-link" href="../../syllabus.html"> 
 <span class="menu-text">Syllabus</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../schedule.html"> 
+    <a class="nav-link" href="../../schedule.html"> 
 <span class="menu-text">Schedule</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../setup/index.html"> 
+    <a class="nav-link" href="../../setup/index.html"> 
 <span class="menu-text">Setup</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../slides/index.html"> 
+    <a class="nav-link" href="../../slides/index.html"> 
 <span class="menu-text">Slides</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -115,11 +115,11 @@ ul.task-list li input[type="checkbox"] {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-notes">    
         <li>
-    <a class="dropdown-item" href="../notes/index.html">
+    <a class="dropdown-item" href="../../notes/index.html">
  <span class="dropdown-text">Overview</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notes/week01-linear-regression.qmd">
+    <a class="dropdown-item" href="../../notes/week01-linear-regression.qmd">
  <span class="dropdown-text">Week 1</span></a>
   </li>  
     </ul>
@@ -130,11 +130,11 @@ ul.task-list li input[type="checkbox"] {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-labs">    
         <li>
-    <a class="dropdown-item" href="../labs/index.html">
+    <a class="dropdown-item" href="../../labs/index.html">
  <span class="dropdown-text">Overview</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../labs/Lab01-Regression/index.html">
+    <a class="dropdown-item" href="../../labs/Lab01-Regression/index.html">
  <span class="dropdown-text">Lab 1</span></a>
   </li>  
     </ul>
@@ -145,13 +145,13 @@ ul.task-list li input[type="checkbox"] {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-homework">    
         <li>
-    <a class="dropdown-item" href="../hw/index.html">
+    <a class="dropdown-item" href="../../hw/index.html">
  <span class="dropdown-text">Overview</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="../project/index.html"> 
+    <a class="nav-link" href="../../project/index.html"> 
 <span class="menu-text">Project</span></a>
   </li>  
 </ul>
@@ -165,23 +165,14 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#pattern" id="toc-pattern" class="nav-link active" data-scroll-target="#pattern">Pattern</a></li>
-  <li><a href="#lab-index" id="toc-lab-index" class="nav-link" data-scroll-target="#lab-index">Lab index</a></li>
-  </ul>
-</nav>
-    </div>
+    
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Labs</h1>
-<p class="subtitle lead">Guided R notebooks</p>
+<h1 class="title">Lab 1: Asking prices for used Corollas</h1>
+<p class="subtitle lead">Wed 2 Sep · in person · bring a laptop</p>
 </div>
 
 
@@ -198,119 +189,22 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<div class="sch-chip-row">
-<p><span class="sch-chip">Default: Wednesday lab</span> <span class="sch-chip">Starter + thinking questions</span> <span class="sch-chip sch-chip-soft">Bring laptop</span></p>
-</div>
 <p class="page-lead">
-On lab days, read the problem before you sit down. Bring a laptop to labs. On Wednesdays, laptops are required for R. You will get the problem before class and a starter notebook with parts already working. In the hour we work on approach, interpretation, figures, and what the results mean for the decision. The first lab is <strong>2 September</strong>. The case and the data for Lab 1 are up. Starter code before class.
+Read the case before class, including the codebook on page 2. Download the data and look at it with the codebook open. Starter code goes up before class.
 </p>
-<section id="pattern" class="level2">
-<h2 class="anchored" data-anchor-id="pattern">Pattern</h2>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Pattern</th>
-<th>When</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Default</td>
-<td>Lab on <strong>Wednesday</strong></td>
-</tr>
-<tr class="even">
-<td>Exception</td>
-<td>Midterm week, 11 Nov (no class), presentation week</td>
-</tr>
-<tr class="odd">
-<td>Midterm week</td>
-<td>No lab (<strong>Wed 7 Oct</strong> = midterm)</td>
-</tr>
-<tr class="even">
-<td>Presentation week</td>
-<td>No lab (<strong>30 Nov &amp; 2 Dec</strong>)</td>
-</tr>
-</tbody>
-</table>
+<div class="sch-chip-row">
+<p><span class="sch-chip">Case + data</span> <span class="sch-chip sch-chip-soft">Starter before class</span></p>
+</div>
+<section id="case" class="level3 sch-week-card">
+<h3 class="anchored" data-anchor-id="case">Case</h3>
+<p><a href="lab01-corolla-problem-v2.pdf">PDF</a> · two pages (problem + codebook)</p>
 </section>
-<section id="lab-index" class="level2">
-<h2 class="anchored" data-anchor-id="lab-index">Lab index</h2>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Lab</th>
-<th>Meeting</th>
-<th>Focus</th>
-<th>Status</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>L1 Regression</td>
-<td><strong>Wed 2 Sep</strong></td>
-<td>Linear regression lab</td>
-<td><a href="Lab01-Regression/">Case + data</a></td>
-</tr>
-<tr class="even">
-<td>L2 Evaluation</td>
-<td>Wed 9 Sep</td>
-<td>Honest evaluation · leakage habits</td>
-<td>Not posted yet</td>
-</tr>
-<tr class="odd">
-<td>L3 Regularization</td>
-<td>Wed 23 Sep</td>
-<td>Ridge/lasso in R</td>
-<td>Not posted yet</td>
-</tr>
-<tr class="even">
-<td>L4 CV / selection</td>
-<td>Wed 30 Sep</td>
-<td>CV · no leakage across folds</td>
-<td>Not posted yet</td>
-</tr>
-<tr class="odd">
-<td>L5 Logistic</td>
-<td>Wed 21 Oct</td>
-<td>Logistic in R</td>
-<td>Not posted yet</td>
-</tr>
-<tr class="even">
-<td>L6 Metrics / cutoffs</td>
-<td>Wed 28 Oct</td>
-<td>ROC, AUC, <strong>decision cutoffs</strong></td>
-<td>Not posted yet</td>
-</tr>
-<tr class="odd">
-<td>L7 Trees</td>
-<td>Wed 4 Nov</td>
-<td>Trees in R</td>
-<td>Not posted yet</td>
-</tr>
-<tr class="even">
-<td><em>(ensembles studio)</em></td>
-<td>Mon 9 Nov</td>
-<td>Live R with concepts (no Wed lab)</td>
-<td>Not posted yet</td>
-</tr>
-<tr class="odd">
-<td>L8 PCA</td>
-<td><strong>Wed 18 Nov</strong></td>
-<td><strong>PCA lab</strong> (locked)</td>
-<td>Not posted yet</td>
-</tr>
-<tr class="even">
-<td>L9 Clustering + literacy</td>
-<td>Wed 25 Nov</td>
-<td>Clustering · short modern-AI talk</td>
-<td>Not posted yet</td>
-</tr>
-</tbody>
-</table>
-<p>See <a href="../schedule.html">Schedule</a> for the full calendar.</p>
+<section id="data" class="level3 sch-week-card">
+<h3 class="anchored" data-anchor-id="data">Data</h3>
+<p><a href="data/toyota_corolla.csv">toyota_corolla.csv</a> · 1,436 used Corollas, asking prices in euros</p>
+</section>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

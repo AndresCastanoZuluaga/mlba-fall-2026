@@ -1,257 +1,5 @@
 [
   {
-    "objectID": "schedule.html",
-    "href": "schedule.html",
-    "title": "Schedule",
-    "section": "",
-    "text": "Canonical student-facing calendar (source of truth for all dates). If this page disagrees with the syllabus, Canvas, or anything else, this page wins—then those places are updated to match."
-  },
-  {
-    "objectID": "schedule.html#quick-reference",
-    "href": "schedule.html#quick-reference",
-    "title": "Schedule",
-    "section": "Quick reference",
-    "text": "Quick reference\n\nHomeworks\n\n\n\n\n\n\n\n\n\nHW\nReleased\nDeadline\nFocus\n\n\n\n\nHW1\n2 Sep\n9 Sep\nRegression + metrics / basic evaluation\n\n\nHW2\n21 Sep\n28 Sep\nTrain/test + regularization\n\n\nHW3\n21 Oct\n28 Oct\nLogistic + classification metrics\n\n\nHW4\n2 Nov\n9 Nov\nTrees + boosting + PCA if needed\n\n\n\n\n\nQuizzes (paper, ~10–15 min)\n\n\n\nQuiz\nDate\n\n\n\n\nQ1\nMon 31 Aug\n\n\nQ2\nMon 21 Sep\n\n\nQ3\nWed 21 Oct\n\n\nQ4\nWed 25 Nov\n\n\n\n\n\nExam & project\n\n\n\n\n\n\n\nItem\nDate\n\n\n\n\nMidterm review\nMon 5 Oct\n\n\nMidterm\nWed 7 Oct (closed notes; weeks 1–5 only)\n\n\nProject brief published\nWed 28 Oct\n\n\nProject checkpoint\nWed 18 Nov (PCA lab day; criteria with brief)\n\n\nProject presentations\nMon 30 Nov & Wed 2 Dec\n\n\n\n\nNo homework/quiz/project dues: 5–7 Oct (midterm week)."
-  },
-  {
-    "objectID": "schedule.html#week-by-week",
-    "href": "schedule.html#week-by-week",
-    "title": "Schedule",
-    "section": "Week-by-week",
-    "text": "Week-by-week\n\nWeek 1 — Launch + linear regression\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 24 Aug\nConcepts\nIntroduction; AI and jobs; a first look at the 400-store file\n—\n\n\nWed 26 Aug\nConcepts + light R\nRegression metrics; interpretation; R ready\n—\n\n\n\n\n\nWeek 2 — Regression lab\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 31 Aug\nConcepts + quiz\nQuiz 1; continue linear regression\nQuiz 1\n\n\nWed 2 Sep\nLab\nLinear regression lab in R\nHW1 out\n\n\n\n\n\nWeek 3 — Train/test & generalization\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 7 Sep\nConcepts\nTrain/test; over/underfit; leakage (primary); pair talks resume\n—\n\n\nWed 9 Sep\nLab\nHonest evaluation in R (incl. leakage habits)\nHW1 due\n\n\n\n\nMon 14 Sep · No class\n\n\n\nWeek 4 — Regularization\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nWed 16 Sep\nConcepts\nRidge/lasso; complexity\n—\n\n\nMon 21 Sep\nConcepts\nShrinkage, λ, pitfalls; pair presentation\nQuiz 2 · HW2 out\n\n\nWed 23 Sep\nLab\nRidge/lasso in R\n—\n\n\n\n\n\nWeek 5 — Cross-validation & model selection\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 28 Sep\nConcepts\nk-fold CV; selection vs test; leakage reinforced; pair presentation\nHW2 due\n\n\nWed 30 Sep\nLab\nCV / selection in R (no leakage across folds)\n—\n\n\n\n\n\nWeek 6 — Midterm week (no other dues)\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 5 Oct\nReview\nWeeks 1–5; interpret→decide; logistics; Q&A\n—\n\n\nWed 7 Oct\nMIDTERM\nClosed notes, in class\nMidterm\n\n\n\n\n11–15 Oct · Fall break · No classes\n\n\n\nWeek 7 — Logistic regression\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 19 Oct\nConcepts\nLogistic; odds; classification decisions; pair presentation\n—\n\n\nWed 21 Oct\nLab\nLogistic in R\nQuiz 3 · HW3 out\n\n\n\n\n\nWeek 8 — Classification metrics & thresholds\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 26 Oct\nConcepts\nROC, AUC; cutoffs as decisions (costs of being wrong); prediction vs acting; leakage / decision-time reminder; pair presentation\n—\n\n\nWed 28 Oct\nLab\nMetrics / decision cutoffs in R\nHW3 due · Project brief\n\n\n\n\n\nWeek 9 — Decision trees\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 2 Nov\nConcepts\nTrees; pair presentation\nHW4 out\n\n\nWed 4 Nov\nLab\nTrees in R\n—\n\n\n\n\n\nWeek 10 — Random forests & boosting\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 9 Nov\nConcepts + studio\nForests + boosting; live R: start one ensemble (no Wed lab this week); pair presentation\nHW4 due\n\n\nWed 11 Nov\n—\nNo class\n—\n\n\n\n\n\nWeek 11 — PCA\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 16 Nov\nConcepts\nPCA for business / high-dim data\n—\n\n\nWed 18 Nov\nLab\nPCA lab in R\nProject checkpoint\n\n\n\n\n\nWeek 12 — Clustering + short modern-AI talk\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 23 Nov\nConcepts\nClustering / segmentation; pair presentation\n—\n\n\nWed 25 Nov\nLab + module\nClustering lab; short modern-AI talk (neural nets + chatbots — literacy only)\nQuiz 4\n\n\n\n\n\nWeek 13 — Project presentations\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 30 Nov\nPresentations\nIndividual project presentations + Q&A\nProject\n\n\nWed 2 Dec\nPresentations\nRemaining presentations + Q&A\nProject\n\n\n\n\nAttendance expected both days (see syllabus for missed-session penalty on presentation grade)."
-  },
-  {
-    "objectID": "schedule.html#master-deadline-list",
-    "href": "schedule.html#master-deadline-list",
-    "title": "Schedule",
-    "section": "Master deadline list",
-    "text": "Master deadline list\n\n\n\nDate\nEvent\n\n\n\n\n31 Aug\nQuiz 1\n\n\n2 Sep\nHW1 released\n\n\n9 Sep\nHW1 deadline\n\n\n21 Sep\nQuiz 2 · HW2 released\n\n\n28 Sep\nHW2 deadline\n\n\n5 Oct\nMidterm review\n\n\n7 Oct\nMidterm\n\n\n21 Oct\nQuiz 3 · HW3 released\n\n\n28 Oct\nHW3 deadline · Project brief published\n\n\n2 Nov\nHW4 released\n\n\n9 Nov\nHW4 deadline\n\n\n18 Nov\nProject checkpoint (PCA lab day)\n\n\n25 Nov\nQuiz 4\n\n\n30 Nov–2 Dec\nProject presentations"
-  },
-  {
-    "objectID": "notes/index.html",
-    "href": "notes/index.html",
-    "title": "Lecture notes",
-    "section": "",
-    "text": "Before class: read & run Notes = durable book Slides PDF after class\nLecture notes will appear here before class. They are notebooks: the ideas, short problems, and R you can run. Slides are what we use in the room; notes are what you keep. Nothing is posted yet. I will put each week up before you need it."
-  },
-  {
-    "objectID": "notes/index.html#how-to-use-notes",
-    "href": "notes/index.html#how-to-use-notes",
-    "title": "Lecture notes",
-    "section": "How to use notes",
-    "text": "How to use notes\n\n\n\nWhen\nWhat to do\n\n\n\n\nBefore class\nRead and run the assigned notes\n\n\nIn class\nKeep notes open as reference if useful\n\n\nAfter class\nRevisit for homework and exams"
-  },
-  {
-    "objectID": "notes/index.html#notes-index",
-    "href": "notes/index.html#notes-index",
-    "title": "Lecture notes",
-    "section": "Notes index",
-    "text": "Notes index\n\n\n\n\n\n\n\n\n\nWeek\nTopic (from schedule)\nStatus\nLink\n\n\n\n\n01\nLaunch + linear regression\nNot yet built\n—\n\n\n02\n(Lab week — see Labs; notes track evaluation path)\nNot yet built\n—\n\n\n03\nTrain/test & generalization · leakage primary\nNot yet built\n—\n\n\n04\nRegularization\nNot yet built\n—\n\n\n05\nCV & model selection · leakage reinforced\nNot yet built\n—\n\n\n06\nMidterm week (review + exam — no new notes package)\nReview sheet TBD\n—\n\n\n07\nLogistic regression\nNot yet built\n—\n\n\n08\nClassification metrics & decision cutoffs · prediction vs acting · leakage reminder\nNot yet built\n—\n\n\n09\nDecision trees\nNot yet built\n—\n\n\n10\nRandom forests & boosting\nNot yet built\n—\n\n\n11\nPCA\nNot yet built\n—\n\n\n12\nClustering · short modern-AI literacy\nNot yet built\n—\n\n\n13\nProject presentations\nn/a\n—\n\n\n\nFull meeting dates: Schedule."
-  },
-  {
-    "objectID": "slides/index.html",
-    "href": "slides/index.html",
-    "title": "Slides",
-    "section": "",
-    "text": "I post the slides after class, not before. Open the HTML in Chrome — that is the same deck we used in the room. The PDF is for printing."
-  },
-  {
-    "objectID": "slides/index.html#week-1-launch-linear-regression",
-    "href": "slides/index.html#week-1-launch-linear-regression",
-    "title": "Slides",
-    "section": "Week 1 — Launch + linear regression",
-    "text": "Week 1 — Launch + linear regression\n\nMon 24 Aug · Introduction\nOpen in Chrome · PDF\n\n\nWed 26 Aug · Linear regression\nOpen in Chrome · PDF"
-  },
-  {
-    "objectID": "setup/index.html",
-    "href": "setup/index.html",
-    "title": "Setup: R and RStudio",
-    "section": "",
-    "text": "R 4.3+ RStudio / Posit Quarto Finish before Week 1 lab"
-  },
-  {
-    "objectID": "setup/index.html#why-this-matters",
-    "href": "setup/index.html#why-this-matters",
-    "title": "Setup: R and RStudio",
-    "section": "Why this matters",
-    "text": "Why this matters\nLabs and homeworks use R. Please do this before the first lab and email me if something doesn’t work, so we can use lab time for methods rather than troubleshooting installation. Make sure you do this after the first class and reach out if there are issues to solve.\n\nAfter the first class: Monday 24 August\n\nBefore the first lab: Wednesday 2 September\n\nIf something fails, email me or stop by—we will get you unstuck. Do not wait until the night before a homework is due.\nThis page is written for Windows, macOS, and Linux. Most CMU-Q students use Windows or Mac; follow the section for your system."
-  },
-  {
-    "objectID": "setup/index.html#before-you-start-all-systems",
-    "href": "setup/index.html#before-you-start-all-systems",
-    "title": "Setup: R and RStudio",
-    "section": "0. Before you start (all systems)",
-    "text": "0. Before you start (all systems)\n\n\n\n\n\n\n\nCheck\nWhy\n\n\n\n\n~2–4 GB free disk space\nR + RStudio + packages add up\n\n\nStable internet (campus Wi‑Fi is fine)\nPackage downloads are large\n\n\nAdministrator rights on your laptop\nNeeded for installers (Windows especially)\n\n\nClose other heavy apps\nInstalls can take 10–30 minutes\n\n\nR version 4.3 or newer recommended\nMatches current CRAN binaries"
-  },
-  {
-    "objectID": "setup/index.html#install-r",
-    "href": "setup/index.html#install-r",
-    "title": "Setup: R and RStudio",
-    "section": "1. Install R",
-    "text": "1. Install R\n\nWindows\n\nGo to https://cran.r-project.org/bin/windows/base/.\n\nDownload “Download R-x.x.x for Windows”.\n\nRun the installer.\n\nAccept the default install location (usually C:\\Program Files\\R\\...).\n\nYou can leave the 32-bit option unchecked (64-bit only is fine).\n\n\nFinish the installer.\n\nStrongly recommended on Windows — Rtools (needed if a package must compile from source, e.g. some updates of xgboost or glmnet):\n\nGo to https://cran.r-project.org/bin/windows/Rtools/.\n\nInstall the Rtools version that matches your R version (the page explains which).\n\nUse the default options so Rtools is on the system PATH.\n\nWithout Rtools, many packages still install as pre-built binaries. If install fails with messages about g++, make, or “compilation failed,” install Rtools and try again.\n\n\nmacOS\n\nGo to https://cran.r-project.org/bin/macosx/.\n\nDownload the installer for your chip:\n\nApple Silicon (M1/M2/M3/M4): usually labeled arm64\n\nIntel: usually labeled x86_64\n\n\nTo check your chip: Apple menu → About This Mac.\n\nOpen the .pkg and complete installation.\n\nIf macOS blocks the installer: System Settings → Privacy & Security → allow the app, or right-click → Open.\n\n\n\nLinux\nUse your distribution’s instructions on CRAN, or install from https://cran.r-project.org/ for your distro. On Ubuntu/Debian you typically need build tools (build-essential) for source packages.\n\n\nQuick check\nIn RStudio later, run:\nR.version.string\nYou should see a recent version (4.3+ preferred)."
-  },
-  {
-    "objectID": "setup/index.html#install-rstudio-desktop-posit",
-    "href": "setup/index.html#install-rstudio-desktop-posit",
-    "title": "Setup: R and RStudio",
-    "section": "2. Install RStudio Desktop (Posit)",
-    "text": "2. Install RStudio Desktop (Posit)\nAll systems:\n\nGo to https://posit.co/download/rstudio-desktop/.\n\nDownload RStudio Desktop Free for your OS.\n\nInstall and open RStudio.\n\nConfirm the Console shows an R version and a &gt; prompt.\n\n\nWindows tips\n\nInstall R before RStudio.\n\nIf RStudio says it cannot find R:\nTools → Global Options → General → R version → Change and point to your R install under C:\\Program Files\\R\\.\n\nPrefer installing to a path without unusual characters. Default paths are fine.\n\nRun RStudio as a normal user for daily work (not always “as Administrator”).\n\n\n\nmacOS tips\n\nDrag RStudio into Applications.\n\nFirst launch: right-click → Open if Gatekeeper blocks it.\n\nIf you have both Intel and ARM R, keep one clear default.\n\nYou will do almost all course work in RStudio: open .qmd files, run code chunks, and Knit/Render when asked."
-  },
-  {
-    "objectID": "setup/index.html#install-quarto-recommended",
-    "href": "setup/index.html#install-quarto-recommended",
-    "title": "Setup: R and RStudio",
-    "section": "3. Install Quarto (recommended)",
-    "text": "3. Install Quarto (recommended)\nQuarto powers our lecture notes and labs (.qmd files).\n\nGo to https://quarto.org/docs/get-started/.\n\nInstall Quarto for Windows / macOS / Linux.\n\nFully quit and reopen RStudio after installing.\n\n\nCheck\n\nWindows: open Command Prompt or PowerShell (not only R):\nquarto --version\n\nmacOS / Linux: Terminal:\nquarto --version\n\nIf this fails but RStudio still runs code chunks, you can work day-to-day; full website/render features may need Quarto fixed. Ask me early if quarto is not found after install (Windows PATH issues are common—restart the PC once after installing Quarto)."
-  },
-  {
-    "objectID": "setup/index.html#install-course-packages",
-    "href": "setup/index.html#install-course-packages",
-    "title": "Setup: R and RStudio",
-    "section": "4. Install course packages",
-    "text": "4. Install course packages\n\n4.1 Easiest method\n\nDownload install-packages.R from this Setup page (or copy from the course site).\n\nIn RStudio: File → Open File → select install-packages.R.\n\nClick Source, or run:\n\nsource(\"install-packages.R\", echo = TRUE)\n(Adjust the path if the file is in Downloads, e.g. on Windows: source(\"C:/Users/YourName/Downloads/install-packages.R\").)\n\n\n4.2 Or paste this in the RStudio console\nThis can take 10–30 minutes. Stay online.\n\n# Prefer binaries when possible (especially Windows)\noptions(install.packages.check.source = \"no\")\noptions(pkgType = ifelse(.Platform$OS.type == \"windows\", \"binary\", getOption(\"pkgType\")))\n\n# --- CORE (required for most of the course) ---\ncore &lt;- c(\n  \"tidyverse\",     # data wrangling + ggplot2\n  \"scales\",\n  \"tidymodels\",    # modeling workflow\n  \"glmnet\",        # ridge / lasso\n  \"rpart\",         # decision trees\n  \"rpart.plot\",\n  \"ranger\",        # random forests\n  \"vip\",\n  \"cluster\",\n  \"factoextra\",\n  \"ggfortify\",\n  \"pROC\",          # ROC / AUC\n  \"nnet\",          # simple neural nets (intro)\n  \"rmarkdown\",\n  \"knitr\",\n  \"gt\",\n  \"broom\",\n  \"here\"\n)\n\n# --- RECOMMENDED (used later; install now if you can) ---\nrecommended &lt;- c(\n  \"xgboost\"        # boosting — sometimes needs Rtools on Windows\n)\n\ninstall_set &lt;- function(pkgs) {\n  missing &lt;- pkgs[!pkgs %in% rownames(installed.packages())]\n  if (!length(missing)) {\n    message(\"Already installed: \", paste(pkgs, collapse = \", \"))\n    return(invisible(TRUE))\n  }\n  message(\"Installing: \", paste(missing, collapse = \", \"))\n  for (p in missing) {\n    message(\"--&gt; \", p)\n    tryCatch(\n      install.packages(p, dependencies = TRUE),\n      error = function(e) message(\"FAILED: \", p, \" — \", conditionMessage(e))\n    )\n  }\n}\n\ninstall_set(core)\ninstall_set(recommended)\n\n# Report status\nall_pkgs &lt;- c(core, recommended)\nok &lt;- vapply(all_pkgs, requireNamespace, quietly = TRUE, FUN.VALUE = logical(1))\nprint(ok)\nif (!all(ok[core])) {\n  stop(\"Core packages still missing: \", paste(names(ok[core])[!ok[core]], collapse = \", \"))\n}\nif (!ok[\"xgboost\"]) {\n  message(\"NOTE: xgboost failed. You can still start the course; we will revisit before boosting week. On Windows, install Rtools and retry.\")\n} else {\n  message(\"All core + recommended packages look good.\")\n}\n\n\n\n4.3 Optional later (do not block Week 1)\nOnly if we announce them for neural-net / API demos:\n\n# install.packages(\"torch\")   # heavy; Windows/macOS have specific install docs\n# install.packages(\"luz\")\n# install.packages(c(\"httr2\", \"jsonlite\"))"
-  },
-  {
-    "objectID": "setup/index.html#verify-your-setup-must-pass",
-    "href": "setup/index.html#verify-your-setup-must-pass",
-    "title": "Setup: R and RStudio",
-    "section": "5. Verify your setup (must pass)",
-    "text": "5. Verify your setup (must pass)\nRun in the RStudio console—no red errors:\n\nneed &lt;- c(\n  \"tidyverse\", \"tidymodels\", \"glmnet\", \"rpart\", \"ranger\",\n  \"cluster\", \"pROC\", \"nnet\", \"broom\", \"here\"\n)\n\nok &lt;- vapply(need, requireNamespace, quietly = TRUE, FUN.VALUE = logical(1))\nprint(ok)\n\nif (!all(ok)) {\n  stop(\"Missing packages: \", paste(names(ok)[!ok], collapse = \", \"))\n} else {\n  message(\"Core packages OK.\")\n}\n\n# Smoke test: tiny linear model\nlibrary(tidymodels)\nset.seed(467)\ndat &lt;- data.frame(x = rnorm(50), y = NA_real_)\ndat$y &lt;- 1 + 2 * dat$x + rnorm(50)\nfit &lt;- linear_reg() |&gt; set_engine(\"lm\") |&gt; fit(y ~ x, data = dat)\nprint(broom::tidy(fit))\nmessage(\"Smoke test passed — modeling stack works.\")\n\nYou should see a small table of coefficients (intercept and x)."
-  },
-  {
-    "objectID": "setup/index.html#files-and-folders-windows-note",
-    "href": "setup/index.html#files-and-folders-windows-note",
-    "title": "Setup: R and RStudio",
-    "section": "6. Files and folders (Windows note)",
-    "text": "6. Files and folders (Windows note)\n\n\n\nType\nRole\n\n\n\n\n.qmd\nNotes, labs, homework source\n\n\n.html\nBuilt view after Knit / Render\n\n\nData (.csv, etc.)\nProvided with each assignment\n\n\n\nCreate one course folder, e.g.:\n\nWindows: C:\\Users\\YourName\\Documents\\mlba-f26\\\n\nmacOS: ~/Documents/mlba-f26/\n\nIf you use cloud sync (OneDrive, Dropbox, etc.), avoid working only on online-only files—knitr can fail when files are not fully on disk. Keep a full local copy of the assignment folder while you work; submit on Canvas.\nWindows paths: In R, prefer forward slashes:\nsource(\"C:/Users/YourName/Downloads/install-packages.R\")"
-  },
-  {
-    "objectID": "setup/index.html#troubleshooting-by-symptom",
-    "href": "setup/index.html#troubleshooting-by-symptom",
-    "title": "Setup: R and RStudio",
-    "section": "7. Troubleshooting (by symptom)",
-    "text": "7. Troubleshooting (by symptom)\n\nWindows\n\n\n\n\n\n\n\nProblem\nWhat to try\n\n\n\n\nRStudio “No R version available”\nInstall R first; then Tools → Global Options → R version\n\n\ninstall.packages “compilation failed” / g++ / make\nInstall Rtools matching your R version; restart RStudio; retry\n\n\nxgboost fails\nSkip for now (course can start without it); install Rtools; install.packages(\"xgboost\") later\n\n\nInstall blocked by antivirus\nTemporarily allow R/RStudio; or install on campus network\n\n\nPermission denied writing to library\nAvoid installing into a protected system folder; use default user library; do not need Admin for packages if R is installed normally\n\n\nPath with spaces / OneDrive\nWork in Documents\\mlba-f26; if OneDrive “Files On-Demand” causes knit errors, mark the folder Always keep on this device\n\n\nQuarto not recognized in terminal\nRestart PC after Quarto install; reinstall Quarto; confirm RStudio → Tools finds quarto\n\n\nPlots don’t show\nTools → Global Options → R Markdown → show output inline\n\n\n\n\n\nmacOS\n\n\n\n\n\n\n\nProblem\nWhat to try\n\n\n\n\nWrong chip installer (Intel vs Apple Silicon)\nReinstall R for your chip (About This Mac)\n\n\n“Developer tools” / command-line tools prompt\nInstall Xcode Command Line Tools when asked\n\n\nPackage binary unavailable\nUpdate R; retry; install CLT if compiling from source\n\n\nGatekeeper blocks RStudio\nSystem Settings → Privacy & Security → Open Anyway\n\n\n\n\n\nAll systems\n\n\n\n\n\n\n\nProblem\nWhat to try\n\n\n\n\nVery slow installs\nStay on campus Wi‑Fi; install core list first; retry failed packages one by one\n\n\nlibrary() errors after install\nSession → Restart R; then library(packageName)\n\n\nKnit fails “package X not found”\nInstall X; check you knit with the same R version as the console\n\n\nOut of disk space\nFree several GB; remove old package caches if needed\n\n\nCorporate / locked laptop\nContact IT for admin rights; use a personal machine if course work is blocked\n\n\n\n\n\nIf you are completely stuck\n\nScreenshot the full error (red text).\n\nNote: Windows or Mac, and R version (R.version.string).\n\nEmail me before the next lab.\n\nOn 26 August bring the laptop to class for a live fix if needed (that day is still a lecture, not a lab)."
-  },
-  {
-    "objectID": "setup/index.html#package-policy-for-the-semester",
-    "href": "setup/index.html#package-policy-for-the-semester",
-    "title": "Setup: R and RStudio",
-    "section": "8. Package policy for the semester",
-    "text": "8. Package policy for the semester\n\nCore packages above are assumed for homeworks and most labs.\n\nxgboost is recommended early but not a Week-1 blocker if install fails on Windows without Rtools.\n\nExtra packages for a specific week will be listed in that week’s notes and added here.\n\nIf a CRAN update breaks something mid-semester, tell me—we may pin versions."
-  },
-  {
-    "objectID": "setup/index.html#privacy-and-ai",
-    "href": "setup/index.html#privacy-and-ai",
-    "title": "Setup: R and RStudio",
-    "section": "9. Privacy and AI",
-    "text": "9. Privacy and AI\n\nCourse materials: this website.\n\nSubmissions and grades: Canvas only.\n\nYou may use generative AI to interpret install errors, but you must still run the verification yourself (see syllabus AI policy)."
-  },
-  {
-    "objectID": "setup/index.html#checklist-before-first-lab",
-    "href": "setup/index.html#checklist-before-first-lab",
-    "title": "Setup: R and RStudio",
-    "section": "10. Checklist before first lab",
-    "text": "10. Checklist before first lab\n\nAll students\n\nR installed (recent version)\n\nRStudio opens and shows R in the console\n\nQuarto installed and RStudio restarted (recommended)\n\nCore packages installed\n\nVerify script + smoke test succeed\n\nLaptop charged for class\n\n\n\nWindows extras\n\nRtools installed (strongly recommended)\n\nRStudio finds the correct R version\n\nCourse folder is local (not online-only cloud)\n\n\n\nmacOS extras\n\nR installer matches Apple Silicon vs Intel\n\nIf any required box is unchecked by 26 August, contact me that day so we can fix it before the first lab on 2 September."
-  },
-  {
-    "objectID": "labs/index.html",
-    "href": "labs/index.html",
-    "title": "Labs",
-    "section": "",
-    "text": "Default: Wednesday lab Starter + thinking questions Bring laptop\nOn lab days, read the problem before you sit down. Bring a laptop to labs. On Wednesdays, laptops are required for R. You will get the problem before class and a starter notebook with parts already working. In the hour we work on approach, interpretation, figures, and what the results mean for the decision. Wednesday 26 Aug is still a lecture (linear regression, in R). The first lab is 2 September. Nothing is posted yet. I will put each lab here before you need it."
-  },
-  {
-    "objectID": "labs/index.html#pattern",
-    "href": "labs/index.html#pattern",
-    "title": "Labs",
-    "section": "Pattern",
-    "text": "Pattern\n\n\n\nPattern\nWhen\n\n\n\n\nDefault\nLab on Wednesday\n\n\nException\nMidterm week, 11 Nov (no class), presentation week\n\n\nMidterm week\nNo lab (Wed 7 Oct = midterm)\n\n\nPresentation week\nNo lab (30 Nov & 2 Dec)"
-  },
-  {
-    "objectID": "labs/index.html#lab-index",
-    "href": "labs/index.html#lab-index",
-    "title": "Labs",
-    "section": "Lab index",
-    "text": "Lab index\n\n\n\n\n\n\n\n\n\nLab\nMeeting\nFocus\nStatus\n\n\n\n\nL1 Regression\nWed 2 Sep\nLinear regression lab\nNot posted yet\n\n\nL2 Evaluation\nWed 9 Sep\nHonest evaluation · leakage habits\nNot posted yet\n\n\nL3 Regularization\nWed 23 Sep\nRidge/lasso in R\nNot posted yet\n\n\nL4 CV / selection\nWed 30 Sep\nCV · no leakage across folds\nNot posted yet\n\n\nL5 Logistic\nWed 21 Oct\nLogistic in R\nNot posted yet\n\n\nL6 Metrics / cutoffs\nWed 28 Oct\nROC, AUC, decision cutoffs\nNot posted yet\n\n\nL7 Trees\nWed 4 Nov\nTrees in R\nNot posted yet\n\n\n(ensembles studio)\nMon 9 Nov\nLive R with concepts (no Wed lab)\nNot posted yet\n\n\nL8 PCA\nWed 18 Nov\nPCA lab (locked)\nNot posted yet\n\n\nL9 Clustering + literacy\nWed 25 Nov\nClustering · short modern-AI talk\nNot posted yet\n\n\n\nSee Schedule for the full calendar."
-  },
-  {
-    "objectID": "hw/index.html",
-    "href": "hw/index.html",
-    "title": "Homework",
-    "section": "",
-    "text": "Individual R notebook At most six slides ≤ 5 min video Submit on Canvas\nEvery homework is individual. You submit three pieces on Canvas: a runnable R notebook, at most six slides, and a video of at most five minutes. The slides and the video should tell the same story as the notebook: the problem, the evidence, the decision, and the limit.\nNothing is posted yet. I will put each homework here before you need it. Dates are on the schedule."
-  },
-  {
-    "objectID": "hw/index.html#package-every-hw",
-    "href": "hw/index.html#package-every-hw",
-    "title": "Homework",
-    "section": "Package (every HW)",
-    "text": "Package (every HW)\n\nR notebook — analysis must run\n\nAt most six slides — the problem, the evidence, the decision, and the limit\n\n≤ 5:00 video — same story; simple recording is fine\n\nSubmit on Canvas only (not this site)."
-  },
-  {
-    "objectID": "hw/index.html#schedule",
-    "href": "hw/index.html#schedule",
-    "title": "Homework",
-    "section": "Schedule",
-    "text": "Schedule\n\n\n\nHW\nReleased\nDeadline\nStatus\n\n\n\n\nHW1\n2 Sep\n9 Sep\nNot posted yet\n\n\nHW2\n21 Sep\n28 Sep\nNot posted yet\n\n\nHW3\n21 Oct\n28 Oct\nNot posted yet\n\n\nHW4\n2 Nov\n9 Nov\nNot posted yet\n\n\n\n\nNo HW dues midterm week (5–7 Oct). HW4 is due 9 Nov (ensembles studio day)—plan ahead.\n\nFull calendar: Schedule."
-  },
-  {
-    "objectID": "hw/index.html#ai",
-    "href": "hw/index.html#ai",
-    "title": "Homework",
-    "section": "AI",
-    "text": "AI\nAI is allowed on homework if you disclose it (Yellow level, when the assignment allows it). You must run the code and be able to explain the important parts of how you reached the decision. If you hide AI use, or you cannot explain the work in the video, or I suspect you used AI inappropriately, I will ask you to present in person. Depending on how you handle the questions in person, the grade on that homework can go as low as 0, and you may be reported for an academic integrity violation. See Syllabus."
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "70-467 - Machine Learning for Business Analytics",
-    "section": "",
-    "text": "CMU-Q · Fall 2026 · 70-467\n\n\n\n\nInstructor: Andrés Castaño Zuluaga\n\n\nWelcome to 70-467 Machine Learning for Business Analytics!\n\n\nIn an era when AI can write code faster than most people, writing code is not the scarce skill. The bottleneck in productive analytics is understanding, verification, and judgment: knowing what to ask the tools to do, checking whether the answer is good enough to act on, and explaining both the recommendation and its limits. AI will not replace your job. Someone who can use it and is prepared to work those bottlenecks will.\nThis course prepares you for that. You cannot evaluate the tools, or incorporate them into how you work, until you understand the methods. That is what sharpens judgment and makes the communication defensible. We incentivize responsible use of AI: tools that augment you, not substitutes that replace the thinking. You will learn to turn data into decisions you can stand behind. Choose the method, check it carefully, and explain the recommendation and its limits. The emphasis is business judgment under real problems, not model fitting as an end in itself. We work in R, with real datasets.\n\n\nMon & Wed · 2:30–3:45 PM · CMB 1190 Concepts + R labs"
-  },
-  {
-    "objectID": "index.html#methods-you-will-see-and-use",
-    "href": "index.html#methods-you-will-see-and-use",
-    "title": "70-467 - Machine Learning for Business Analytics",
-    "section": "Methods you will see and use",
-    "text": "Methods you will see and use\nWe move from simple, interpretable models to richer tools, always starting from a business problem and emphasizing business understanding, method feasibility and limitations, and judgement in decision-making.\n\n  \n    \n    Linear regression\n    Quantitative outcomes; the workhorse we start with\n  \n  \n    \n    Logistic regression\n    Classification when the outcome is a category\n  \n  \n    \n    Trees and ensembles\n    CART, random forests, boosting\n  \n  \n    \n    PCA\n    Reducing dimensions when you have many variables\n  \n  \n    \n    Clustering\n    Grouping without a pre-labeled outcome\n  \n  \n    \n    Neural nets\n    A short look, late in the term, if time allows\n  \n\nFull week-by-week plan: Schedule."
-  },
-  {
-    "objectID": "index.html#how-we-work",
-    "href": "index.html#how-we-work",
-    "title": "70-467 - Machine Learning for Business Analytics",
-    "section": "How we work",
-    "text": "How we work\nA simple weekly rhythm so you always know how to prepare.\n\n  \n    \n      \n    \n    01 · Before class\n    Lecture notes\n    Read the assigned textbook sections and, when assigned, run the Quarto notes. Those notes are in Quarto, so complete the setup instructions early. You need a working machine for the week to week flow of the course.\n  \n  \n    \n      \n    \n    02 · Monday\n    Concepts & decisions\n     Mondays are for understanding the method, always starting from a business problem. You prepare a short introduction to that method and present it. I then take over and finish the lecture. The presentation schedule comes in week two, once enrollment is set.\n  \n  \n    \n      \n    \n    03 · Wednesday\n    R lab\n    Wednesdays are labs, and we start from a problem, not from the code. The problem is posted before class. Come prepared. In class we work through guided notebooks: some of the code is already there, you complete the TODOs, we run it, and we interpret the output together. Then we argue the merits of the analysis and how to make it stronger.\n  \n  \n    \n      \n    \n    04 · Outside class\n    Build and defend\n    For homework you get real data, a problem, and starter code. You turn in a notebook, at most six slides, and a video of at most five minutes — same story in all three. The project is individual and ends with an in-class presentation; details are in the syllabus."
-  },
-  {
-    "objectID": "index.html#learn-deliver",
-    "href": "index.html#learn-deliver",
-    "title": "70-467 - Machine Learning for Business Analytics",
-    "section": "Learn & deliver",
-    "text": "Learn & deliver\nMaterials you will use throughout the term (orient yourself with Start here above).\n\n  Lecture NotesPrepare before every class\n  LabsIn-class R notebooks\n  HomeworkSpecs and expectations\n  Final ProjectCheckpoint and presentations"
-  },
-  {
-    "objectID": "project/index.html",
-    "href": "project/index.html",
-    "title": "Final project",
-    "section": "",
-    "text": "Individual R + decision story Live defense 20% of course grade\nIndividual applied project: a real business decision, appropriate methods in R, clear recommendation, and a live presentation with Q&A.\nThe project brief will be on this page on 28 October. Do not start a proposal before that. Nothing is posted yet."
-  },
-  {
-    "objectID": "project/index.html#milestones",
-    "href": "project/index.html#milestones",
-    "title": "Final project",
-    "section": "Milestones",
-    "text": "Milestones\n\n\n\n\n\n\n\n\n\nMilestone\nDate\nNotes\nStatus\n\n\n\n\nProject brief published\n28 Oct\nTracks / data / rules\nNot posted yet\n\n\nGraded checkpoint\n18 Nov\nSame day as the PCA lab. Criteria published with the brief\nNot posted yet\n\n\nPresentations\n30 Nov & 2 Dec\n~10–12 min + Q&A\nSlots after roster\n\n\n\nThe split of the project grade ships with the brief. The course grade for the project is 20%."
-  },
-  {
-    "objectID": "project/index.html#attendance-presentation-week",
-    "href": "project/index.html#attendance-presentation-week",
-    "title": "Final project",
-    "section": "Attendance (presentation week)",
-    "text": "Attendance (presentation week)\nAttendance is expected both days. Missing a presentation session carries a 15-point penalty on the presentation component of the project grade. Plan to attend both days, not only your own slot. The final wording of the penalty will be in the project guidelines.\nThe brief will say what data you may use, what you turn in at the checkpoint, and how the presentation is graded. See the syllabus and the schedule."
-  },
-  {
     "objectID": "syllabus.html",
     "href": "syllabus.html",
     "title": "70-467 — Machine Learning for Business Analytics",
@@ -362,5 +110,264 @@
     "title": "70-467 — Machine Learning for Business Analytics",
     "section": "Inclusive Excellence",
     "text": "Inclusive Excellence\nWe must treat every individual with respect. We are diverse in many ways, and recognizing this diversity is fundamental to building and maintaining an inclusive campus community. Diversity can refer to our different perspectives, lived experiences and our identities, including but not limited to race, color, national origin, sex, disability, age, sexual orientation, gender identity, pregnancy or related condition, family status, marital status, parental status, religion, ancestry, veteran status, or genetic information. What makes us different can shape the perspectives our students, faculty, and staff bring to our campus. Each of us is responsible for creating a safer, more inclusive environment.\n\nThis syllabus may be updated. Material changes will be announced on the course website and Canvas. For detailed dates, use the course website schedule."
+  },
+  {
+    "objectID": "setup/index.html",
+    "href": "setup/index.html",
+    "title": "Setup: R and RStudio",
+    "section": "",
+    "text": "R 4.3+ RStudio / Posit Quarto Finish before Week 1 lab"
+  },
+  {
+    "objectID": "setup/index.html#why-this-matters",
+    "href": "setup/index.html#why-this-matters",
+    "title": "Setup: R and RStudio",
+    "section": "Why this matters",
+    "text": "Why this matters\nLabs and homeworks use R. Please do this before the first lab and email me if something doesn’t work, so we can use lab time for methods rather than troubleshooting installation. Make sure you do this after the first class and reach out if there are issues to solve.\n\nAfter the first class: Monday 24 August\n\nBefore the first lab: Wednesday 2 September\n\nIf something fails, email me or stop by—we will get you unstuck. Do not wait until the night before a homework is due.\nThis page is written for Windows, macOS, and Linux. Most CMU-Q students use Windows or Mac; follow the section for your system."
+  },
+  {
+    "objectID": "setup/index.html#before-you-start-all-systems",
+    "href": "setup/index.html#before-you-start-all-systems",
+    "title": "Setup: R and RStudio",
+    "section": "0. Before you start (all systems)",
+    "text": "0. Before you start (all systems)\n\n\n\n\n\n\n\nCheck\nWhy\n\n\n\n\n~2–4 GB free disk space\nR + RStudio + packages add up\n\n\nStable internet (campus Wi‑Fi is fine)\nPackage downloads are large\n\n\nAdministrator rights on your laptop\nNeeded for installers (Windows especially)\n\n\nClose other heavy apps\nInstalls can take 10–30 minutes\n\n\nR version 4.3 or newer recommended\nMatches current CRAN binaries"
+  },
+  {
+    "objectID": "setup/index.html#install-r",
+    "href": "setup/index.html#install-r",
+    "title": "Setup: R and RStudio",
+    "section": "1. Install R",
+    "text": "1. Install R\n\nWindows\n\nGo to https://cran.r-project.org/bin/windows/base/.\n\nDownload “Download R-x.x.x for Windows”.\n\nRun the installer.\n\nAccept the default install location (usually C:\\Program Files\\R\\...).\n\nYou can leave the 32-bit option unchecked (64-bit only is fine).\n\n\nFinish the installer.\n\nStrongly recommended on Windows — Rtools (needed if a package must compile from source, e.g. some updates of xgboost or glmnet):\n\nGo to https://cran.r-project.org/bin/windows/Rtools/.\n\nInstall the Rtools version that matches your R version (the page explains which).\n\nUse the default options so Rtools is on the system PATH.\n\nWithout Rtools, many packages still install as pre-built binaries. If install fails with messages about g++, make, or “compilation failed,” install Rtools and try again.\n\n\nmacOS\n\nGo to https://cran.r-project.org/bin/macosx/.\n\nDownload the installer for your chip:\n\nApple Silicon (M1/M2/M3/M4): usually labeled arm64\n\nIntel: usually labeled x86_64\n\n\nTo check your chip: Apple menu → About This Mac.\n\nOpen the .pkg and complete installation.\n\nIf macOS blocks the installer: System Settings → Privacy & Security → allow the app, or right-click → Open.\n\n\n\nLinux\nUse your distribution’s instructions on CRAN, or install from https://cran.r-project.org/ for your distro. On Ubuntu/Debian you typically need build tools (build-essential) for source packages.\n\n\nQuick check\nIn RStudio later, run:\nR.version.string\nYou should see a recent version (4.3+ preferred)."
+  },
+  {
+    "objectID": "setup/index.html#install-rstudio-desktop-posit",
+    "href": "setup/index.html#install-rstudio-desktop-posit",
+    "title": "Setup: R and RStudio",
+    "section": "2. Install RStudio Desktop (Posit)",
+    "text": "2. Install RStudio Desktop (Posit)\nAll systems:\n\nGo to https://posit.co/download/rstudio-desktop/.\n\nDownload RStudio Desktop Free for your OS.\n\nInstall and open RStudio.\n\nConfirm the Console shows an R version and a &gt; prompt.\n\n\nWindows tips\n\nInstall R before RStudio.\n\nIf RStudio says it cannot find R:\nTools → Global Options → General → R version → Change and point to your R install under C:\\Program Files\\R\\.\n\nPrefer installing to a path without unusual characters. Default paths are fine.\n\nRun RStudio as a normal user for daily work (not always “as Administrator”).\n\n\n\nmacOS tips\n\nDrag RStudio into Applications.\n\nFirst launch: right-click → Open if Gatekeeper blocks it.\n\nIf you have both Intel and ARM R, keep one clear default.\n\nYou will do almost all course work in RStudio: open .qmd files, run code chunks, and Knit/Render when asked."
+  },
+  {
+    "objectID": "setup/index.html#install-quarto-recommended",
+    "href": "setup/index.html#install-quarto-recommended",
+    "title": "Setup: R and RStudio",
+    "section": "3. Install Quarto (recommended)",
+    "text": "3. Install Quarto (recommended)\nQuarto powers our lecture notes and labs (.qmd files).\n\nGo to https://quarto.org/docs/get-started/.\n\nInstall Quarto for Windows / macOS / Linux.\n\nFully quit and reopen RStudio after installing.\n\n\nCheck\n\nWindows: open Command Prompt or PowerShell (not only R):\nquarto --version\n\nmacOS / Linux: Terminal:\nquarto --version\n\nIf this fails but RStudio still runs code chunks, you can work day-to-day; full website/render features may need Quarto fixed. Ask me early if quarto is not found after install (Windows PATH issues are common—restart the PC once after installing Quarto)."
+  },
+  {
+    "objectID": "setup/index.html#install-course-packages",
+    "href": "setup/index.html#install-course-packages",
+    "title": "Setup: R and RStudio",
+    "section": "4. Install course packages",
+    "text": "4. Install course packages\n\n4.1 Easiest method\n\nDownload install-packages.R from this Setup page (or copy from the course site).\n\nIn RStudio: File → Open File → select install-packages.R.\n\nClick Source, or run:\n\nsource(\"install-packages.R\", echo = TRUE)\n(Adjust the path if the file is in Downloads, e.g. on Windows: source(\"C:/Users/YourName/Downloads/install-packages.R\").)\n\n\n4.2 Or paste this in the RStudio console\nThis can take 10–30 minutes. Stay online.\n\n# Prefer binaries when possible (especially Windows)\noptions(install.packages.check.source = \"no\")\noptions(pkgType = ifelse(.Platform$OS.type == \"windows\", \"binary\", getOption(\"pkgType\")))\n\n# --- CORE (required for most of the course) ---\ncore &lt;- c(\n  \"tidyverse\",     # data wrangling + ggplot2\n  \"scales\",\n  \"tidymodels\",    # modeling workflow\n  \"glmnet\",        # ridge / lasso\n  \"rpart\",         # decision trees\n  \"rpart.plot\",\n  \"ranger\",        # random forests\n  \"vip\",\n  \"cluster\",\n  \"factoextra\",\n  \"ggfortify\",\n  \"pROC\",          # ROC / AUC\n  \"nnet\",          # simple neural nets (intro)\n  \"rmarkdown\",\n  \"knitr\",\n  \"gt\",\n  \"broom\",\n  \"here\"\n)\n\n# --- RECOMMENDED (used later; install now if you can) ---\nrecommended &lt;- c(\n  \"xgboost\"        # boosting — sometimes needs Rtools on Windows\n)\n\ninstall_set &lt;- function(pkgs) {\n  missing &lt;- pkgs[!pkgs %in% rownames(installed.packages())]\n  if (!length(missing)) {\n    message(\"Already installed: \", paste(pkgs, collapse = \", \"))\n    return(invisible(TRUE))\n  }\n  message(\"Installing: \", paste(missing, collapse = \", \"))\n  for (p in missing) {\n    message(\"--&gt; \", p)\n    tryCatch(\n      install.packages(p, dependencies = TRUE),\n      error = function(e) message(\"FAILED: \", p, \" — \", conditionMessage(e))\n    )\n  }\n}\n\ninstall_set(core)\ninstall_set(recommended)\n\n# Report status\nall_pkgs &lt;- c(core, recommended)\nok &lt;- vapply(all_pkgs, requireNamespace, quietly = TRUE, FUN.VALUE = logical(1))\nprint(ok)\nif (!all(ok[core])) {\n  stop(\"Core packages still missing: \", paste(names(ok[core])[!ok[core]], collapse = \", \"))\n}\nif (!ok[\"xgboost\"]) {\n  message(\"NOTE: xgboost failed. You can still start the course; we will revisit before boosting week. On Windows, install Rtools and retry.\")\n} else {\n  message(\"All core + recommended packages look good.\")\n}\n\n\n\n4.3 Optional later (do not block Week 1)\nOnly if we announce them for neural-net / API demos:\n\n# install.packages(\"torch\")   # heavy; Windows/macOS have specific install docs\n# install.packages(\"luz\")\n# install.packages(c(\"httr2\", \"jsonlite\"))"
+  },
+  {
+    "objectID": "setup/index.html#verify-your-setup-must-pass",
+    "href": "setup/index.html#verify-your-setup-must-pass",
+    "title": "Setup: R and RStudio",
+    "section": "5. Verify your setup (must pass)",
+    "text": "5. Verify your setup (must pass)\nRun in the RStudio console—no red errors:\n\nneed &lt;- c(\n  \"tidyverse\", \"tidymodels\", \"glmnet\", \"rpart\", \"ranger\",\n  \"cluster\", \"pROC\", \"nnet\", \"broom\", \"here\"\n)\n\nok &lt;- vapply(need, requireNamespace, quietly = TRUE, FUN.VALUE = logical(1))\nprint(ok)\n\nif (!all(ok)) {\n  stop(\"Missing packages: \", paste(names(ok)[!ok], collapse = \", \"))\n} else {\n  message(\"Core packages OK.\")\n}\n\n# Smoke test: tiny linear model\nlibrary(tidymodels)\nset.seed(467)\ndat &lt;- data.frame(x = rnorm(50), y = NA_real_)\ndat$y &lt;- 1 + 2 * dat$x + rnorm(50)\nfit &lt;- linear_reg() |&gt; set_engine(\"lm\") |&gt; fit(y ~ x, data = dat)\nprint(broom::tidy(fit))\nmessage(\"Smoke test passed — modeling stack works.\")\n\nYou should see a small table of coefficients (intercept and x)."
+  },
+  {
+    "objectID": "setup/index.html#files-and-folders-windows-note",
+    "href": "setup/index.html#files-and-folders-windows-note",
+    "title": "Setup: R and RStudio",
+    "section": "6. Files and folders (Windows note)",
+    "text": "6. Files and folders (Windows note)\n\n\n\nType\nRole\n\n\n\n\n.qmd\nNotes, labs, homework source\n\n\n.html\nBuilt view after Knit / Render\n\n\nData (.csv, etc.)\nProvided with each assignment\n\n\n\nCreate one course folder, e.g.:\n\nWindows: C:\\Users\\YourName\\Documents\\mlba-f26\\\n\nmacOS: ~/Documents/mlba-f26/\n\nIf you use cloud sync (OneDrive, Dropbox, etc.), avoid working only on online-only files—knitr can fail when files are not fully on disk. Keep a full local copy of the assignment folder while you work; submit on Canvas.\nWindows paths: In R, prefer forward slashes:\nsource(\"C:/Users/YourName/Downloads/install-packages.R\")"
+  },
+  {
+    "objectID": "setup/index.html#troubleshooting-by-symptom",
+    "href": "setup/index.html#troubleshooting-by-symptom",
+    "title": "Setup: R and RStudio",
+    "section": "7. Troubleshooting (by symptom)",
+    "text": "7. Troubleshooting (by symptom)\n\nWindows\n\n\n\n\n\n\n\nProblem\nWhat to try\n\n\n\n\nRStudio “No R version available”\nInstall R first; then Tools → Global Options → R version\n\n\ninstall.packages “compilation failed” / g++ / make\nInstall Rtools matching your R version; restart RStudio; retry\n\n\nxgboost fails\nSkip for now (course can start without it); install Rtools; install.packages(\"xgboost\") later\n\n\nInstall blocked by antivirus\nTemporarily allow R/RStudio; or install on campus network\n\n\nPermission denied writing to library\nAvoid installing into a protected system folder; use default user library; do not need Admin for packages if R is installed normally\n\n\nPath with spaces / OneDrive\nWork in Documents\\mlba-f26; if OneDrive “Files On-Demand” causes knit errors, mark the folder Always keep on this device\n\n\nQuarto not recognized in terminal\nRestart PC after Quarto install; reinstall Quarto; confirm RStudio → Tools finds quarto\n\n\nPlots don’t show\nTools → Global Options → R Markdown → show output inline\n\n\n\n\n\nmacOS\n\n\n\n\n\n\n\nProblem\nWhat to try\n\n\n\n\nWrong chip installer (Intel vs Apple Silicon)\nReinstall R for your chip (About This Mac)\n\n\n“Developer tools” / command-line tools prompt\nInstall Xcode Command Line Tools when asked\n\n\nPackage binary unavailable\nUpdate R; retry; install CLT if compiling from source\n\n\nGatekeeper blocks RStudio\nSystem Settings → Privacy & Security → Open Anyway\n\n\n\n\n\nAll systems\n\n\n\n\n\n\n\nProblem\nWhat to try\n\n\n\n\nVery slow installs\nStay on campus Wi‑Fi; install core list first; retry failed packages one by one\n\n\nlibrary() errors after install\nSession → Restart R; then library(packageName)\n\n\nKnit fails “package X not found”\nInstall X; check you knit with the same R version as the console\n\n\nOut of disk space\nFree several GB; remove old package caches if needed\n\n\nCorporate / locked laptop\nContact IT for admin rights; use a personal machine if course work is blocked\n\n\n\n\n\nIf you are completely stuck\n\nScreenshot the full error (red text).\n\nNote: Windows or Mac, and R version (R.version.string).\n\nEmail me before the next lab.\n\nOn 26 August bring the laptop to class for a live fix if needed (that day is still a lecture, not a lab)."
+  },
+  {
+    "objectID": "setup/index.html#package-policy-for-the-semester",
+    "href": "setup/index.html#package-policy-for-the-semester",
+    "title": "Setup: R and RStudio",
+    "section": "8. Package policy for the semester",
+    "text": "8. Package policy for the semester\n\nCore packages above are assumed for homeworks and most labs.\n\nxgboost is recommended early but not a Week-1 blocker if install fails on Windows without Rtools.\n\nExtra packages for a specific week will be listed in that week’s notes and added here.\n\nIf a CRAN update breaks something mid-semester, tell me—we may pin versions."
+  },
+  {
+    "objectID": "setup/index.html#privacy-and-ai",
+    "href": "setup/index.html#privacy-and-ai",
+    "title": "Setup: R and RStudio",
+    "section": "9. Privacy and AI",
+    "text": "9. Privacy and AI\n\nCourse materials: this website.\n\nSubmissions and grades: Canvas only.\n\nYou may use generative AI to interpret install errors, but you must still run the verification yourself (see syllabus AI policy)."
+  },
+  {
+    "objectID": "setup/index.html#checklist-before-first-lab",
+    "href": "setup/index.html#checklist-before-first-lab",
+    "title": "Setup: R and RStudio",
+    "section": "10. Checklist before first lab",
+    "text": "10. Checklist before first lab\n\nAll students\n\nR installed (recent version)\n\nRStudio opens and shows R in the console\n\nQuarto installed and RStudio restarted (recommended)\n\nCore packages installed\n\nVerify script + smoke test succeed\n\nLaptop charged for class\n\n\n\nWindows extras\n\nRtools installed (strongly recommended)\n\nRStudio finds the correct R version\n\nCourse folder is local (not online-only cloud)\n\n\n\nmacOS extras\n\nR installer matches Apple Silicon vs Intel\n\nIf any required box is unchecked by 26 August, contact me that day so we can fix it before the first lab on 2 September."
+  },
+  {
+    "objectID": "project/index.html",
+    "href": "project/index.html",
+    "title": "Final project",
+    "section": "",
+    "text": "Individual R + decision story Live defense 20% of course grade\nIndividual applied project: a real business decision, appropriate methods in R, clear recommendation, and a live presentation with Q&A.\nThe project brief will be on this page on 28 October. Do not start a proposal before that. Nothing is posted yet."
+  },
+  {
+    "objectID": "project/index.html#milestones",
+    "href": "project/index.html#milestones",
+    "title": "Final project",
+    "section": "Milestones",
+    "text": "Milestones\n\n\n\n\n\n\n\n\n\nMilestone\nDate\nNotes\nStatus\n\n\n\n\nProject brief published\n28 Oct\nTracks / data / rules\nNot posted yet\n\n\nGraded checkpoint\n18 Nov\nSame day as the PCA lab. Criteria published with the brief\nNot posted yet\n\n\nPresentations\n30 Nov & 2 Dec\n~10–12 min + Q&A\nSlots after roster\n\n\n\nThe split of the project grade ships with the brief. The course grade for the project is 20%."
+  },
+  {
+    "objectID": "project/index.html#attendance-presentation-week",
+    "href": "project/index.html#attendance-presentation-week",
+    "title": "Final project",
+    "section": "Attendance (presentation week)",
+    "text": "Attendance (presentation week)\nAttendance is expected both days. Missing a presentation session carries a 15-point penalty on the presentation component of the project grade. Plan to attend both days, not only your own slot. The final wording of the penalty will be in the project guidelines.\nThe brief will say what data you may use, what you turn in at the checkpoint, and how the presentation is graded. See the syllabus and the schedule."
+  },
+  {
+    "objectID": "labs/index.html",
+    "href": "labs/index.html",
+    "title": "Labs",
+    "section": "",
+    "text": "Default: Wednesday lab Starter + thinking questions Bring laptop\nOn lab days, read the problem before you sit down. Bring a laptop to labs. On Wednesdays, laptops are required for R. You will get the problem before class and a starter notebook with parts already working. In the hour we work on approach, interpretation, figures, and what the results mean for the decision. The first lab is 2 September. The case and the data for Lab 1 are up. Starter code before class."
+  },
+  {
+    "objectID": "labs/index.html#pattern",
+    "href": "labs/index.html#pattern",
+    "title": "Labs",
+    "section": "Pattern",
+    "text": "Pattern\n\n\n\nPattern\nWhen\n\n\n\n\nDefault\nLab on Wednesday\n\n\nException\nMidterm week, 11 Nov (no class), presentation week\n\n\nMidterm week\nNo lab (Wed 7 Oct = midterm)\n\n\nPresentation week\nNo lab (30 Nov & 2 Dec)"
+  },
+  {
+    "objectID": "labs/index.html#lab-index",
+    "href": "labs/index.html#lab-index",
+    "title": "Labs",
+    "section": "Lab index",
+    "text": "Lab index\n\n\n\nLab\nMeeting\nFocus\nStatus\n\n\n\n\nL1 Regression\nWed 2 Sep\nLinear regression lab\nCase + data\n\n\nL2 Evaluation\nWed 9 Sep\nHonest evaluation · leakage habits\nNot posted yet\n\n\nL3 Regularization\nWed 23 Sep\nRidge/lasso in R\nNot posted yet\n\n\nL4 CV / selection\nWed 30 Sep\nCV · no leakage across folds\nNot posted yet\n\n\nL5 Logistic\nWed 21 Oct\nLogistic in R\nNot posted yet\n\n\nL6 Metrics / cutoffs\nWed 28 Oct\nROC, AUC, decision cutoffs\nNot posted yet\n\n\nL7 Trees\nWed 4 Nov\nTrees in R\nNot posted yet\n\n\n(ensembles studio)\nMon 9 Nov\nLive R with concepts (no Wed lab)\nNot posted yet\n\n\nL8 PCA\nWed 18 Nov\nPCA lab (locked)\nNot posted yet\n\n\nL9 Clustering + literacy\nWed 25 Nov\nClustering · short modern-AI talk\nNot posted yet\n\n\n\nSee Schedule for the full calendar."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "70-467 - Machine Learning for Business Analytics",
+    "section": "",
+    "text": "CMU-Q · Fall 2026 · 70-467\n\n\n\n\nInstructor: Andrés Castaño Zuluaga\n\n\nWelcome to 70-467 Machine Learning for Business Analytics!\n\n\nIn an era when AI can write code faster than most people, writing code is not the scarce skill. The bottleneck in productive analytics is understanding, verification, and judgment: knowing what to ask the tools to do, checking whether the answer is good enough to act on, and explaining both the recommendation and its limits. AI will not replace your job. Someone who can use it and is prepared to work those bottlenecks will.\nThis course prepares you for that. You cannot evaluate the tools, or incorporate them into how you work, until you understand the methods. That is what sharpens judgment and makes the communication defensible. We incentivize responsible use of AI: tools that augment you, not substitutes that replace the thinking. You will learn to turn data into decisions you can stand behind. Choose the method, check it carefully, and explain the recommendation and its limits. The emphasis is business judgment under real problems, not model fitting as an end in itself. We work in R, with real datasets.\n\n\nMon & Wed · 2:30–3:45 PM · CMB 1190 Concepts + R labs"
+  },
+  {
+    "objectID": "index.html#methods-you-will-see-and-use",
+    "href": "index.html#methods-you-will-see-and-use",
+    "title": "70-467 - Machine Learning for Business Analytics",
+    "section": "Methods you will see and use",
+    "text": "Methods you will see and use\nWe move from simple, interpretable models to richer tools, always starting from a business problem and emphasizing business understanding, method feasibility and limitations, and judgement in decision-making.\n\n  \n    \n    Linear regression\n    Quantitative outcomes; the workhorse we start with\n  \n  \n    \n    Logistic regression\n    Classification when the outcome is a category\n  \n  \n    \n    Trees and ensembles\n    CART, random forests, boosting\n  \n  \n    \n    PCA\n    Reducing dimensions when you have many variables\n  \n  \n    \n    Clustering\n    Grouping without a pre-labeled outcome\n  \n  \n    \n    Neural nets\n    A short look, late in the term, if time allows\n  \n\nFull week-by-week plan: Schedule."
+  },
+  {
+    "objectID": "index.html#how-we-work",
+    "href": "index.html#how-we-work",
+    "title": "70-467 - Machine Learning for Business Analytics",
+    "section": "How we work",
+    "text": "How we work\nA simple weekly rhythm so you always know how to prepare.\n\n  \n    \n      \n    \n    01 · Before class\n    Lecture notes\n    Read the assigned textbook sections and, when assigned, run the Quarto notes. Those notes are in Quarto, so complete the setup instructions early. You need a working machine for the week to week flow of the course.\n  \n  \n    \n      \n    \n    02 · Monday\n    Concepts & decisions\n     Mondays are for understanding the method, always starting from a business problem. You prepare a short introduction to that method and present it. I then take over and finish the lecture. The presentation schedule comes in week two, once enrollment is set.\n  \n  \n    \n      \n    \n    03 · Wednesday\n    R lab\n    Wednesdays are labs, and we start from a problem, not from the code. The problem is posted before class. Come prepared. In class we work through guided notebooks: some of the code is already there, you complete the TODOs, we run it, and we interpret the output together. Then we argue the merits of the analysis and how to make it stronger.\n  \n  \n    \n      \n    \n    04 · Outside class\n    Build and defend\n    For homework you get real data, a problem, and starter code. You turn in a notebook, at most six slides, and a video of at most five minutes — same story in all three. The project is individual and ends with an in-class presentation; details are in the syllabus."
+  },
+  {
+    "objectID": "index.html#learn-deliver",
+    "href": "index.html#learn-deliver",
+    "title": "70-467 - Machine Learning for Business Analytics",
+    "section": "Learn & deliver",
+    "text": "Learn & deliver\nMaterials you will use throughout the term (orient yourself with Start here above).\n\n  Lecture NotesPrepare before every class\n  LabsIn-class R notebooks\n  HomeworkSpecs and expectations\n  Final ProjectCheckpoint and presentations"
+  },
+  {
+    "objectID": "hw/index.html",
+    "href": "hw/index.html",
+    "title": "Homework",
+    "section": "",
+    "text": "Individual R notebook At most six slides ≤ 5 min video Submit on Canvas\nEvery homework is individual. You submit three pieces on Canvas: a runnable R notebook, at most six slides, and a video of at most five minutes. The slides and the video should tell the same story as the notebook: the problem, the evidence, the decision, and the limit.\nNothing is posted yet. I will put each homework here before you need it. Dates are on the schedule."
+  },
+  {
+    "objectID": "hw/index.html#package-every-hw",
+    "href": "hw/index.html#package-every-hw",
+    "title": "Homework",
+    "section": "Package (every HW)",
+    "text": "Package (every HW)\n\nR notebook — analysis must run\n\nAt most six slides — the problem, the evidence, the decision, and the limit\n\n≤ 5:00 video — same story; simple recording is fine\n\nSubmit on Canvas only (not this site)."
+  },
+  {
+    "objectID": "hw/index.html#schedule",
+    "href": "hw/index.html#schedule",
+    "title": "Homework",
+    "section": "Schedule",
+    "text": "Schedule\n\n\n\nHW\nReleased\nDeadline\nStatus\n\n\n\n\nHW1\n2 Sep\n9 Sep\nNot posted yet\n\n\nHW2\n21 Sep\n28 Sep\nNot posted yet\n\n\nHW3\n21 Oct\n28 Oct\nNot posted yet\n\n\nHW4\n2 Nov\n9 Nov\nNot posted yet\n\n\n\n\nNo HW dues midterm week (5–7 Oct). HW4 is due 9 Nov (ensembles studio day)—plan ahead.\n\nFull calendar: Schedule."
+  },
+  {
+    "objectID": "hw/index.html#ai",
+    "href": "hw/index.html#ai",
+    "title": "Homework",
+    "section": "AI",
+    "text": "AI\nAI is allowed on homework if you disclose it (Yellow level, when the assignment allows it). You must run the code and be able to explain the important parts of how you reached the decision. If you hide AI use, or you cannot explain the work in the video, or I suspect you used AI inappropriately, I will ask you to present in person. Depending on how you handle the questions in person, the grade on that homework can go as low as 0, and you may be reported for an academic integrity violation. See Syllabus."
+  },
+  {
+    "objectID": "labs/Lab01-Regression/index.html",
+    "href": "labs/Lab01-Regression/index.html",
+    "title": "Lab 1: Asking prices for used Corollas",
+    "section": "",
+    "text": "Read the case before class, including the codebook on page 2. Download the data and look at it with the codebook open. Starter code goes up before class.\n\n\nCase + data Starter before class\n\n\nCase\nPDF · two pages (problem + codebook)\n\n\nData\ntoyota_corolla.csv · 1,436 used Corollas, asking prices in euros"
+  },
+  {
+    "objectID": "notes/index.html",
+    "href": "notes/index.html",
+    "title": "Lecture notes",
+    "section": "",
+    "text": "Before class: read & run Notes = durable book Slides PDF after class\nLecture notes are notebooks: the ideas, short problems, and R you can run. Slides are what we use in the room; notes are what you keep. I will put each week up as we go."
+  },
+  {
+    "objectID": "notes/index.html#how-to-use-notes",
+    "href": "notes/index.html#how-to-use-notes",
+    "title": "Lecture notes",
+    "section": "How to use notes",
+    "text": "How to use notes\n\n\n\nWhen\nWhat to do\n\n\n\n\nBefore class\nRead and run the assigned notes\n\n\nIn class\nKeep notes open as reference if useful\n\n\nAfter class\nRevisit for homework and exams"
+  },
+  {
+    "objectID": "notes/index.html#notes-index",
+    "href": "notes/index.html#notes-index",
+    "title": "Lecture notes",
+    "section": "Notes index",
+    "text": "Notes index\n\n\n\nWeek\nTopic (from schedule)\nStatus\nLink\n\n\n\n\n01\nLaunch + linear regression\nPosted\nWeek 1\n\n\n02\n(Lab week — see Labs; notes track evaluation path)\nNot yet built\n—\n\n\n03\nTrain/test & generalization · leakage primary\nNot yet built\n—\n\n\n04\nRegularization\nNot yet built\n—\n\n\n05\nCV & model selection · leakage reinforced\nNot yet built\n—\n\n\n06\nMidterm week (review + exam — no new notes package)\nReview sheet TBD\n—\n\n\n07\nLogistic regression\nNot yet built\n—\n\n\n08\nClassification metrics & decision cutoffs · prediction vs acting · leakage reminder\nNot yet built\n—\n\n\n09\nDecision trees\nNot yet built\n—\n\n\n10\nRandom forests & boosting\nNot yet built\n—\n\n\n11\nPCA\nNot yet built\n—\n\n\n12\nClustering · short modern-AI literacy\nNot yet built\n—\n\n\n13\nProject presentations\nn/a\n—\n\n\n\nFull meeting dates: Schedule."
+  },
+  {
+    "objectID": "schedule.html",
+    "href": "schedule.html",
+    "title": "Schedule",
+    "section": "",
+    "text": "Canonical student-facing calendar (source of truth for all dates). If this page disagrees with the syllabus, Canvas, or anything else, this page wins—then those places are updated to match."
+  },
+  {
+    "objectID": "schedule.html#quick-reference",
+    "href": "schedule.html#quick-reference",
+    "title": "Schedule",
+    "section": "Quick reference",
+    "text": "Quick reference\n\nHomeworks\n\n\n\n\n\n\n\n\n\nHW\nReleased\nDeadline\nFocus\n\n\n\n\nHW1\n2 Sep\n9 Sep\nRegression + metrics / basic evaluation\n\n\nHW2\n21 Sep\n28 Sep\nTrain/test + regularization\n\n\nHW3\n21 Oct\n28 Oct\nLogistic + classification metrics\n\n\nHW4\n2 Nov\n9 Nov\nTrees + boosting + PCA if needed\n\n\n\n\n\nQuizzes (paper, ~10–15 min)\n\n\n\nQuiz\nDate\n\n\n\n\nQ1\nMon 31 Aug\n\n\nQ2\nMon 21 Sep\n\n\nQ3\nWed 21 Oct\n\n\nQ4\nWed 25 Nov\n\n\n\n\n\nExam & project\n\n\n\n\n\n\n\nItem\nDate\n\n\n\n\nMidterm review\nMon 5 Oct\n\n\nMidterm\nWed 7 Oct (closed notes; weeks 1–5 only)\n\n\nProject brief published\nWed 28 Oct\n\n\nProject checkpoint\nWed 18 Nov (PCA lab day; criteria with brief)\n\n\nProject presentations\nMon 30 Nov & Wed 2 Dec\n\n\n\n\nNo homework/quiz/project dues: 5–7 Oct (midterm week)."
+  },
+  {
+    "objectID": "schedule.html#week-by-week",
+    "href": "schedule.html#week-by-week",
+    "title": "Schedule",
+    "section": "Week-by-week",
+    "text": "Week-by-week\n\nWeek 1 — Launch + linear regression\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 24 Aug\nConcepts\nIntroduction; AI and jobs; a first look at the 400-store file\n—\n\n\nWed 26 Aug\nConcepts + light R\nRegression metrics; interpretation; R ready\n—\n\n\n\n\n\nWeek 2 — Regression lab\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 31 Aug\nConcepts + quiz\nQuiz 1; continue linear regression\nQuiz 1\n\n\nWed 2 Sep\nLab\nLinear regression lab in R\nHW1 out\n\n\n\n\n\nWeek 3 — Train/test & generalization\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 7 Sep\nConcepts\nTrain/test; over/underfit; leakage (primary); pair talks resume\n—\n\n\nWed 9 Sep\nLab\nHonest evaluation in R (incl. leakage habits)\nHW1 due\n\n\n\n\nMon 14 Sep · No class\n\n\n\nWeek 4 — Regularization\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nWed 16 Sep\nConcepts\nRidge/lasso; complexity\n—\n\n\nMon 21 Sep\nConcepts\nShrinkage, λ, pitfalls; pair presentation\nQuiz 2 · HW2 out\n\n\nWed 23 Sep\nLab\nRidge/lasso in R\n—\n\n\n\n\n\nWeek 5 — Cross-validation & model selection\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 28 Sep\nConcepts\nk-fold CV; selection vs test; leakage reinforced; pair presentation\nHW2 due\n\n\nWed 30 Sep\nLab\nCV / selection in R (no leakage across folds)\n—\n\n\n\n\n\nWeek 6 — Midterm week (no other dues)\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 5 Oct\nReview\nWeeks 1–5; interpret→decide; logistics; Q&A\n—\n\n\nWed 7 Oct\nMIDTERM\nClosed notes, in class\nMidterm\n\n\n\n\n11–15 Oct · Fall break · No classes\n\n\n\nWeek 7 — Logistic regression\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 19 Oct\nConcepts\nLogistic; odds; classification decisions; pair presentation\n—\n\n\nWed 21 Oct\nLab\nLogistic in R\nQuiz 3 · HW3 out\n\n\n\n\n\nWeek 8 — Classification metrics & thresholds\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 26 Oct\nConcepts\nROC, AUC; cutoffs as decisions (costs of being wrong); prediction vs acting; leakage / decision-time reminder; pair presentation\n—\n\n\nWed 28 Oct\nLab\nMetrics / decision cutoffs in R\nHW3 due · Project brief\n\n\n\n\n\nWeek 9 — Decision trees\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 2 Nov\nConcepts\nTrees; pair presentation\nHW4 out\n\n\nWed 4 Nov\nLab\nTrees in R\n—\n\n\n\n\n\nWeek 10 — Random forests & boosting\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 9 Nov\nConcepts + studio\nForests + boosting; live R: start one ensemble (no Wed lab this week); pair presentation\nHW4 due\n\n\nWed 11 Nov\n—\nNo class\n—\n\n\n\n\n\nWeek 11 — PCA\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 16 Nov\nConcepts\nPCA for business / high-dim data\n—\n\n\nWed 18 Nov\nLab\nPCA lab in R\nProject checkpoint\n\n\n\n\n\nWeek 12 — Clustering + short modern-AI talk\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 23 Nov\nConcepts\nClustering / segmentation; pair presentation\n—\n\n\nWed 25 Nov\nLab + module\nClustering lab; short modern-AI talk (neural nets + chatbots — literacy only)\nQuiz 4\n\n\n\n\n\nWeek 13 — Project presentations\n\n\n\n\n\n\n\n\n\nDate\nType\nContent\nDue / out\n\n\n\n\nMon 30 Nov\nPresentations\nIndividual project presentations + Q&A\nProject\n\n\nWed 2 Dec\nPresentations\nRemaining presentations + Q&A\nProject\n\n\n\n\nAttendance expected both days (see syllabus for missed-session penalty on presentation grade)."
+  },
+  {
+    "objectID": "schedule.html#master-deadline-list",
+    "href": "schedule.html#master-deadline-list",
+    "title": "Schedule",
+    "section": "Master deadline list",
+    "text": "Master deadline list\n\n\n\nDate\nEvent\n\n\n\n\n31 Aug\nQuiz 1\n\n\n2 Sep\nHW1 released\n\n\n9 Sep\nHW1 deadline\n\n\n21 Sep\nQuiz 2 · HW2 released\n\n\n28 Sep\nHW2 deadline\n\n\n5 Oct\nMidterm review\n\n\n7 Oct\nMidterm\n\n\n21 Oct\nQuiz 3 · HW3 released\n\n\n28 Oct\nHW3 deadline · Project brief published\n\n\n2 Nov\nHW4 released\n\n\n9 Nov\nHW4 deadline\n\n\n18 Nov\nProject checkpoint (PCA lab day)\n\n\n25 Nov\nQuiz 4\n\n\n30 Nov–2 Dec\nProject presentations"
+  },
+  {
+    "objectID": "slides/index.html",
+    "href": "slides/index.html",
+    "title": "Slides",
+    "section": "",
+    "text": "I post the slides after class, not before. Open the HTML in Chrome — that is the same deck we used in the room. The PDF is for printing."
+  },
+  {
+    "objectID": "slides/index.html#week-1-launch-linear-regression",
+    "href": "slides/index.html#week-1-launch-linear-regression",
+    "title": "Slides",
+    "section": "Week 1 — Launch + linear regression",
+    "text": "Week 1 — Launch + linear regression\n\nMon 24 Aug · Introduction\nOpen in Chrome · PDF\n\n\nWed 26 Aug and Mon 31 Aug · Linear regression\nOpen in Chrome · PDF"
   }
 ]

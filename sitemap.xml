@@ -1,39 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://AndresCastanoZuluaga.github.io/mlba-fall-2026/schedule.html</loc>
-    <lastmod>2026-08-23T21:57:43.356Z</lastmod>
-  </url>
-  <url>
-    <loc>https://AndresCastanoZuluaga.github.io/mlba-fall-2026/notes/index.html</loc>
-    <lastmod>2026-08-23T21:53:00.543Z</lastmod>
-  </url>
-  <url>
-    <loc>https://AndresCastanoZuluaga.github.io/mlba-fall-2026/slides/index.html</loc>
-    <lastmod>2026-08-26T13:18:19.895Z</lastmod>
+    <loc>https://AndresCastanoZuluaga.github.io/mlba-fall-2026/syllabus.html</loc>
+    <lastmod>2026-08-23T21:36:54.082Z</lastmod>
   </url>
   <url>
     <loc>https://AndresCastanoZuluaga.github.io/mlba-fall-2026/setup/index.html</loc>
     <lastmod>2026-08-23T19:42:51.241Z</lastmod>
   </url>
   <url>
-    <loc>https://AndresCastanoZuluaga.github.io/mlba-fall-2026/labs/index.html</loc>
+    <loc>https://AndresCastanoZuluaga.github.io/mlba-fall-2026/project/index.html</loc>
     <lastmod>2026-08-23T21:54:18.963Z</lastmod>
   </url>
   <url>
-    <loc>https://AndresCastanoZuluaga.github.io/mlba-fall-2026/hw/index.html</loc>
-    <lastmod>2026-08-23T21:54:18.961Z</lastmod>
+    <loc>https://AndresCastanoZuluaga.github.io/mlba-fall-2026/labs/index.html</loc>
+    <lastmod>2026-09-02T05:21:40.020Z</lastmod>
   </url>
   <url>
     <loc>https://AndresCastanoZuluaga.github.io/mlba-fall-2026/index.html</loc>
     <lastmod>2026-08-23T22:34:42.792Z</lastmod>
   </url>
   <url>
-    <loc>https://AndresCastanoZuluaga.github.io/mlba-fall-2026/project/index.html</loc>
-    <lastmod>2026-08-23T21:54:18.963Z</lastmod>
+    <loc>https://AndresCastanoZuluaga.github.io/mlba-fall-2026/hw/index.html</loc>
+    <lastmod>2026-08-23T21:54:18.961Z</lastmod>
   </url>
   <url>
-    <loc>https://AndresCastanoZuluaga.github.io/mlba-fall-2026/syllabus.html</loc>
-    <lastmod>2026-08-23T21:36:54.082Z</lastmod>
+    <loc>https://AndresCastanoZuluaga.github.io/mlba-fall-2026/labs/Lab01-Regression/index.html</loc>
+    <lastmod>2026-09-02T05:21:40.006Z</lastmod>
+  </url>
+  <url>
+    <loc>https://AndresCastanoZuluaga.github.io/mlba-fall-2026/notes/index.html</loc>
+    <lastmod>2026-08-27T10:08:43.435Z</lastmod>
+  </url>
+  <url>
+    <loc>https://AndresCastanoZuluaga.github.io/mlba-fall-2026/schedule.html</loc>
+    <lastmod>2026-08-23T21:57:43.356Z</lastmod>
+  </url>
+  <url>
+    <loc>https://AndresCastanoZuluaga.github.io/mlba-fall-2026/slides/index.html</loc>
+    <lastmod>2026-09-01T15:38:28.014Z</lastmod>
   </url>
 </urlset>
