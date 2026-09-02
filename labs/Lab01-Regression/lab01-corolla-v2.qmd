@@ -1,0 +1,738 @@
+---
+title: "Lab 1: Linear Regression: Predicting asking prices for used Corollas"
+subtitle: "70-467 · Wednesday 2 September"
+author: "Andrés Castaño Zuluaga"
+date: last-modified
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    embed-resources: true
+    code-fold: false
+    theme: cosmo
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+Read the case first, including the codebook. You will use 1,436 listings as comparables to set an asking price for a car with a given spec, and to say how wide the band is for that one car.
+
+In the room we get through In class. Most chunks already run. Where the notebook says Interpret, the reading of the output is written for you. A few items are marked Your turn: those are for discussion.
+
+After class is the rest of the notebook. The code is already typed.
+
+```{r}
+#| label: setup
+options(scipen = 999)
+library(readr)
+library(dplyr)
+library(ggplot2)
+
+theme_lab <- function() {
+  theme_minimal(base_size = 13) +
+    theme(
+      panel.grid.minor = element_blank(),
+      plot.title = element_text(face = "bold", size = 14),
+      legend.position = "top"
+    )
+}
+col_ink <- "#182C4B"
+col_red <- "#C41230"
+```
+
+# Business problem
+
+The file is 1,436 asking prices, in euros, for used Toyota Corollas on sale in the Netherlands in late summer 2004. Each listing has age, kilometres, fuel, engine, and options. The case asks you to set an asking price for a car with a known spec, using those listings as comparables.
+
+Car A is already listed (row 1: diesel TERRA, 23 months, 46,986 km, no automatic climate control, 13,500 euros). 
+
+Car B is not in the file (petrol, 36 months, 60,000 km, automatic climate control). The coefficients along the way tell you which specs move euros enough that leaving them out would change the posted price.
+
+The file does not contain cost, or how demand would change if the ask moved. These are associations among 2004 asking prices.
+
+# Description of the variables
+
+The codebook is page 2 of the case. Type, unit, and description are there for all 39 columns. Dummy means 0 = no and 1 = yes. Price is in euros. Age is in months as of August 2004. KM is in kilometres. Automatic climate control is `Automatic_airco`.
+
+Sections 1 to 6 fit age, kilometres, and climate on the comparables. Section 7 prices Car A and Car B. Section 8 checks the listings already in the file. After class adds fuel, a curve in age, interactions, and residual plots that speak to the width of the band.
+
+# In class (~75 minutes)
+
+## 1. The comparables
+
+```{r}
+#| label: load
+# Why? Confirm the file reads, and that names match the codebook.
+cars <- read_csv("data/toyota_corolla.csv", show_col_types = FALSE)
+
+# Fuel has three levels. Put Petrol first so it is the baseline when lm()
+# builds dummy variables. Why? Alphabetical order would make CNG the baseline
+# (17 cars). That intercept would be hard to interpret.
+cars$Fuel_Type <- factor(cars$Fuel_Type, levels = c("Petrol", "Diesel", "CNG"))
+cars$climate <- factor(cars$Automatic_airco, labels = c("No automatic climate", "Automatic climate"))
+
+nrow(cars)
+head(cars[, c("Id", "Price", "Age_08_04", "KM", "Fuel_Type", "Automatic_airco")], 5)
+
+# One row has CC = 16000. That is a 1.6 litre typed with an extra zero.
+cars[cars$CC == 16000, c("Id", "Model", "CC", "HP", "Price")]
+```
+
+```{r}
+#| label: price-hist
+#| fig-height: 4.2
+#| fig-width: 7.4
+# Why a picture of Y first? A coefficient is euros. You need a sense of
+# a typical ask before you judge whether a gap is large enough to change a post.
+ggplot(cars, aes(Price)) +
+  geom_histogram(bins = 35, fill = col_ink, color = "white") +
+  geom_vline(xintercept = mean(cars$Price), color = col_red, linewidth = 0.9) +
+  labs(x = "Asking price (euros)", y = "Number of cars") +
+  theme_lab()
+```
+
+Interpret. $Y$ is `Price`, the asking price, in euros. The red line is the mean, about 10,730 euros. Most listings sit between about 7,000 and 14,000. Automatic climate control is on 81 cars. CNG is 17 cars. A dummy on 81 cars can be estimated; a dummy on 17 cars will be noisy. Car A is already in `head()`: row 1, 13,500 euros.
+
+## 2. Pictures before coefficients
+
+The case mentioned age and equipment as common rules of thumb. Both pictures below are raw associations. The stacked bars show why the climate boxplot is not yet a posting rule: automatic climate control sits on young cars.
+
+```{r}
+#| label: scatter-age
+#| fig-height: 4.6
+#| fig-width: 7.6
+ggplot(cars, aes(Age_08_04, Price)) +
+  geom_point(alpha = 0.28, size = 1.15, color = col_ink) +
+  geom_smooth(method = "lm", se = FALSE, color = col_red, linewidth = 1.05) +
+  labs(x = "Age (months as of August 2004)", y = "Asking price (euros)") +
+  theme_lab()
+```
+
+```{r}
+#| label: box-climate
+#| fig-height: 4.6
+#| fig-width: 7.2
+ggplot(cars, aes(climate, Price)) +
+  geom_boxplot(fill = col_ink, alpha = 0.12, outlier.alpha = 0.35, width = 0.55) +
+  labs(x = NULL, y = "Asking price (euros)") +
+  theme_lab()
+```
+
+```{r}
+#| label: climate-by-age
+#| fig-height: 4.6
+#| fig-width: 7.6
+cars$age_band <- cut(
+  cars$Age_08_04,
+  breaks = c(0, 24, 48, 80),
+  labels = c("0 to 24 months", "25 to 48 months", "49 to 80 months"),
+  include.lowest = TRUE
+)
+ggplot(cars, aes(age_band, fill = climate)) +
+  geom_bar(position = "fill", width = 0.7) +
+  scale_y_continuous(labels = function(p) paste0(100 * p, "%")) +
+  scale_fill_manual(values = c("No automatic climate" = col_ink, "Automatic climate" = col_red)) +
+  labs(x = "Age of the car", y = "Share of cars", fill = NULL) +
+  theme_lab()
+```
+
+Interpret. Asking price falls with age. Cars with automatic climate control list much higher. The stacked bars show why: in the first two years, a large share have climate control; after four years, almost none do. A raw climate gap mixes equipment with age. If you posted from that boxplot, you would be mixing car's age with car's climate control. 
+
+## 3. The effect of Age on asking price?
+
+Simple linear regression: euros of asking price per extra month of age. Why age first? 
+
+```{r}
+#| label: lm-age
+# Price = β0 + β1 Age_08_04 + ε
+m_age <- lm(Price ~ Age_08_04, data = cars)
+summary(m_age)
+```
+
+Interpretation: 
+- The slope is about −171 euros per extra month of age. Twelve months is about −2,050 euros, roughly 19% of the mean ask. 
+- $R^2$ is about 0.77: age alone accounts for a large share of variation in asking prices. 
+
+- Business implication. An age-only rule would knock about 2,050 euros off a car that is one year older. That is large next to a typical ask. However, The slope is no accounting for the effect of kilometres and equipment into age. The next two sections take those out.
+
+## 4. Does including KMs change the implications of the first model? 
+
+Age and kilometres move together. If you only put age in, part of what looks like age is really kilometres. Multiple regression isolates each one. For posting, two cars of the same age may no be comparable if the odometers (KMs) differ.
+
+```{r}
+#| label: lm-age-km
+m_km <- lm(Price ~ Age_08_04 + KM, data = cars)
+summary(m_km)
+anova(m_age, m_km)
+```
+
+Interpretation: 
+- The age slope moves from about −171 to about −154 euros per month once kilometres are in. Why? 
+
+- Holding age fixed, 10,000 extra kilometres are associated with about −165 euros in this two-variable fit (multiply the KM coefficient by 10,000). The nested $F$ is large: kilometres belong once age is already in.
+
+- Business implication. A posting rule that ignores the odometer will overstate the age penalty and miss a smaller kilometre penalty. For Car B (60,000 km) that gap is small next to a year of age, and it is not zero.
+
+## 5. What's the role of automatic climate control?
+
+A dummy is a 0/1 column. The case treats well-equipped cars as a possible different product. A $t$-test of mean asking price with and without climate is the same idea as a regression on the dummy alone. That raw gap still mixes climate with age.
+
+```{r}
+#| label: ttest-climate
+t.test(Price ~ climate, data = cars)
+m_ac_only <- lm(Price ~ Automatic_airco, data = cars)
+summary(m_ac_only)
+```
+
+Interpret. The raw gap is about 9,200 euros. The coefficient in `m_ac_only` matches the difference of means. Given the stacked bars, that is climate plus the effect of car age. 
+
+Now put climate next to age and kilometres. That is the posting-relevant gap: same age, same kilometres, climate versus not.
+
+```{r}
+#| label: lm-climate
+m_ac <- lm(Price ~ Age_08_04 + KM + Automatic_airco, data = cars)
+summary(m_ac)
+```
+
+```{r}
+#| label: climate-lines
+#| fig-height: 4.8
+#| fig-width: 7.6
+grid_ac <- expand.grid(
+  Age_08_04 = seq(min(cars$Age_08_04), max(cars$Age_08_04), length.out = 80),
+  KM = mean(cars$KM),
+  Automatic_airco = c(0, 1)
+)
+grid_ac$fit <- predict(m_ac, newdata = grid_ac)
+grid_ac$climate <- ifelse(grid_ac$Automatic_airco == 1, "Automatic climate", "No automatic climate")
+ggplot(grid_ac, aes(Age_08_04, fit, color = climate)) +
+  geom_line(linewidth = 1.2) +
+  scale_color_manual(values = c("No automatic climate" = col_ink, "Automatic climate" = col_red)) +
+  labs(
+    x = "Age (months as of August 2004)",
+    y = "Fitted asking price (euros)",
+    color = NULL
+  ) +
+  theme_lab()
+```
+
+Interpretation: 
+
+- Holding age and kilometres fixed, automatic climate control is associated with about +4,000 euros. 
+
+- The effect of age also changes, to about −135 euros per month, because climate was sitting on young cars. 
+
+- $R^2$ is about 0.84. 
+
+- Residual standard error is about 1,440 euros: even with age, kilometres, and climate, a typical listing still misses the fitted value by about that much. The two lines are parallel: same age slope, different intercepts. The vertical gap is the dummy.
+
+- Business implication. For Car B, which has climate control, leaving this dummy out will understate the ask by about 4,000 euros. That is larger than a year of age. However, The file does not contain the cost of fitting climate control, and cars with it are better equipped in other ways too. The 4,000 euros is a tag on a posted price, not the effect of installing the option.
+
+Student exercise. Add ordinary `Airco` next to `Automatic_airco`. After you run it: does the automatic-climate coefficient stay near 4,000 euros, or does ordinary A/C steal some of that gap?
+
+```{r}
+#| label: both-ac
+m_both_ac <- lm(Price ~ Age_08_04 + KM + Automatic_airco + Airco, data = cars)
+summary(m_both_ac)
+```
+
+## 6. Large enough to change the post? Statistical vs economic content
+
+Compare moves you would discuss when setting an ask to residual standard error (the typical miss, in euros). 
+
+Each bar is a change in asking price from `m_ac`, holding the other included variables fixed. The dashed lines are plus and minus one residual standard error.
+
+```{r}
+#| label: size-plot
+#| fig-height: 4.4
+#| fig-width: 7.8
+size_df <- data.frame(
+  item = c(
+    "Twelve months of age",
+    "10,000 extra km",
+    "Automatic climate control"
+  ),
+  euros = c(
+    12 * coef(m_ac)["Age_08_04"],
+    10000 * coef(m_ac)["KM"],
+    coef(m_ac)["Automatic_airco"]
+  )
+)
+size_df$item <- factor(size_df$item, levels = rev(size_df$item))
+ggplot(size_df, aes(euros, item)) +
+  geom_vline(xintercept = 0, color = "#6D6E71", linewidth = 0.4) +
+  geom_vline(xintercept = c(-sigma(m_ac), sigma(m_ac)), color = col_red, linetype = "dashed", linewidth = 0.6) +
+  geom_col(fill = col_ink, width = 0.65) +
+  labs(x = "Associated change in asking price (euros)", y = NULL) +
+  theme_lab()
+```
+
+Interpretation: 
+
+- mClimate is the large bar, about +4,000 euros, well beyond residual standard error. 
+
+- A year of age is about −1,600 euros, also large next to the dashed line. 10,000 km is about −150 euros, small next to residual standard error. 
+
+- Two cars with the same age, kilometres, and climate can still be posted about 1,440 euros apart in a typical miss.
+
+- Business implication. If you are building a guess for the posted price, you cannot drop climate or age. Kilometres belong statistically, and they do not move the post by much.
+
+In what other way would you do this? that uses other elements of the distribution of the outcome variable? List the your thinking a try to execute it. Here you would do this on your own. 
+
+## 7. Post Car A and Car B
+
+`m_ac` is the comparable model we will use in the room: age, kilometres, climate. `predict()` turns a spec into the prediction for an asking price given a set of features.
+
+Tow different types: 
+
+- A confidence interval is for the mean ask of cars with this mix. 
+
+- A prediction interval is for this one car. 
+
+Which one do you think should be wider? 
+
+Both are center at the same value. The prediction interval is wider because this car still has a residual. For one car you are pricing, use the prediction interval.
+
+### Car A (already listed)
+
+```{r}
+#| label: car-a
+cars[1, c("Id", "Price", "Age_08_04", "KM", "Fuel_Type", "Automatic_airco", "Model")]
+predict(m_ac, newdata = cars[1, ], interval = "confidence")
+predict(m_ac, newdata = cars[1, ], interval = "prediction")
+```
+
+```{r}
+#| label: car-a-bands
+#| fig-height: 3.8
+#| fig-width: 7.8
+ci1 <- predict(m_ac, newdata = cars[1, ], interval = "confidence")
+pi1 <- predict(m_ac, newdata = cars[1, ], interval = "prediction")
+bands <- data.frame(
+  kind = factor(
+    c("95% prediction interval (this car)", "95% confidence interval (mean)"),
+    levels = c("95% prediction interval (this car)", "95% confidence interval (mean)")
+  ),
+  lwr = c(pi1[1, "lwr"], ci1[1, "lwr"]),
+  upr = c(pi1[1, "upr"], ci1[1, "upr"]),
+  fit = c(pi1[1, "fit"], ci1[1, "fit"])
+)
+ggplot(bands, aes(y = kind)) +
+  geom_segment(aes(x = lwr, xend = upr, yend = kind), linewidth = 3.2, color = col_ink, lineend = "butt") +
+  geom_point(aes(x = fit), size = 3.2, color = col_ink) +
+  geom_point(aes(x = cars$Price[1], y = "95% prediction interval (this car)"), size = 3.4, color = col_red) +
+  labs(x = "Euros", y = NULL) +
+  theme_lab()
+```
+
+Interpretation:  
+
+- Predicted asking price is about 15,260 euros. 
+
+- The confidence interval is tight (about 15,090 to 15,430). Why? we know the mean of cars with this mix fairly well. 
+
+- The prediction interval is wide (about 12,430 to 18,090): one car still has a residual of about 1,440 euros. 
+
+- The red dot is the listed 13,500. It sits below the predicted value and inside the prediction interval. `m_ac` does not include fuel. After class in the code below, you will put fuel in the model and this may have implications for the the predictions above.
+
+- Business implication. If you used this model to check the listing, you would not call 13,500 impossible. You would say it is a low ask relative to comparable age, kilometres, and climate in this file, but still inside the band for one car.
+
+### Car B (not in the file)
+
+```{r}
+#| label: car-b
+incoming <- data.frame(
+  Age_08_04 = 36,
+  KM = 60000,
+  Automatic_airco = 1,
+  Fuel_Type = factor("Petrol", levels = levels(cars$Fuel_Type))
+)
+incoming
+predict(m_ac, newdata = incoming, interval = "confidence")
+predict(m_ac, newdata = incoming, interval = "prediction")
+```
+
+```{r}
+#| label: car-b-bands
+#| fig-height: 3.8
+#| fig-width: 7.8
+ci_b <- predict(m_ac, newdata = incoming, interval = "confidence")
+pi_b <- predict(m_ac, newdata = incoming, interval = "prediction")
+bands_b <- data.frame(
+  kind = factor(
+    c("95% prediction interval (Car B)", "95% confidence interval (mean)"),
+    levels = c("95% prediction interval (Car B)", "95% confidence interval (mean)")
+  ),
+  lwr = c(pi_b[1, "lwr"], ci_b[1, "lwr"]),
+  upr = c(pi_b[1, "upr"], ci_b[1, "upr"]),
+  fit = c(pi_b[1, "fit"], ci_b[1, "fit"])
+)
+ggplot(bands_b, aes(y = kind)) +
+  geom_segment(aes(x = lwr, xend = upr, yend = kind), linewidth = 3.2, color = col_ink, lineend = "butt") +
+  geom_point(aes(x = fit), size = 3.2, color = col_ink) +
+  labs(x = "Euros", y = NULL) +
+  theme_lab()
+```
+
+Interpretations: 
+
+- There is no red listed price. Fitted asking price is about 17,310 euros. The confidence interval is about 16,990 to 17,630. 
+
+- The prediction interval is about 14,470 to 20,150. Climate control is doing a lot of work in that fitted value. After class you can drop climate and see the guess fall by about 4,000 euros.
+
+- Your turn (discussion). For Car B, would you post the fitted 17,310, a round number near it (17,000 or 17,500), or something else inside the prediction interval? Give one reason. The fitted value is a guess from 2004 comparables. 
+
+## 8. How well do the guesses track the listings we already have?
+
+```{r}
+#| label: fitted-vs-listed
+#| fig-height: 5.0
+#| fig-width: 7.6
+fit_df <- data.frame(listed = cars$Price, fitted = fitted(m_ac))
+ggplot(fit_df, aes(fitted, listed)) +
+  geom_point(alpha = 0.28, size = 1.15, color = col_ink) +
+  geom_abline(slope = 1, intercept = 0, color = col_red, linewidth = 0.9) +
+  geom_point(data = data.frame(fitted = fitted(m_ac)[1], listed = cars$Price[1]),
+             aes(fitted, listed), color = col_red, size = 3.2) +
+  labs(x = "Fitted asking price (euros)", y = "Listed asking price (euros)") +
+  theme_lab()
+```
+
+Interpretation: 
+
+- The red line is listed price = prediction price. Points near the line are listings close to the model's guess. The red point is Car A: listed below fitted, as in the band plot. Scatter around the line is the residual of about 1,440 euros. 
+
+- This picture uses the same 1,436 cars you predicted, so it looks more optimistic than a guess for a car you have not seen (Car B). Next week we evaluate a guess on cars that were not used to fit. 
+
+# After class
+
+The chunks below already run. They will help you to explore other interesting topics in regression:  
+
+- The effect of adding fuel 
+- Whether the relationship between asking price and age is non-linear
+- Whether the effect of age is conditioned on another variable (fuel)
+- Does our model meet the regression assumptions? 
+
+## A. Fuel: three levels, two dummies
+
+How  can we introduce the effect of fuel type and how does it change our results? What's the baseline category? 
+
+```{r}
+#| label: lm-fuel
+m_fuel <- lm(Price ~ Age_08_04 + KM + Automatic_airco + Fuel_Type, data = cars)
+summary(m_fuel)
+anova(m_ac, m_fuel)
+```
+
+```{r}
+#| label: fuel-lines
+#| fig-height: 4.8
+#| fig-width: 7.6
+grid_f <- expand.grid(
+  Age_08_04 = seq(min(cars$Age_08_04), max(cars$Age_08_04), length.out = 80),
+  KM = mean(cars$KM),
+  Automatic_airco = 0,
+  Fuel_Type = factor(c("Petrol", "Diesel", "CNG"), levels = levels(cars$Fuel_Type))
+)
+grid_f$fit <- predict(m_fuel, newdata = grid_f)
+ggplot(grid_f, aes(Age_08_04, fit, color = Fuel_Type, linetype = Fuel_Type)) +
+  geom_line(linewidth = 1.15) +
+  scale_color_manual(values = c(Petrol = col_ink, Diesel = col_red, CNG = "#6D6E71")) +
+  labs(
+    x = "Age (months as of August 2004)",
+    y = "Fitted asking price (euros)",
+    color = NULL, linetype = NULL
+  ) +
+  theme_lab()
+```
+
+Interpretation:  
+
+- Holding age, kilometres, and climate fixed, diesel is associated with a higher ask than petrol (read `Fuel_TypeDiesel`). 
+
+Now re-predict Car A and Car B with fuel in.
+
+```{r}
+#| label: predict-with-fuel
+predict(m_fuel, newdata = cars[1, ], interval = "prediction")
+predict(m_fuel, newdata = incoming, interval = "prediction")
+```
+What do you see?
+
+Interpretation: 
+
+- Car A (diesel) gets a higher predicted asking price once fuel is in.
+
+- Car B is petrol, so its predicted asking price moves little. Climate still dominates the posting difference between the two cars.
+
+## B. Is a straight line in age enough?
+
+Young cars and old cars may not lose euros at the same monthly rate. A single age slope is then an average that no car actually has. Car B is 36 months, in the middle of the age range. Car A is 23 months, younger.
+
+```{r}
+#| label: age-sq
+# I(Age_08_04^2) is age squared. The I() is required; otherwise ^ is formula
+# syntax for interactions, not arithmetic.
+m_quad <- lm(Price ~ Age_08_04 + I(Age_08_04^2) + KM + Automatic_airco, data = cars)
+summary(m_quad)
+anova(m_ac, m_quad)
+```
+
+```{r}
+#| label: age-sq-plot
+#| fig-height: 4.8
+#| fig-width: 7.6
+curve_grid <- data.frame(
+  Age_08_04 = seq(min(cars$Age_08_04), max(cars$Age_08_04), length.out = 80),
+  KM = mean(cars$KM),
+  Automatic_airco = 0
+)
+curve_long <- rbind(
+  data.frame(Age_08_04 = curve_grid$Age_08_04,
+             fit = predict(m_ac, newdata = curve_grid),
+             which = "Straight line"),
+  data.frame(Age_08_04 = curve_grid$Age_08_04,
+             fit = predict(m_quad, newdata = curve_grid),
+             which = "Quadratic in age")
+)
+ggplot(cars, aes(Age_08_04, Price)) +
+  geom_point(alpha = 0.18, size = 1.05, color = col_ink) +
+  geom_line(data = curve_long, aes(Age_08_04, fit, color = which), linewidth = 1.1) +
+  geom_vline(xintercept = c(23, 36), color = "#6D6E71", linetype = "dotted") +
+  scale_color_manual(values = c("Straight line" = "#6D6E71", "Quadratic in age" = col_red)) +
+  labs(x = "Age (months as of August 2004)", y = "Asking price (euros)", color = NULL) +
+  theme_lab()
+```
+
+Interpretation:
+
+- The nested $F$ is large, there is evidence that the relationship between asking price and age is non-linear. Including $age^{2}$ would provide better fit to the data. What are the implications for our predictions?
+
+- The dotted lines are Car A (23 months) and Car B (36 months). For posting a four-month-old Corolla you would rather use the quadratic. 
+
+## C. Does the age slope depend on fuel?
+
+So far the fuel dummy only shifts the intercept. An interaction lets the age slope differ by fuel.
+
+```{r}
+#| label: age-fuel
+m_axf <- lm(Price ~ Age_08_04 * Fuel_Type + KM, data = cars)
+summary(m_axf)
+```
+
+```{r}
+#| label: age-fuel-plot
+#| fig-height: 4.8
+#| fig-width: 7.6
+grid2 <- expand.grid(
+  Age_08_04 = seq(min(cars$Age_08_04), max(cars$Age_08_04), length.out = 80),
+  KM = mean(cars$KM),
+  Fuel_Type = factor(c("Petrol", "Diesel"), levels = levels(cars$Fuel_Type))
+)
+grid2$fit <- predict(m_axf, newdata = grid2)
+ggplot(grid2, aes(Age_08_04, fit, color = Fuel_Type)) +
+  geom_line(linewidth = 1.2) +
+  scale_color_manual(values = c(Petrol = col_ink, Diesel = col_red)) +
+  labs(x = "Age (months as of August 2004)", y = "Fitted asking price (euros)", color = NULL) +
+  theme_lab()
+```
+
+Interpretation: 
+
+- Petrol age slope: the `Age_08_04` coefficient. 
+
+- Diesel age slope: `Age_08_04` + `Age_08_04:Fuel_TypeDiesel`
+
+- Diesel is steeper (more negative) by about 50 euros per month. What does it mean for the effect of age on asking price by fuel type? 
+
+- A three-year-old diesel is not the same age gap as a three-year-old petrol. 
+
+## D. Does the age slope depend on kilometres?
+
+Age and kilometres are both continuous. Their product asks whether an extra month of age is associated with a smaller price gap when the car already has high kilometres.
+
+```{r}
+#| label: age-km
+m_axk <- lm(Price ~ Age_08_04 * KM + Fuel_Type, data = cars)
+summary(m_axk)
+km_lo <- as.numeric(quantile(cars$KM, 0.25))
+km_hi <- as.numeric(quantile(cars$KM, 0.75))
+b_age <- coef(m_axk)["Age_08_04"]
+b_int <- coef(m_axk)["Age_08_04:KM"]
+c(
+  age_slope_at_25th_km = unname(b_age + b_int * km_lo),
+  age_slope_at_75th_km = unname(b_age + b_int * km_hi)
+)
+```
+
+```{r}
+#| label: age-km-plot
+#| fig-height: 4.8
+#| fig-width: 7.6
+grid3 <- rbind(
+  data.frame(
+    Age_08_04 = seq(min(cars$Age_08_04), max(cars$Age_08_04), length.out = 80),
+    KM = km_lo,
+    Fuel_Type = factor("Petrol", levels = levels(cars$Fuel_Type)),
+    km_band = "KM at 25th percentile"
+  ),
+  data.frame(
+    Age_08_04 = seq(min(cars$Age_08_04), max(cars$Age_08_04), length.out = 80),
+    KM = km_hi,
+    Fuel_Type = factor("Petrol", levels = levels(cars$Fuel_Type)),
+    km_band = "KM at 75th percentile"
+  )
+)
+grid3$fit <- predict(m_axk, newdata = grid3)
+ggplot(grid3, aes(Age_08_04, fit, color = km_band)) +
+  geom_line(linewidth = 1.2) +
+  scale_color_manual(values = c("KM at 25th percentile" = col_ink, "KM at 75th percentile" = col_red)) +
+  labs(x = "Age (months as of August 2004)", y = "Fitted asking price (euros)", color = NULL) +
+  theme_lab()
+```
+
+Interpretation: 
+
+- Extra kilometers flatten the the effect of age on asking price. 
+
+- At the 25th percentile of KM the age penalty per month is steeper than at the 75th.
+
+- On a high-mile car, another month of age is associated with a smaller extra price gap.
+
+## E. Residuals and the width of the prediction interval
+
+The prediction intervals for Car A and Car B used one residual standard error for every car. These pictures ask whether that is reasonable.
+
+```{r}
+#| label: resid-fitted
+#| fig-height: 4.6
+#| fig-width: 7.6
+ggplot(data.frame(fit = fitted(m_ac), e = resid(m_ac)), aes(fit, e)) +
+  geom_hline(yintercept = 0, color = col_red, linewidth = 0.7) +
+  geom_point(alpha = 0.32, size = 1.15, color = col_ink) +
+  geom_smooth(se = FALSE, color = "#6D6E71", linewidth = 0.9) +
+  labs(x = "Fitted asking price (euros)", y = "Residual (euros)") +
+  theme_lab()
+```
+
+```{r}
+#| label: resid-hist
+#| fig-height: 4.2
+#| fig-width: 7.2
+ggplot(data.frame(e = resid(m_ac)), aes(e)) +
+  geom_histogram(bins = 35, fill = col_ink, color = "white") +
+  labs(x = "Residual (euros)", y = "Number of cars") +
+  theme_lab()
+```
+
+```{r}
+#| label: hetero
+#| fig-height: 4.6
+#| fig-width: 7.6
+ggplot(data.frame(fit = fitted(m_ac), ae = abs(resid(m_ac))), aes(fit, ae)) +
+  geom_point(alpha = 0.32, size = 1.15, color = col_ink) +
+  geom_smooth(se = FALSE, color = col_red, linewidth = 0.95) +
+  labs(x = "Fitted asking price (euros)", y = "Absolute residual (euros)") +
+  theme_lab()
+```
+
+Interpret. The histogram is the residual the prediction interval uses. If it is roughly mound-shaped, the usual interval is a usable sketch. If the fan plot rises, expensive cars miss by more. Car B's fitted value is on the high side of these listings (about 17,300 euros). If the fan is real, the usual prediction interval is too tight for that car.
+
+```{r}
+#| label: diagnostics
+#| fig-height: 7.2
+#| fig-width: 7.2
+# 1. Residuals vs Fitted: horizontal? Linearity.
+# 2. Normal Q-Q: residuals roughly normal (used for the PI).
+# 3. Scale-Location: constant residual variance.
+# 4. Residuals vs Leverage: points far right with large Cook's distance pull the fit.
+par(mfrow = c(2, 2))
+plot(m_ac)
+par(mfrow = c(1, 1))
+```
+
+## F. Drop climate and re-predict Car B
+
+The size plot said climate moves the posted price. Here is that claim as a prediction.
+
+```{r}
+#| label: drop-climate
+m_noc <- lm(Price ~ Age_08_04 + KM, data = cars)
+c(
+  with_climate    = unname(predict(m_ac, newdata = incoming)),
+  without_climate = unname(predict(m_noc, newdata = incoming)),
+  difference      = unname(predict(m_ac, newdata = incoming) - predict(m_noc, newdata = incoming))
+)
+```
+
+Interpretation:
+
+- Dropping climate knocks about 4,000 euros off the guess for Car B. 
+
+- That is how much the ask moves if you ignore the dummy the case treated as a different product.
+
+## G. Do not put age and year of manufacture in the same equation
+
+`Age_08_04` is age in months as of August 2004. `Mfg_Year` is the year the car was built. Those two are nearly the same series. Putting both in is collinearity: the model cannot tell them apart, and the coefficients become noisy for no gain in the guess.
+
+```{r}
+#| label: age-year
+#| fig-height: 4.6
+#| fig-width: 7.6
+ggplot(cars, aes(Mfg_Year, Age_08_04)) +
+  geom_jitter(width = 0.12, height = 0.35, alpha = 0.32, size = 1.15, color = col_ink) +
+  labs(x = "Year of manufacture", y = "Age (months as of August 2004)") +
+  theme_lab()
+cor(cars$Age_08_04, cars$Mfg_Year)
+```
+
+Student exercise. Fit `lm(Price ~ Age_08_04 + Mfg_Year + KM, data = cars)` and look at the age and year standard errors next to `m_km`. Keep age. Drop year.
+
+```{r}
+#| label: age-year-lm
+m_both <- lm(Price ~ Age_08_04 + Mfg_Year + KM, data = cars)
+summary(m_both)$coefficients[c("Age_08_04", "Mfg_Year"), ]
+summary(m_km)$coefficients["Age_08_04", , drop = FALSE]
+```
+What do you see? 
+
+
+## H. A coefficient that changes sign
+
+ABS looks like a plus if you only compare means. Once age, kilometres, and climate are in, the ABS coefficient is negative in this file. That is confounding. Do not tell a buyer that anti-lock brakes lower the asking price.
+
+```{r}
+#| label: abs-plot
+#| fig-height: 4.4
+#| fig-width: 7.2
+ggplot(cars, aes(factor(ABS, labels = c("No ABS", "ABS")), Price)) +
+  geom_boxplot(fill = col_ink, alpha = 0.12, outlier.alpha = 0.35, width = 0.55) +
+  labs(x = NULL, y = "Asking price (euros)") +
+  theme_lab()
+```
+
+```{r}
+#| label: abs-lm
+m_abs <- lm(Price ~ Age_08_04 + KM + Automatic_airco + ABS, data = cars)
+summary(m_abs)$coefficients["ABS", , drop = FALSE]
+```
+
+Your turn. Pick one other 0/1 column from the codebook (not climate, not ABS). Add it to `m_ac`. Read the coefficient in euros. Is it large next to residual standard error? Would you put it in a sentence when you defend the ask for Car B?
+
+## I. Which car pulls the fit?
+
+```{r}
+#| label: cooks
+#| fig-height: 4.4
+#| fig-width: 7.6
+cooks <- cooks.distance(m_ac)
+ggplot(data.frame(Id = cars$Id, cook = cooks), aes(Id, cook)) +
+  geom_point(alpha = 0.4, size = 1.2, color = col_ink) +
+  labs(x = "Id", y = "Cook's distance") +
+  theme_lab()
+
+cars[which.max(cooks), c("Id", "Model", "Price", "Age_08_04", "KM", "Fuel_Type", "Automatic_airco")]
+```
+
+Interpret. The standout row is a nearly new, high-price car (the Verso in this file). Optional: drop that row, refit `m_ac`, and re-predict Car B. If the guess for Car B barely moves, that one listing is not driving the posted price you would use.

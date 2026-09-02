@@ -305,7 +305,7 @@
     "href": "labs/Lab01-Regression/index.html",
     "title": "Lab 1: Linear Regression Application: Asking prices for used Corollas",
     "section": "",
-    "text": "Read the case before class, including the codebook on page 2. Download the data and look at it with the codebook open. Think about the problem discussed in the case and also about what other potential problems and uses of regression you see in that dataset.\n\n\nCase + data Starter before class\n\n\nCase\nPDF · (problem description + codebook)\n\n\nData\ntoyota_corolla.csv · 1,436 used Corollas, asking prices in euros"
+    "text": "Read the case before class, including the codebook on page 2. Download the data and look at it with the codebook open. Think about the problem discussed in the case and also about what other potential problems and uses of regression you see in that dataset.\n\n\nCase + data + starter\n\n\nCase\nPDF · (problem description + codebook)\n\n\nData\ntoyota_corolla.csv · 1,436 used Corollas, asking prices in euros\n\n\nStarter\nlab01-corolla-v2.qmd · zip (qmd + data folder)\nPut the csv in a folder named data next to the qmd (the zip already has that layout). Open the qmd in RStudio and Knit / Render."
   },
   {
     "objectID": "notes/index.html",
