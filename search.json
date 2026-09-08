@@ -228,7 +228,7 @@
     "href": "labs/index.html",
     "title": "Labs",
     "section": "",
-    "text": "Default: Wednesday lab Starter + thinking questions Bring laptop\nOn lab days, read the problem before you sit down. Bring a laptop to labs. On Wednesdays, laptops are required for R. You will get the problem before class and a starter notebook with parts already working. In the hour we work on approach, interpretation, figures, and what the results mean for the decision. The first lab is 2 September. The case and the data for Lab 1 are up. Starter code before class."
+    "text": "Default: Wednesday lab Starter + thinking questions Bring laptop\nOn lab days, read the problem before you sit down. Bring a laptop to labs. On Wednesdays, laptops are required for R. You will get the problem before class and a starter notebook with parts already working. In the hour we work on approach, interpretation, figures, and what the results mean for the decision. Lab 2 is 9 September. The case and the data are up. Starter code before class."
   },
   {
     "objectID": "labs/index.html#pattern",
@@ -242,42 +242,14 @@
     "href": "labs/index.html#lab-index",
     "title": "Labs",
     "section": "Lab index",
-    "text": "Lab index\n\n\n\nLab\nMeeting\nFocus\nStatus\n\n\n\n\nL1 Regression\nWed 2 Sep\nLinear regression lab\nCase + data\n\n\nL2 Evaluation\nWed 9 Sep\nHonest evaluation · leakage habits\nNot posted yet\n\n\nL3 Regularization\nWed 23 Sep\nRidge/lasso in R\nNot posted yet\n\n\nL4 CV / selection\nWed 30 Sep\nCV · no leakage across folds\nNot posted yet\n\n\nL5 Logistic\nWed 21 Oct\nLogistic in R\nNot posted yet\n\n\nL6 Metrics / cutoffs\nWed 28 Oct\nROC, AUC, decision cutoffs\nNot posted yet\n\n\nL7 Trees\nWed 4 Nov\nTrees in R\nNot posted yet\n\n\n(ensembles studio)\nMon 9 Nov\nLive R with concepts (no Wed lab)\nNot posted yet\n\n\nL8 PCA\nWed 18 Nov\nPCA lab (locked)\nNot posted yet\n\n\nL9 Clustering + literacy\nWed 25 Nov\nClustering · short modern-AI talk\nNot posted yet\n\n\n\nSee Schedule for the full calendar."
+    "text": "Lab index\n\n\n\nLab\nMeeting\nFocus\nStatus\n\n\n\n\nL1 Regression\nWed 2 Sep\nLinear regression lab\nCase + data\n\n\nL2 Evaluation\nWed 9 Sep\nHonest evaluation · leakage habits\nCase + data\n\n\nL3 Regularization\nWed 23 Sep\nRidge/lasso in R\nNot posted yet\n\n\nL4 CV / selection\nWed 30 Sep\nCV · no leakage across folds\nNot posted yet\n\n\nL5 Logistic\nWed 21 Oct\nLogistic in R\nNot posted yet\n\n\nL6 Metrics / cutoffs\nWed 28 Oct\nROC, AUC, decision cutoffs\nNot posted yet\n\n\nL7 Trees\nWed 4 Nov\nTrees in R\nNot posted yet\n\n\n(ensembles studio)\nMon 9 Nov\nLive R with concepts (no Wed lab)\nNot posted yet\n\n\nL8 PCA\nWed 18 Nov\nPCA lab (locked)\nNot posted yet\n\n\nL9 Clustering + literacy\nWed 25 Nov\nClustering · short modern-AI talk\nNot posted yet\n\n\n\nSee Schedule for the full calendar."
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "70-467 - Machine Learning for Business Analytics",
+    "objectID": "labs/Lab01-Regression/index.html",
+    "href": "labs/Lab01-Regression/index.html",
+    "title": "Lab 1: Linear Regression Application: Asking prices for used Corollas",
     "section": "",
-    "text": "CMU-Q · Fall 2026 · 70-467\n\n\n\n\nInstructor: Andrés Castaño Zuluaga\n\n\nWelcome to 70-467 Machine Learning for Business Analytics!\n\n\nIn an era when AI can write code faster than most people, writing code is not the scarce skill. The bottleneck in productive analytics is understanding, verification, and judgment: knowing what to ask the tools to do, checking whether the answer is good enough to act on, and explaining both the recommendation and its limits. AI will not replace your job. Someone who can use it and is prepared to work those bottlenecks will.\nThis course prepares you for that. You cannot evaluate the tools, or incorporate them into how you work, until you understand the methods. That is what sharpens judgment and makes the communication defensible. We incentivize responsible use of AI: tools that augment you, not substitutes that replace the thinking. You will learn to turn data into decisions you can stand behind. Choose the method, check it carefully, and explain the recommendation and its limits. The emphasis is business judgment under real problems, not model fitting as an end in itself. We work in R, with real datasets.\n\n\nMon & Wed · 2:30–3:45 PM · CMB 1190 Concepts + R labs"
-  },
-  {
-    "objectID": "index.html#methods-you-will-see-and-use",
-    "href": "index.html#methods-you-will-see-and-use",
-    "title": "70-467 - Machine Learning for Business Analytics",
-    "section": "Methods you will see and use",
-    "text": "Methods you will see and use\nWe move from simple, interpretable models to richer tools, always starting from a business problem and emphasizing business understanding, method feasibility and limitations, and judgement in decision-making.\n\n  \n    \n    Linear regression\n    Quantitative outcomes; the workhorse we start with\n  \n  \n    \n    Logistic regression\n    Classification when the outcome is a category\n  \n  \n    \n    Trees and ensembles\n    CART, random forests, boosting\n  \n  \n    \n    PCA\n    Reducing dimensions when you have many variables\n  \n  \n    \n    Clustering\n    Grouping without a pre-labeled outcome\n  \n  \n    \n    Neural nets\n    A short look, late in the term, if time allows\n  \n\nFull week-by-week plan: Schedule."
-  },
-  {
-    "objectID": "index.html#how-we-work",
-    "href": "index.html#how-we-work",
-    "title": "70-467 - Machine Learning for Business Analytics",
-    "section": "How we work",
-    "text": "How we work\nA simple weekly rhythm so you always know how to prepare.\n\n  \n    \n      \n    \n    01 · Before class\n    Lecture notes\n    Read the assigned textbook sections and, when assigned, run the Quarto notes. Those notes are in Quarto, so complete the setup instructions early. You need a working machine for the week to week flow of the course.\n  \n  \n    \n      \n    \n    02 · Monday\n    Concepts & decisions\n     Mondays are for understanding the method, always starting from a business problem. You prepare a short introduction to that method and present it. I then take over and finish the lecture. The presentation schedule comes in week two, once enrollment is set.\n  \n  \n    \n      \n    \n    03 · Wednesday\n    R lab\n    Wednesdays are labs, and we start from a problem, not from the code. The problem is posted before class. Come prepared. In class we work through guided notebooks: some of the code is already there, you complete the TODOs, we run it, and we interpret the output together. Then we argue the merits of the analysis and how to make it stronger.\n  \n  \n    \n      \n    \n    04 · Outside class\n    Build and defend\n    For homework you get real data, a problem, and starter code. You turn in a notebook, at most six slides, and a video of at most five minutes — same story in all three. The project is individual and ends with an in-class presentation; details are in the syllabus."
-  },
-  {
-    "objectID": "index.html#learn-deliver",
-    "href": "index.html#learn-deliver",
-    "title": "70-467 - Machine Learning for Business Analytics",
-    "section": "Learn & deliver",
-    "text": "Learn & deliver\nMaterials you will use throughout the term (orient yourself with Start here above).\n\n  Lecture NotesPrepare before every class\n  LabsIn-class R notebooks\n  HomeworkSpecs and expectations\n  Final ProjectCheckpoint and presentations"
-  },
-  {
-    "objectID": "hw/HW01-Garment/index.html",
-    "href": "hw/HW01-Garment/index.html",
-    "title": "Homework 1. Who to sit down with this week",
-    "section": "",
-    "text": "Read the case first, including the codebook on page 2. This homework is long. Start early. You submit three pieces on Canvas (not this site): a runnable R notebook, at most six slides, and a video of at most five minutes.\n\n\nCase + data + starter Submit on Canvas\n\n\nCase\nPDF · (problem description + codebook)\n\n\nData\ngarments_worker_productivity.csv · 1,197 team-days, one garment plant, 2015\n\n\nStarter\nhw1-garment.qmd · zip (qmd + data folder)\nPut the csv in a folder named data next to the qmd (the zip already has that layout). Open the qmd in RStudio and Knit / Render. Submit the knitted notebook, the slides, and the video on Canvas. The starter has what to submit and the common mistakes."
+    "text": "Read the case before class, including the codebook on page 2. Download the data and look at it with the codebook open. Think about the problem discussed in the case and also about what other potential problems and uses of regression you see in that dataset.\n\n\nCase + data + starter\n\n\nCase\nPDF · (problem description + codebook)\n\n\nData\ntoyota_corolla.csv · 1,436 used Corollas, asking prices in euros\n\n\nStarter\nlab01-corolla-v2.qmd · zip (qmd + data folder)\nPut the csv in a folder named data next to the qmd (the zip already has that layout). Open the qmd in RStudio and Knit / Render."
   },
   {
     "objectID": "hw/index.html",
@@ -308,11 +280,46 @@
     "text": "AI\nAI is allowed on homework if you disclose it (Yellow level, when the assignment allows it). You must run the code and be able to explain the important parts of how you reached the decision. If you hide AI use, or you cannot explain the work in the video, or I suspect you used AI inappropriately, I will ask you to present in person. Depending on how you handle the questions in person, the grade on that homework can go as low as 0, and you may be reported for an academic integrity violation. See Syllabus."
   },
   {
-    "objectID": "labs/Lab01-Regression/index.html",
-    "href": "labs/Lab01-Regression/index.html",
-    "title": "Lab 1: Linear Regression Application: Asking prices for used Corollas",
+    "objectID": "hw/HW01-Garment/index.html",
+    "href": "hw/HW01-Garment/index.html",
+    "title": "Homework 1. Who to sit down with this week",
     "section": "",
-    "text": "Read the case before class, including the codebook on page 2. Download the data and look at it with the codebook open. Think about the problem discussed in the case and also about what other potential problems and uses of regression you see in that dataset.\n\n\nCase + data + starter\n\n\nCase\nPDF · (problem description + codebook)\n\n\nData\ntoyota_corolla.csv · 1,436 used Corollas, asking prices in euros\n\n\nStarter\nlab01-corolla-v2.qmd · zip (qmd + data folder)\nPut the csv in a folder named data next to the qmd (the zip already has that layout). Open the qmd in RStudio and Knit / Render."
+    "text": "Read the case first, including the codebook on page 2. This homework is long. Start early. You submit three pieces on Canvas (not this site): a runnable R notebook, at most six slides, and a video of at most five minutes.\n\n\nCase + data + starter Submit on Canvas\n\n\nCase\nPDF · (problem description + codebook)\n\n\nData\ngarments_worker_productivity.csv · 1,197 team-days, one garment plant, 2015\n\n\nStarter\nhw1-garment.qmd · zip (qmd + data folder)\nPut the csv in a folder named data next to the qmd (the zip already has that layout). Open the qmd in RStudio and Knit / Render. Submit the knitted notebook, the slides, and the video on Canvas. The starter has what to submit and the common mistakes."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "70-467 - Machine Learning for Business Analytics",
+    "section": "",
+    "text": "CMU-Q · Fall 2026 · 70-467\n\n\n\n\nInstructor: Andrés Castaño Zuluaga\n\n\nWelcome to 70-467 Machine Learning for Business Analytics!\n\n\nIn an era when AI can write code faster than most people, writing code is not the scarce skill. The bottleneck in productive analytics is understanding, verification, and judgment: knowing what to ask the tools to do, checking whether the answer is good enough to act on, and explaining both the recommendation and its limits. AI will not replace your job. Someone who can use it and is prepared to work those bottlenecks will.\nThis course prepares you for that. You cannot evaluate the tools, or incorporate them into how you work, until you understand the methods. That is what sharpens judgment and makes the communication defensible. We incentivize responsible use of AI: tools that augment you, not substitutes that replace the thinking. You will learn to turn data into decisions you can stand behind. Choose the method, check it carefully, and explain the recommendation and its limits. The emphasis is business judgment under real problems, not model fitting as an end in itself. We work in R, with real datasets.\n\n\nMon & Wed · 2:30–3:45 PM · CMB 1190 Concepts + R labs"
+  },
+  {
+    "objectID": "index.html#methods-you-will-see-and-use",
+    "href": "index.html#methods-you-will-see-and-use",
+    "title": "70-467 - Machine Learning for Business Analytics",
+    "section": "Methods you will see and use",
+    "text": "Methods you will see and use\nWe move from simple, interpretable models to richer tools, always starting from a business problem and emphasizing business understanding, method feasibility and limitations, and judgement in decision-making.\n\n  \n    \n    Linear regression\n    Quantitative outcomes; the workhorse we start with\n  \n  \n    \n    Logistic regression\n    Classification when the outcome is a category\n  \n  \n    \n    Trees and ensembles\n    CART, random forests, boosting\n  \n  \n    \n    PCA\n    Reducing dimensions when you have many variables\n  \n  \n    \n    Clustering\n    Grouping without a pre-labeled outcome\n  \n  \n    \n    Neural nets\n    A short look, late in the term, if time allows\n  \n\nFull week-by-week plan: Schedule."
+  },
+  {
+    "objectID": "index.html#how-we-work",
+    "href": "index.html#how-we-work",
+    "title": "70-467 - Machine Learning for Business Analytics",
+    "section": "How we work",
+    "text": "How we work\nA simple weekly rhythm so you always know how to prepare.\n\n  \n    \n      \n    \n    01 · Before class\n    Lecture notes\n    Read the assigned textbook sections and, when assigned, run the Quarto notes. Those notes are in Quarto, so complete the setup instructions early. You need a working machine for the week to week flow of the course.\n  \n  \n    \n      \n    \n    02 · Monday\n    Concepts & decisions\n     Mondays are for understanding the method, always starting from a business problem. You prepare a short introduction to that method and present it. I then take over and finish the lecture. The presentation schedule comes in week two, once enrollment is set.\n  \n  \n    \n      \n    \n    03 · Wednesday\n    R lab\n    Wednesdays are labs, and we start from a problem, not from the code. The problem is posted before class. Come prepared. In class we work through guided notebooks: some of the code is already there, you complete the TODOs, we run it, and we interpret the output together. Then we argue the merits of the analysis and how to make it stronger.\n  \n  \n    \n      \n    \n    04 · Outside class\n    Build and defend\n    For homework you get real data, a problem, and starter code. You turn in a notebook, at most six slides, and a video of at most five minutes — same story in all three. The project is individual and ends with an in-class presentation; details are in the syllabus."
+  },
+  {
+    "objectID": "index.html#learn-deliver",
+    "href": "index.html#learn-deliver",
+    "title": "70-467 - Machine Learning for Business Analytics",
+    "section": "Learn & deliver",
+    "text": "Learn & deliver\nMaterials you will use throughout the term (orient yourself with Start here above).\n\n  Lecture NotesPrepare before every class\n  LabsIn-class R notebooks\n  HomeworkSpecs and expectations\n  Final ProjectCheckpoint and presentations"
+  },
+  {
+    "objectID": "labs/Lab02-Evaluation/index.html",
+    "href": "labs/Lab02-Evaluation/index.html",
+    "title": "Lab 2: A price you can take to a house that has not sold yet",
+    "section": "",
+    "text": "Read the case before class, including the codebook on page 2. Download the data and look at it with the codebook open. Think about the problem in the case: a value for a house that is not in the file, using only facts the office would have before the sale closes.\n\n\nCase + data\n\n\nCase\nPDF · (problem description + codebook)\n\n\nData\names_housing.csv · 2,925 residential sales in Ames, 2006–2010, sale price in dollars"
   },
   {
     "objectID": "notes/index.html",
