@@ -1,0 +1,356 @@
+---
+title: "Homework 1. Who to sit down with this week"
+subtitle: "70-467 · individual · notebook + at most six slides + at most five minutes video"
+author: "Andrés Castaño Zuluaga"
+date: last-modified
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    toc-location: right
+    embed-resources: true
+    code-fold: false
+    theme: cosmo
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+Please read the case first, including the codebook. In this homework you will be applying the learnings from the LR regression slides  and suggested readings. 
+
+Submit on Canvas, Tuesday 15 September 2026, 11:59 pm:
+- this notebook (knitted) with the code you add and your written answers,
+- at most six slides, and
+- a video of at most five minutes presenting those slides.
+
+This homework is long. Please start early. The last section is what you would tell the plant.
+
+You will use the process you go through from the problem to the final decisions to prepare your slides.
+
+Where you see **WRITE YOUR CODE BELOW**, add code in that chunk. Where you see **WRITE YOUR ANSWER BELOW**, write in this notebook. Some parts only ask for one of the two. 
+
+```{r}
+#| label: setup
+options(scipen = 999)
+library(readr)
+library(dplyr)
+library(ggplot2)
+
+theme_hw <- function() {
+  theme_minimal(base_size = 13) +
+    theme(
+      panel.grid.minor = element_blank(),
+      plot.title = element_text(face = "bold", size = 14),
+      legend.position = "top"
+    )
+}
+col_ink <- "#182C4B"
+col_red <- "#C41230"
+```
+
+# The file
+
+```{r}
+#| label: load
+# Load the csv. Use read.csv (base R), not read_csv: readr trims trailing
+# spaces, and department has both "finishing" and "finishing ".
+raw <- read.csv("data/garments_worker_productivity.csv", stringsAsFactors = FALSE)
+# Dates in the file are m/d/yyyy.
+raw$date_p <- as.Date(raw$date, "%m/%d/%Y")
+
+nrow(raw)
+head(raw[, c("date", "department", "team", "targeted_productivity", "actual_productivity", "over_time", "incentive")], 5)
+table(sprintf("[%s]", raw$department))
+sum(is.na(raw$wip))
+sum(raw$actual_productivity > 1)
+```
+
+```{r}
+#| label: wip-drop
+# WIP is missing on finishing. Put wip in a pooled lm and R drops those
+# rows. nobs() is how many rows were actually used.
+m_wip <- lm(actual_productivity ~ targeted_productivity + over_time + incentive + wip, data = raw)
+nobs(m_wip)
+table(raw$department[!is.na(raw$wip)])
+```
+
+A pooled `lm` with `wip` drops finishing. How many rows were used, and who is gone?
+
+**WRITE YOUR ANSWER BELOW**
+
+
+The chunk below trims `department` and maps `sweing` to sewing. Change it if you defend another rule.
+
+```{r}
+#| label: clean
+# Recode: trim spaces, map sweing -> sewing. Change this if you defend
+# another rule.
+d <- raw
+d$department <- trimws(d$department)
+d$department[d$department == "sweing"] <- "sewing"
+d$department <- factor(d$department, levels = c("finishing", "sewing"))
+d$miss <- as.integer(d$actual_productivity < d$targeted_productivity)
+table(d$department)
+```
+
+Actual productivity sometimes exceeds 1. The target never exceeds 0.80. Keep those rows, drop them, or cap them. Write what \(Y\) is measuring, and say whether you kept the department recode above.
+
+```{r}
+#| label: y-rule
+# WRITE YOUR CODE BELOW only if you drop or cap actual_productivity > 1.
+# If you keep those rows, leave this chunk empty.
+```
+
+**WRITE YOUR ANSWER BELOW**
+
+
+
+# Who misses
+
+```{r}
+#| label: miss-by-dept
+d %>%
+  group_by(department) %>%
+  summarise(
+    n = n(),
+    mean_actual = mean(actual_productivity),
+    miss_rate = mean(miss),
+    mean_ot = mean(over_time),
+    mean_inc = mean(incentive),
+    .groups = "drop"
+  )
+```
+
+```{r}
+#| label: scatter-target
+#| fig-height: 4.6
+#| fig-width: 7.4
+# Actual vs posted target. The dashed line is actual = target.
+ggplot(d, aes(targeted_productivity, actual_productivity, color = department)) +
+  geom_point(alpha = 0.35, size = 1.2) +
+  geom_abline(slope = 1, intercept = 0, linetype = 2) +
+  scale_color_manual(values = c("finishing" = col_red, "sewing" = col_ink)) +
+  labs(x = "Targeted productivity", y = "Actual productivity", color = NULL) +
+  theme_hw()
+```
+
+```{r}
+#| label: miss-by-team
+d %>%
+  group_by(team, department) %>%
+  summarise(n = n(), miss_rate = mean(miss), mean_actual = mean(actual_productivity), .groups = "drop") %>%
+  arrange(desc(miss_rate))
+```
+
+Which department misses more often? Which teams would you sit down with first?
+
+**WRITE YOUR ANSWER BELOW**
+
+
+If you want another cut (by day, by quarter), add it here.
+
+```{r}
+#| label: miss-write
+# WRITE YOUR CODE BELOW only if you want another table or plot.
+```
+
+
+
+# Models
+
+Please fit linear models for actual productivity. Start with the posted target. Then add overtime and incentive. Then department (a dummy, or two equations). Use notes from readings and slides to guide you with understanding and interpretations. 
+
+```{r}
+#| label: m0
+m0 <- lm(actual_productivity ~ targeted_productivity, data = d)
+summary(m0)
+sigma(m0)
+```
+
+What does the target coefficient mean? What is residual standard error next to the SD of actual productivity?
+
+**WRITE YOUR ANSWER BELOW**
+
+
+```{r}
+#| label: m1
+m1 <- lm(actual_productivity ~ targeted_productivity + over_time + incentive, data = d)
+summary(m1)
+anova(m0, m1)
+```
+
+Do overtime and the incentive still belong once the target is already in? The nested \(F\) is in the `anova` output above.
+
+**WRITE YOUR ANSWER BELOW**
+
+
+Please add department: a dummy on the pooled file, or two equations (sewing and finishing). If you add the dummy, run a nested comparison against `m1`. Write which you used and why.
+
+```{r}
+#| label: m2
+# WRITE YOUR CODE BELOW
+```
+
+**WRITE YOUR ANSWER BELOW**
+
+
+
+For each slope you keep: a 0.10 move in the target, 1,000 minutes of overtime, an incentive of 50. Compare those to the mean of \(Y\), the SD of \(Y\), residual standard error, and the miss-rate gap between finishing and sewing.
+
+```{r}
+#| label: size-helpers
+mean(d$actual_productivity)
+sd(d$actual_productivity)
+d %>%
+  group_by(department) %>%
+  summarise(miss_rate = mean(miss), .groups = "drop")
+```
+
+Please compute those three sizes from the model you are taking to the plant. Write whether overtime or the cheque is large enough to belong in the conversation this week.
+
+```{r}
+#| label: size
+# WRITE YOUR CODE BELOW
+# 0.10 * target coefficient; 1000 * overtime coefficient; 50 * incentive coefficient.
+```
+
+**WRITE YOUR ANSWER BELOW**
+
+
+
+# The 9 March cheques
+
+```{r}
+#| label: mar9
+mar9 <- d %>%
+  filter(date_p == as.Date("2015-03-09"), department == "finishing", incentive >= 960)
+mar9[, c("team", "incentive", "actual_productivity", "targeted_productivity", "over_time")]
+median(d$incentive[d$incentive > 0 & d$incentive < 200])
+```
+
+Ten finishing team-days, overtime 0, incentive 960 to 3,600. Team 8 that day: 960, actual 0.264.
+
+Please fit your pooled model with those ten rows and without them. Write what happens to the incentive coefficient.
+
+```{r}
+#| label: mar9-models
+# WRITE YOUR CODE BELOW
+# Same formula as your pooled spec: once on d, once without these ten rows.
+```
+
+**WRITE YOUR ANSWER BELOW**
+
+
+
+# Extra checks
+
+Please go back to the regression slides and Chapter 3 (including the appendix) for residual plots and influence. Use the model you locked.
+
+Cook's distance on the model you locked. Which rows stand out, given 9 March?
+
+```{r}
+#| label: extras-cook
+# WRITE YOUR CODE BELOW
+```
+
+**WRITE YOUR ANSWER BELOW**
+
+
+If you used one equation for sewing and finishing, plot residuals against fitted values. Do the two departments have the same residual standard error? If you split, say so below and leave the chunk empty.
+
+```{r}
+#| label: extras-resid
+# WRITE YOUR CODE BELOW only if you pooled sewing and finishing.
+```
+
+**WRITE YOUR ANSWER BELOW**
+
+
+`idle_time` is positive on 18 sewing rows. The nested \(F\) can still look significant. Does idle time belong in the conversation this week?
+
+```{r}
+#| label: extras-idle
+# WRITE YOUR CODE BELOW if you put idle_time in the spec.
+# If you leave it out, leave this chunk empty and say why in the answer.
+```
+
+**WRITE YOUR ANSWER BELOW**
+
+
+If you use overtime times incentive, fit it with the 9 March rows and without them. If you do not use that product, leave the chunk empty and say so below.
+
+```{r}
+#| label: extras-ot-inc
+# WRITE YOUR CODE BELOW only if you use over_time:incentive.
+```
+
+**WRITE YOUR ANSWER BELOW**
+
+
+A prediction interval for one new finishing team-day is wide. Compute one, then write how wide it is. Please do not treat this file as a way to post one productivity number.
+
+```{r}
+#| label: extras-pi
+# WRITE YOUR CODE BELOW
+```
+
+**WRITE YOUR ANSWER BELOW**
+
+
+
+# What you would tell the plant
+
+Please record a video of at most five minutes, with at most six slides. The camera must be on. I need to see you delivering. 
+
+Please start with what the plant is trying to decide: who to sit down with this week, and whether overtime or the incentive cheque belongs in that conversation. Then how you approached it (linear regression, in a sentence). Then one or two results. Then who you would sit down with, and whether overtime or the cheque is worth that meeting. Please also include any other concluding remark you deem relevant to the conversation.
+
+You are talking to the plant coordinator. They care who to sit down with this week. They are not sitting in a methods seminar. A strong presentation does not hide behind jargon, does not assume they already know what residual standard error is, and does not oversell what the file can establish. If you say nested \(F\), say what that comparison is doing. If you report a coefficient, say what it means for the floor.
+
+Weak: "The overtime coefficient is 0.0000025 and statistically significant."
+
+Stronger: "A thousand extra minutes of overtime barely move actual productivity next to how much teams already miss."
+
+Weak: "I used a nested \(F\)."
+
+Stronger: "I compared a smaller equation to a larger one to see whether overtime and the cheque still belong once the target is already in."
+
+Weak: "This proves that raising the cheque will lift actual productivity."
+
+Stronger: "This is one factory in 2015. The file cannot tell them what happens if they raise overtime or the cheque."
+
+## What to submit
+
+You must submit three files on Canvas, Tuesday 15 September 2026, 11:59 pm.
+
+| Submission element | Requirement |
+|--------------------|-------------|
+| Notebook | A knitted file that runs (HTML or PDF from this qmd), with the code you add and your written answers |
+| Slides | At most six slides. Same numbers as the notebook. |
+| Video | At most five minutes. Camera on. I need to see you. |
+| Where | Canvas only (not the course site) |
+| When | Tuesday 15 September 2026, 11:59 pm |
+
+Please use a filename that includes your last name.
+
+There is no live Q&A after the recording. Before you submit, open the knitted notebook, the slides, and the video and check that they open.
+
+## Common mistakes
+
+Please take these seriously.
+
+| Common mistake | Why it weakens the work | Stronger choice |
+|----------------|-------------------------|-----------------|
+| Reading the slides | I cannot tell that you understand it. That is a zero on the slides and the video. | Practice until you can talk from the numbers. |
+| Camera off | I need to see you delivering. That is a zero on the slides and the video. | Camera on the whole time. |
+| Starting with the coefficient | The coordinator does not yet know what you are trying to decide. | Start with who to sit down with this week. |
+| Naming nested \(F\) and stopping | They hear a label, not a comparison. | Say you compared a smaller equation to a larger one. |
+| "Overtime is significant" | They hear a test, not whether overtime belongs in the meeting. | Size next to how much teams already miss. |
+| "Raise overtime or the cheque and actual will go up" | The file cannot support that. | Say this is one factory in 2015. |
+| A model that is only in the slides | I cannot check it against the notebook. | Same numbers as the knit. |
+| AI delivering the video | That is not your delivery. That is a zero on the slides and the video. | AI may help you prepare. You deliver. |
+
+If you used AI, write what you used and what you changed.
+
+**WRITE YOUR ANSWER BELOW**
+
