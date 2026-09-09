@@ -1,0 +1,737 @@
+---
+title: "Lab 2: A price you can take to a house that has not sold yet"
+subtitle: "70-467 · Wednesday 9 September"
+author: "Andrés Castaño Zuluaga"
+date: last-modified
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    embed-resources: true
+    code-fold: false
+    theme: cosmo
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+Read the case first, including the codebook. You will produce a value for a house that is not in the file, using only facts the office would have before the sale closes, and report test MSE next to the $180,000 mean. Please say whether neighborhood dummies belong, and whether Partial and New belong.
+
+In the room we get through In class. Most chunks already run. After class is the rest of the notebook. The code is already typed.
+
+```{r}
+#| label: setup
+options(scipen = 999)
+library(readr)
+library(dplyr)
+library(ggplot2)
+
+theme_lab <- function() {
+  theme_minimal(base_size = 13) +
+    theme(
+      panel.grid.minor = element_blank(),
+      plot.title = element_text(face = "bold", size = 14),
+      legend.position = "top"
+    )
+}
+col_ink <- "#182C4B"
+col_red <- "#C41230"
+col_grey <- "#6D6E71"
+usd <- scales::label_dollar(accuracy = 1)
+```
+
+# In class (~75 minutes)
+
+```{r}
+#| label: intro-problem
+######################################
+# Introduction to the business problem
+######################################
+# Business problem:
+# The Ames City Assessor's Office used 2,925 residential sales from 2006 to 2010
+# to keep its valuation model current. Mean sale is about $180,000. The office
+# still has to put a number on a house that is not in this file, using only facts
+# it would have before the sale closes.
+#
+# A common rule is living area. In this file overall quality moves tens of
+# thousands of dollars; leaving it out will change the posted value. Partial and
+# New sales sit around $275,000; the rest around $172,000. Those labels exist
+# only after the deal is done. Twenty-eight neighborhoods can look good on one
+# training sample and fail on the next.
+#
+# How the Monday tools help:
+# Last week residual standard error was on the houses already in the fit. Monday:
+# that training error is the wrong number to report for a house the office has
+# not seen. Test error is the miss on rows the rule did not use to fit. We will
+# estimate test error three ways you saw in class (ISLR Ch. 5, and Monday's
+# validation hour): a validation set, leave-one-out CV, and k-fold CV. The goal
+# is to lock a rule we can take to the next house, not to get a pretty fit on
+# the 2,925 we already have.
+#
+# Description of variables (from the codebook in the case):
+# - SalePrice: sale price in dollars (the outcome)
+# - Gr.Liv.Area: above-grade living area in square feet
+# - Overall.Qual: overall material and finish, 1 to 10
+# - Full.Bath, Garage.Cars, Year.Built: listing facts
+# - Neighborhood: 28 names in Ames
+# - Sale.Condition, Sale.Type: recorded at closing (Partial, New)
+#
+# Source: De Cock (2011), Ames housing; OpenIntro extract. Five sales with
+# living area above 4,000 sq ft are already out.
+#
+# Think: 1) What would you explore before you post a number?
+#        2) What is the outcome, and which columns would you have before close?
+```
+
+```{r}
+#| label: load
+#############################
+# Loading packages and data
+#############################
+ames <- read_csv("data/ames_housing.csv", show_col_types = FALSE)
+ames$Garage.Cars[is.na(ames$Garage.Cars)] <- 0
+ames$Kitchen.Qual[ames$Kitchen.Qual == "Po"] <- "Fa"
+
+nrow(ames)                 # Why? Confirm n matches the case (2,925).
+mean(ames$SalePrice)       # Why? The case asks you to report test MSE next to this mean.
+sd(ames$SalePrice)
+table(ames$Sale.Condition) # Partial is how the sale closed, not a listing fact.
+```
+
+```{r}
+#| label: plot-price-area
+#| fig-height: 5.0
+#| fig-width: 7.8
+# Before running regressions, look at the comparables.
+# Why? Visuals help check whether a living-area line is even plausible, and they
+# communicate findings. Color is overall quality, the large listing lever in this file.
+ggplot(ames, aes(Gr.Liv.Area, SalePrice, color = Overall.Qual)) +
+  geom_point(alpha = 0.35, size = 1.2) +
+  geom_smooth(method = "lm", se = FALSE, color = col_red, linewidth = 0.8) +
+  scale_color_viridis_c(option = "cividis", breaks = c(2, 4, 6, 8, 10)) +
+  scale_y_continuous(labels = usd) +
+  labs(
+    x = "Above-grade living area (sq ft)",
+    y = "Sale price (USD)",
+    color = "Overall quality"
+  ) +
+  theme_lab()
+# Question: Does the red line fit well? Hold living area at about 1,500 sq ft.
+# A quality-5 sale and a quality-8 sale are not in the same band. Any pattern
+# the line is missing?
+# Discuss: The case said leaving quality out will change the posted value.
+# Roughly how many dollars sit between those two bands, next to the $180,000 mean?
+# The house you will post is quality 6.
+```
+
+```{r}
+#| label: plot-price-hist
+#| fig-height: 4.0
+#| fig-width: 7.4
+ggplot(ames, aes(SalePrice)) +
+  geom_histogram(bins = 35, fill = col_ink, color = "white") +
+  geom_vline(xintercept = mean(ames$SalePrice), color = col_red, linewidth = 0.9) +
+  scale_x_continuous(labels = usd) +
+  labs(x = "Sale price (USD)", y = "Number of sales") +
+  theme_lab()
+# Question: The red line is the mean, about $180,000. If a rule is typically
+# $40,000 off on a house it did not use to fit, is that large or small here?
+```
+
+```{r}
+#| label: simple-lm
+#############################
+# Simple linear regression
+#############################
+# Simple linear regression estimates the relationship between one predictor and
+# the outcome. Here, how sale price changes with living area.
+# Why important? This is the common rule in the case. If the slope is small next
+# to $180,000, living area barely moves the posted value; if it is large, the
+# office cannot ignore square footage.
+m_area_all <- lm(SalePrice ~ Gr.Liv.Area, data = ames)  # SalePrice = b0 + b1 * living area + e
+summary(m_area_all)
+# Interpret: What does the coefficient for Gr.Liv.Area tell us in dollars per
+# square foot? Is it significant? R-squared shows explained variance on these
+# 2,925 sales, not on a house that is not in the file.
+# Business implication: Is a living-area-only asking price good enough, or is
+# the residual still huge next to the $180,000 mean?
+```
+
+```{r}
+#| label: listing-lm
+#############################
+# Multiple linear regression
+#############################
+# Multiple regression includes several predictors to control for confounding.
+# Why? The scatter already showed quality fanning at a given square footage.
+# Isolating living area after quality is in the line is closer to how the office
+# actually looks at a listing.
+m_list_all <- lm(
+  SalePrice ~ Gr.Liv.Area + Overall.Qual + Full.Bath + Garage.Cars + Year.Built,
+  data = ames
+)
+summary(m_list_all)
+# Interpret new coefficients: How does Overall.Qual affect sale price, in dollars
+# per step, holding living area, baths, garage, and year? Did R-squared improve?
+# Business implication: The case said leaving quality out will change the posted
+# value. Does this coefficient agree, next to $180,000?
+#
+# Student exercise: Look at Full.Bath. Did the sign come out the way you would
+# explain to an assessor ("add a bath, add dollars")? If not, what else in the
+# line might baths be standing in for?
+```
+
+```{r}
+#| label: cv-header
+####################################
+# Estimating the miss on a new house
+####################################
+# These methods assess performance on unseen sales and estimate variability.
+# Reference: ISLR 2nd edition, Chapter 5 (the pages assigned for Monday) and
+# Monday's hour on training MSE, test MSE, and resampling.
+#
+# Cross-validation evaluates how well a rule generalizes by simulating prediction
+# on held-out subsets.
+# Why important in business analytics? Prevents treating a good fit on the 2,925
+# sales we already have as a good value for the next house. The case is exactly
+# that next house.
+#
+# On Monday the flexibility knob was extra columns (and, in the book, polynomial
+# degree). Here the same idea, in this file:
+#   1. Living area only          (too simple: underfit on the scatter)
+#   2. Listing facts             (living area + quality + baths + garage + year)
+#   3. Listing + 28 neighborhoods (more flexible; rare streets may not travel)
+# Goal: Choose the rule that minimizes estimated test error, then post a number.
+# Traditional in-sample comparison (R-squared, residual standard error) does not
+# assess generalization. That was last week.
+```
+
+```{r}
+#| label: validation-set
+# The Validation Set Approach (ISLR Ch. 5.1.1; Monday: shuffle, split, fit, score).
+# Definition: Randomly split the sales into a training sample and a validation
+# (test) sample. Fit on train. Evaluate MSE on validation.
+# Advantages: Simple to implement.
+# Disadvantages: High variability (depends on the split); potential bias if the
+# training sample is small.
+# Business note: Useful for a quick check, but repeat the split before you lock
+# a valuation rule. The case already said one training sample is not enough.
+set.seed(467)
+n <- nrow(ames)
+train_id <- sample.int(n, floor(0.5 * n))  # about half the sales to train
+train <- ames[train_id, ]
+test  <- ames[-train_id, ]
+nrow(train)
+nrow(test)
+
+# Train a living-area rule. Score the sales it did not use to fit.
+m_area <- lm(SalePrice ~ Gr.Liv.Area, data = train)
+mean((test$SalePrice - predict(m_area, test))^2)
+# The MSE formula: MSE = (1 / n_test) * sum (y_i - yhat_i)^2
+# where y_i is the actual sale price, yhat_i is the predicted price, and n_test
+# is the number of held-out sales.
+# Why? Estimates generalization error. Lower is better out of sample.
+# In this office: use it to compare rules you would take to a house not in the file.
+
+# RMSE in dollars is easier to put next to the $180,000 mean.
+sqrt(mean((test$SalePrice - predict(m_area, test))^2))
+
+# Repeat for listing facts, then listing + neighborhood, to compare flexibility.
+m_list <- lm(
+  SalePrice ~ Gr.Liv.Area + Overall.Qual + Full.Bath + Garage.Cars + Year.Built,
+  data = train
+)
+mean((test$SalePrice - predict(m_list, test))^2)
+sqrt(mean((test$SalePrice - predict(m_list, test))^2))
+
+m_nb <- lm(
+  SalePrice ~ Gr.Liv.Area + Overall.Qual + Full.Bath + Garage.Cars + Year.Built + Neighborhood,
+  data = train
+)
+nb_hat <- try(predict(m_nb, test), silent = TRUE)
+if (inherits(nb_hat, "try-error")) {
+  NA_real_  # a neighborhood in test was not in train, so this split cannot score 28 names
+} else {
+  ok <- !is.na(nb_hat)
+  c(
+    test_MSE = mean((test$SalePrice[ok] - nb_hat[ok])^2),
+    scored = sum(ok),
+    n_test = nrow(test)
+  )
+}
+# Interpret: Did listing facts beat living area on test MSE? Did 28 names beat
+# listing facts, or did predict() fail? Training residual will look better as
+# you add columns. That is not the question. The question is test.
+```
+
+```{r}
+#| label: plot-pred-actual
+#| fig-height: 4.8
+#| fig-width: 8.2
+# Why? The red line is y = x, a perfect prediction on the held-out sales.
+# Underfit is a cloud that fans off that line (Monday: living-area underfit).
+eval_df <- rbind(
+  data.frame(rule = "Living area", predicted = predict(m_area, test), actual = test$SalePrice),
+  data.frame(rule = "Listing facts", predicted = predict(m_list, test), actual = test$SalePrice)
+)
+eval_df$rule <- factor(eval_df$rule, levels = c("Living area", "Listing facts"))
+ggplot(eval_df, aes(predicted, actual)) +
+  geom_abline(slope = 1, intercept = 0, color = col_red, linewidth = 0.85) +
+  geom_point(alpha = 0.22, size = 1.15, color = col_ink) +
+  facet_wrap(~rule) +
+  coord_cartesian(xlim = c(0, 625000), ylim = c(0, 625000)) +
+  scale_x_continuous(labels = usd) +
+  scale_y_continuous(labels = usd) +
+  labs(
+    x = "Predicted sale price on the validation sample (USD)",
+    y = "Actual sale price (USD)"
+  ) +
+  theme_lab()
+# Question: Does the line fit well on the left panel? Any pattern in the
+# residuals for expensive houses? Which panel would you take to the next house?
+```
+
+```{r}
+#| label: plot-nbhd
+#| fig-height: 5.0
+#| fig-width: 7.4
+# 28 neighborhoods are extra flexibility. predict() needs every test street to
+# have appeared in train. Rare names sit on an axis.
+nb_lev <- sort(unique(ames$Neighborhood))
+nb_df <- data.frame(
+  Neighborhood = nb_lev,
+  n_train = as.integer(table(factor(train$Neighborhood, levels = nb_lev))),
+  n_test  = as.integer(table(factor(test$Neighborhood,  levels = nb_lev)))
+)
+ggplot(nb_df, aes(n_train, n_test)) +
+  geom_abline(slope = 1, intercept = 0, color = col_grey, linetype = "dashed", linewidth = 0.6) +
+  geom_point(size = 2.3, color = col_ink) +
+  geom_point(data = subset(nb_df, n_train == 0 | n_test == 0), color = col_red, size = 3.2) +
+  annotate("text", x = 24, y = -2, label = "Landmrk", size = 3.3, color = col_red, hjust = 0) +
+  annotate("text", x = 24, y = 36, label = "GrnHill", size = 3.3, color = col_ink, hjust = 0) +
+  coord_cartesian(xlim = c(-4, max(nb_df$n_train) * 1.06), ylim = c(-10, max(nb_df$n_test) * 1.08)) +
+  labs(x = "Sales in the training sample", y = "Sales in the test sample") +
+  theme_lab()
+# Question: Which street is on the axis with seed 467? GrnHill has two sales in
+# the whole file; Landmrk has one. What happens to a 28-dummy rule on a street
+# the training sample never saw?
+```
+
+```{r}
+#| label: second-split
+# Different split to show variability (ISLR Fig. 5.2; Monday: a second 50/50).
+# Why? Demonstrates how results change with a different random split, which is
+# the main drawback of the validation set.
+set.seed(468)
+train_id2 <- sample.int(n, floor(0.5 * n))
+train2 <- ames[train_id2, ]
+test2  <- ames[-train_id2, ]
+
+mse_val <- function(form, tr, te) {
+  m <- lm(form, data = tr)
+  yh <- try(predict(m, te), silent = TRUE)
+  if (inherits(yh, "try-error")) return(NA_real_)
+  ok <- !is.na(yh)
+  mean((te$SalePrice[ok] - yh[ok])^2)
+}
+f_area <- SalePrice ~ Gr.Liv.Area
+f_list <- SalePrice ~ Gr.Liv.Area + Overall.Qual + Full.Bath + Garage.Cars + Year.Built
+f_nb   <- SalePrice ~ Gr.Liv.Area + Overall.Qual + Full.Bath + Garage.Cars + Year.Built + Neighborhood
+
+val467 <- c(
+  mse_val(f_area, train, test),
+  mse_val(f_list, train, test),
+  mse_val(f_nb,   train, test)
+)
+val468 <- c(
+  mse_val(f_area, train2, test2),
+  mse_val(f_list, train2, test2),
+  mse_val(f_nb,   train2, test2)
+)
+data.frame(
+  rule = c("Living area", "Listing facts", "Listing + neighborhood"),
+  MSE_seed467 = val467,
+  MSE_seed468 = val468,
+  RMSE_seed467 = sqrt(val467),
+  RMSE_seed468 = sqrt(val468)
+)
+# Compare to previous: Different MSE? Did neighborhood even score on both splits?
+# Student exercise: Change seed to 469 and run the split again.
+# Discuss: How does variability affect whether you lock 28 neighborhood names?
+# In this office, average over several splits before you take a rule to the next house.
+#
+# Problems with the Validation Set approach (ISLR; Monday):
+# 1) MSE can be highly variable depending on which sales landed in training.
+# 2) Performance is worse when models are trained on fewer observations, so
+#    validation MSE can overestimate the test error you would see with more data.
+```
+
+```{r}
+#| label: fig52
+#| fig-height: 4.8
+#| fig-width: 7.8
+# Analog of ISLR Figure 5.2, in this file. Flexibility on the x-axis (three
+# rules, simple to more flexible). Two random splits. If the two lines do not
+# pick the same winner, you cannot lock from one validation set.
+fig52 <- data.frame(
+  flexibility = factor(
+    rep(c("1 Living area", "2 Listing facts", "3 + neighborhood"), 2),
+    levels = c("1 Living area", "2 Listing facts", "3 + neighborhood")
+  ),
+  split = rep(c("Seed 467", "Seed 468"), each = 3),
+  rmse = sqrt(c(val467, val468))
+)
+ggplot(fig52, aes(flexibility, rmse, color = split, group = split)) +
+  geom_line(linewidth = 0.9, na.rm = TRUE) +
+  geom_point(size = 3, na.rm = TRUE) +
+  scale_color_manual(values = c("Seed 467" = col_ink, "Seed 468" = col_red)) +
+  scale_y_continuous(labels = usd) +
+  labs(
+    x = "Flexibility of the rule (this file)",
+    y = "Validation RMSE (USD)",
+    color = NULL
+  ) +
+  theme_lab()
+# Question: What do you see? Is there consensus between the two splits about
+# which rule has the lowest validation error? Monday's Figure-5.2 point: the
+# quadratic often won, but not every split agreed. Same idea, Ames instead of mpg.
+```
+
+```{r}
+#| label: kfold
+# k-Fold Cross-Validation (ISLR Ch. 5.1.3; Monday: k = 5 or 10).
+# Definition: Split the sales into k blocks (folds). Train on k-1, test on the
+# held-out fold, repeat k times, average the k MSEs.
+# Advantages:
+# - Lower variance than LOOCV (the k models are less correlated)
+# - Computationally faster (k fits vs n)
+# Disadvantages:
+# - Slightly higher bias than LOOCV (each training sample is smaller than n-1)
+# Common k = 5 or 10; balances the bias-variance trade-off.
+# In business analytics: preferred on a file this size (n = 2,925). The case
+# asked you to average test MSE across several training samples; this is that
+# average. The number you report is the mean of the k MSEs, not the smallest,
+# not the last (Monday).
+#
+# How the picture works: each block is the validation sample once. Cross-validation
+# error = average(Error 1, Error 2, ..., Error k).
+```
+
+```{r}
+#| label: plot-kfold-schematic
+#| fig-height: 3.6
+#| fig-width: 5.4
+kf <- expand.grid(pass = 1:5, block = 1:5)
+kf$held <- kf$pass == kf$block
+ggplot(kf, aes(block, 6 - pass, fill = held)) +
+  geom_tile(color = "white", width = 0.92, height = 0.92) +
+  scale_fill_manual(values = c("FALSE" = col_ink, "TRUE" = col_red), guide = "none") +
+  coord_equal() +
+  labs(x = "Block of sales", y = "Pass") +
+  theme_lab() +
+  theme(axis.text.y = element_blank(), panel.grid = element_blank())
+# Question: On pass 3, which block is the test sample? How many times does each
+# sale get to be in test across the five passes? Red is held out; ink is train.
+```
+
+```{r}
+#| label: cv5-loop
+set.seed(467)
+fold5 <- sample(rep(1:5, length.out = n))
+
+cv_k <- function(form, fold) {
+  k <- max(fold)
+  vapply(1:k, function(j) {
+    tr <- ames[fold != j, ]
+    te <- ames[fold == j, ]
+    mse_val(form, tr, te)
+  }, numeric(1))
+}
+
+cv5_area <- cv_k(f_area, fold5)
+cv5_list <- cv_k(f_list, fold5)
+cv5_nb   <- cv_k(f_nb,   fold5)
+data.frame(
+  rule = c("Living area", "Listing facts", "Listing + neighborhood"),
+  mean_test_MSE = c(mean(cv5_area, na.rm = TRUE), mean(cv5_list, na.rm = TRUE), mean(cv5_nb, na.rm = TRUE)),
+  mean_test_RMSE = sqrt(c(mean(cv5_area, na.rm = TRUE), mean(cv5_list, na.rm = TRUE), mean(cv5_nb, na.rm = TRUE))),
+  folds_scored = c(sum(!is.na(cv5_area)), sum(!is.na(cv5_list)), sum(!is.na(cv5_nb)))
+)
+# Interpret: Lowest mean test error for which rule? Did every fold score for
+# neighborhood? Business: choose the parsimonious rule you can actually take
+# to a street that might be missing from a training sample.
+```
+
+```{r}
+#| label: plot-cv5
+#| fig-height: 4.6
+#| fig-width: 7.6
+cv5_plot <- data.frame(
+  fold = rep(1:5, 3),
+  rule = factor(
+    rep(c("Living area", "Listing facts", "Listing + neighborhood"), each = 5),
+    levels = c("Living area", "Listing facts", "Listing + neighborhood")
+  ),
+  rmse = sqrt(c(cv5_area, cv5_list, cv5_nb))
+)
+ggplot(cv5_plot, aes(fold, rmse, color = rule)) +
+  geom_line(linewidth = 0.8, na.rm = TRUE) +
+  geom_point(size = 2.6, na.rm = TRUE) +
+  scale_color_manual(
+    values = c(
+      "Living area" = col_grey,
+      "Listing facts" = col_ink,
+      "Listing + neighborhood" = col_red
+    )
+  ) +
+  scale_x_continuous(breaks = 1:5) +
+  scale_y_continuous(labels = usd) +
+  labs(x = "Held-out fold (Error 1 ... Error 5)", y = "Test RMSE (USD)", color = NULL) +
+  theme_lab()
+# Question: What do you see? Neighborhood has no point on a fold that could not
+# score a street. The CV number is the average of the points that exist, not
+# the lowest point. Would you lock 28 names from one fold that looked good?
+```
+
+```{r}
+#| label: close
+#############################
+# Information you would not have
+#############################
+# Monday: leakage is using a column you would not have at the moment of the
+# decision. Partial and New are recorded at closing. They came in high in this
+# file (~$275,000 vs ~$172,000). That does not mean they belong in a value for
+# a house that has not closed.
+train$Partial <- as.integer(train$Sale.Condition == "Partial")
+train$New     <- as.integer(train$Sale.Type == "New")
+test$Partial  <- as.integer(test$Sale.Condition == "Partial")
+test$New      <- as.integer(test$Sale.Type == "New")
+ames$Partial  <- as.integer(ames$Sale.Condition == "Partial")
+ames$New      <- as.integer(ames$Sale.Type == "New")
+
+m_close <- lm(
+  SalePrice ~ Gr.Liv.Area + Overall.Qual + Full.Bath + Garage.Cars + Year.Built + Partial + New,
+  data = train
+)
+c(
+  listing_test_MSE = mse_val(f_list, train, test),
+  close_test_MSE = mean((test$SalePrice - predict(m_close, test))^2)
+)
+coef(m_close)[c("Partial", "New")]
+# Interpret: Did test MSE fall when Partial and New went in? Holding listing
+# facts, how many dollars is Partial? Business implication: would you have that
+# label on a house the office is valuing before it sells?
+```
+
+```{r}
+#| label: plot-partial
+#| fig-height: 4.8
+#| fig-width: 7.8
+ames$partial_lab <- ifelse(ames$Sale.Condition == "Partial", "Partial (after close)", "Other")
+ggplot(ames, aes(Gr.Liv.Area, SalePrice, color = partial_lab)) +
+  geom_point(data = ames[ames$Sale.Condition != "Partial", ], alpha = 0.28, size = 1.15) +
+  geom_point(data = ames[ames$Sale.Condition == "Partial", ], alpha = 0.8, size = 1.45) +
+  scale_color_manual(values = c("Other" = col_ink, "Partial (after close)" = col_red)) +
+  scale_y_continuous(labels = usd) +
+  labs(x = "Above-grade living area (sq ft)", y = "Sale price (USD)", color = NULL) +
+  theme_lab()
+# Question: At the same living area, do the red points still sit above the ink
+# cloud, or is Partial only "newer, larger houses"? Would you have the red
+# label before the sale closes?
+```
+
+```{r}
+#| label: post
+#############################
+# Post the number
+#############################
+# Last in-class block is the decision in the case. Lock a rule you can defend
+# with estimated test error, using only facts before close. Then predict.
+new_house <- data.frame(
+  Gr.Liv.Area = 1440,
+  Overall.Qual = 6,
+  Full.Bath = 2,
+  Garage.Cars = 2,
+  Year.Built = 1973
+)
+m_lock <- lm(f_list, data = train)  # listing facts; 28 names and Partial/New stay out
+posted <- as.numeric(predict(m_lock, new_house))
+posted
+sqrt(mse_val(f_list, train, test))  # test RMSE next to the $180,000 mean
+mean(ames$SalePrice)
+# Interpret: Why is the post not the mean of the file? Next to $180,000, is the
+# typical miss on held-out sales small enough to post without saying how wide
+# the miss is? Did neighborhood dummies go into this lock? Did Partial?
+```
+
+```{r}
+#| label: plot-posted
+#| fig-height: 4.2
+#| fig-width: 7.4
+ggplot(ames, aes(SalePrice)) +
+  geom_histogram(bins = 35, fill = col_ink, color = "white") +
+  geom_vline(xintercept = mean(ames$SalePrice), color = col_red, linewidth = 0.9) +
+  geom_vline(xintercept = posted, color = col_grey, linewidth = 0.95, linetype = "dashed") +
+  annotate("text", x = posted, y = 505, label = "Posted", hjust = 1.12, size = 3.4, color = col_grey) +
+  annotate("text", x = mean(ames$SalePrice), y = 505, label = "Mean", hjust = -0.12, size = 3.4, color = col_red) +
+  coord_cartesian(ylim = c(0, 530)) +
+  scale_x_continuous(labels = usd) +
+  labs(x = "Sale price (USD)", y = "Number of sales") +
+  theme_lab()
+```
+
+# After class
+
+The code is already typed.
+
+```{r}
+#| label: loocv
+# LOOCV (Leave-One-Out Cross-Validation) - ISLR Ch. 5.1.2; Monday: n fits, or
+# the OLS shortcut.
+# Definition: For n sales, train on n-1, test on the held-out one, repeat n
+# times, average the n MSEs.
+# Advantages:
+# - Low bias (trains on almost all the data)
+# - No randomness in the splits
+# Disadvantages:
+# - High variance (the n models are highly correlated)
+# - Computationally expensive if you really refit n times (here n = 2,925)
+# Why use? Nearly unbiased estimate of test error. For lm, ISLR p. 193: you do
+# not run 2,925 regressions. One fit and the leverages (hatvalues) give the
+# same number. Neighborhood with a one-sale street is a bad place for this
+# shortcut; we do listing facts and living area only.
+m_area_all <- lm(f_area, data = ames)
+h_area <- hatvalues(m_area_all)
+loocv_area <- mean(((ames$SalePrice - fitted(m_area_all)) / (1 - h_area))^2)
+
+m_list_all2 <- lm(f_list, data = ames)
+h_list <- hatvalues(m_list_all2)
+loocv_list <- mean(((ames$SalePrice - fitted(m_list_all2)) / (1 - h_list))^2)
+
+c(living_area_LOOCV = loocv_area, listing_LOOCV = loocv_list)
+sqrt(c(living_area_LOOCV = loocv_area, listing_LOOCV = loocv_list))
+# Interpret: Lowest for listing facts? Compare to the one validation split.
+# Business: a nearly unbiased number, no shuffle. Still not a reason to put
+# Partial in the rule.
+```
+
+```{r}
+#| label: tenfold
+# 10-fold CV, same loop as 5-fold. Student exercise in L4: try K = 5. We already
+# ran K = 5 in class; this is K = 10 on the same three rules.
+set.seed(467)
+fold10 <- sample(rep(1:10, length.out = n))
+cv10_area <- cv_k(f_area, fold10)
+cv10_list <- cv_k(f_list, fold10)
+cv10_nb   <- cv_k(f_nb,   fold10)
+data.frame(
+  rule = c("Living area", "Listing facts", "Listing + neighborhood"),
+  mean_test_MSE = c(mean(cv10_area, na.rm = TRUE), mean(cv10_list, na.rm = TRUE), mean(cv10_nb, na.rm = TRUE)),
+  folds_scored = c(sum(!is.na(cv10_area)), sum(!is.na(cv10_list)), sum(!is.na(cv10_nb)))
+)
+# Interpret: Minimum still listing facts, or do 28 names win once you average
+# ten blocks? Do all ten folds score? Compare to LOOCV: similar ranking, less
+# drama than the two 50/50 splits.
+# Student exercise: Does the rule you would lock change between K = 5 and K = 10?
+#
+# Bias-variance trade-off between LOOCV and k-fold (ISLR Ch. 5.1.3; Monday):
+# LOOCV has low bias (trains on n-1) but high variance (n highly correlated models).
+# k-fold (k = 10) has slightly higher bias (trains on 9/10 of the sales) but lower
+# variance (10 less correlated models).
+# Why prefer k-fold on this file? More stable test-error estimates, less risk of
+# locking 28 names because one split looked good.
+```
+
+```{r}
+#| label: fig54
+#| fig-height: 5.0
+#| fig-width: 8.0
+# Analog of ISLR Figure 5.4: estimated test error against flexibility, for
+# more than one resampling method. The book uses polynomial degree; this file
+# uses the three rules in the case.
+fig54 <- rbind(
+  data.frame(
+    flexibility = c("1 Living area", "2 Listing facts", "3 + neighborhood"),
+    method = "Validation 467",
+    rmse = sqrt(val467)
+  ),
+  data.frame(
+    flexibility = c("1 Living area", "2 Listing facts", "3 + neighborhood"),
+    method = "Validation 468",
+    rmse = sqrt(val468)
+  ),
+  data.frame(
+    flexibility = c("1 Living area", "2 Listing facts", "3 + neighborhood"),
+    method = "5-fold",
+    rmse = sqrt(c(mean(cv5_area, na.rm = TRUE), mean(cv5_list, na.rm = TRUE), mean(cv5_nb, na.rm = TRUE)))
+  ),
+  data.frame(
+    flexibility = c("1 Living area", "2 Listing facts", "3 + neighborhood"),
+    method = "10-fold",
+    rmse = sqrt(c(mean(cv10_area, na.rm = TRUE), mean(cv10_list, na.rm = TRUE), mean(cv10_nb, na.rm = TRUE)))
+  )
+)
+fig54$flexibility <- factor(
+  fig54$flexibility,
+  levels = c("1 Living area", "2 Listing facts", "3 + neighborhood")
+)
+fig54$method <- factor(
+  fig54$method,
+  levels = c("Validation 467", "Validation 468", "5-fold", "10-fold")
+)
+ggplot(fig54, aes(flexibility, rmse, color = method, group = method)) +
+  geom_line(linewidth = 0.9, na.rm = TRUE) +
+  geom_point(size = 2.8, na.rm = TRUE) +
+  scale_color_manual(
+    values = c(
+      "Validation 467" = col_grey,
+      "Validation 468" = "#8AA8C4",
+      "5-fold" = col_ink,
+      "10-fold" = col_red
+    )
+  ) +
+  scale_y_continuous(labels = usd) +
+  labs(
+    x = "Flexibility of the rule (this file)",
+    y = "Estimated test RMSE (USD)",
+    color = NULL
+  ) +
+  theme_lab()
+# Question: What do you see in this graph? The two validation-set lines jump.
+# The 5-fold and 10-fold lines sit closer. Living area is high on every method.
+# Neighborhood jumps or goes missing. Which rule would you lock for the house
+# that is not in the file?
+# Discuss: What does all of this have to do with overfitting? Extra columns can
+# look good on train and on a lucky split. Averaging several held-out blocks is
+# how Monday told you to pick complexity. The case asked for that average
+# before you post.
+```
+
+```{r}
+#| label: baths
+# Full.Bath on the listing rule can change sign. That is not "add a bath, add
+# dollars." It is baths once living area and quality are already in the line.
+summary(m_list)$coefficients["Full.Bath", ]
+aggregate(Overall.Qual ~ Full.Bath, data = ames, FUN = mean)
+```
+
+```{r}
+#| label: plot-baths
+#| fig-height: 4.6
+#| fig-width: 7.6
+bath_df <- subset(ames, Full.Bath %in% c(1, 2, 3))
+bath_df$baths <- factor(paste0(bath_df$Full.Bath, "-bath"), levels = c("1-bath", "2-bath", "3-bath"))
+ggplot(bath_df, aes(factor(Overall.Qual), SalePrice, fill = baths)) +
+  geom_boxplot(
+    position = position_dodge(width = 0.75),
+    outlier.alpha = 0.2, width = 0.65, color = col_ink
+  ) +
+  scale_fill_manual(values = c(col_ink, col_red, col_grey)) +
+  scale_y_continuous(labels = usd) +
+  labs(x = "Overall quality", y = "Sale price (USD)", fill = NULL) +
+  theme_lab()
+# Interpret: Inside a quality score, do two-bath boxes sit above one-bath boxes,
+# or do they overlap? Business implication: if they overlap, a negative Full.Bath
+# coefficient once quality is in the line is not a puzzle.
+```
