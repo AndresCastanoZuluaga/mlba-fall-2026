@@ -19,7 +19,7 @@ execute:
 
 Please read the case first, including the codebook. In this homework you will be applying the learnings from the LR regression slides  and suggested readings. 
 
-Submit on Canvas, Tuesday 15 September 2026, 11:59 pm:
+Submit on Canvas, Thursday 17 September 2026, 11:59 pm:
 - this notebook (knitted) with the code you add and your written answers,
 - at most six slides, and
 - a video of at most five minutes presenting those slides.
@@ -321,7 +321,7 @@ Stronger: "This is one factory in 2015. The file cannot tell them what happens i
 
 ## What to submit
 
-You must submit three files on Canvas, Tuesday 15 September 2026, 11:59 pm.
+You must submit three files on Canvas, Thursday 17 September 2026, 11:59 pm.
 
 | Submission element | Requirement |
 |--------------------|-------------|
@@ -329,7 +329,7 @@ You must submit three files on Canvas, Tuesday 15 September 2026, 11:59 pm.
 | Slides | At most six slides. Same numbers as the notebook. |
 | Video | At most five minutes. Camera on. I need to see you. |
 | Where | Canvas only (not the course site) |
-| When | Tuesday 15 September 2026, 11:59 pm |
+| When | Thursday 17 September 2026, 11:59 pm |
 
 Please use a filename that includes your last name.
 

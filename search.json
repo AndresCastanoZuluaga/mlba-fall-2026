@@ -256,7 +256,7 @@
     "href": "hw/index.html",
     "title": "Homework",
     "section": "",
-    "text": "Individual R notebook At most six slides ≤ 5 min video Submit on Canvas\nEvery homework is individual. You submit three pieces on Canvas: a runnable R notebook, at most six slides, and a video of at most five minutes. The slides and the video should tell the same story as the notebook: what they are trying to decide, how you approached it, what you found, and what you would do.\nHomework 1 is posted below. Submit on Canvas only (not this site). Due Tuesday 15 September, 11:59 pm."
+    "text": "Individual R notebook At most six slides ≤ 5 min video Submit on Canvas\nEvery homework is individual. You submit three pieces on Canvas: a runnable R notebook, at most six slides, and a video of at most five minutes. The slides and the video should tell the same story as the notebook: what they are trying to decide, how you approached it, what you found, and what you would do.\nHomework 1 is posted below. Submit on Canvas only (not this site). Due Thursday 17 September, 11:59 pm."
   },
   {
     "objectID": "hw/index.html#package-every-hw",
@@ -270,7 +270,7 @@
     "href": "hw/index.html#schedule",
     "title": "Homework",
     "section": "Schedule",
-    "text": "Schedule\n\n\n\nHW\nReleased\nDeadline\nStatus\n\n\n\n\nHW1\n6 Sep\n15 Sep\nCase, data, starter · submit on Canvas\n\n\nHW2\n21 Sep\n28 Sep\nNot posted yet\n\n\nHW3\n21 Oct\n28 Oct\nNot posted yet\n\n\nHW4\n2 Nov\n9 Nov\nNot posted yet\n\n\n\n\nNo HW dues midterm week (5–7 Oct). HW4 is due 9 Nov (ensembles studio day)—plan ahead.\n\nFull calendar: Schedule."
+    "text": "Schedule\n\n\n\nHW\nReleased\nDeadline\nStatus\n\n\n\n\nHW1\n6 Sep\n17 Sep\nCase, data, starter · submit on Canvas\n\n\nHW2\n21 Sep\n28 Sep\nNot posted yet\n\n\nHW3\n21 Oct\n28 Oct\nNot posted yet\n\n\nHW4\n2 Nov\n9 Nov\nNot posted yet\n\n\n\n\nNo HW dues midterm week (5–7 Oct). HW4 is due 9 Nov (ensembles studio day)—plan ahead.\n\nFull calendar: Schedule."
   },
   {
     "objectID": "hw/index.html#ai",
@@ -354,7 +354,7 @@
     "href": "schedule.html#quick-reference",
     "title": "Schedule",
     "section": "Quick reference",
-    "text": "Quick reference\n\nHomeworks\n\n\n\n\n\n\n\n\n\nHW\nReleased\nDeadline\nFocus\n\n\n\n\nHW1\n2 Sep\n15 Sep\nRegression + metrics / basic evaluation\n\n\nHW2\n21 Sep\n28 Sep\nTrain/test + regularization\n\n\nHW3\n21 Oct\n28 Oct\nLogistic + classification metrics\n\n\nHW4\n2 Nov\n9 Nov\nTrees + boosting + PCA if needed\n\n\n\n\n\nQuizzes (paper, ~10–15 min)\n\n\n\nQuiz\nDate\n\n\n\n\nQ1\nMon 31 Aug\n\n\nQ2\nMon 21 Sep\n\n\nQ3\nWed 21 Oct\n\n\nQ4\nWed 25 Nov\n\n\n\n\n\nExam & project\n\n\n\n\n\n\n\nItem\nDate\n\n\n\n\nMidterm review\nMon 5 Oct\n\n\nMidterm\nWed 7 Oct (closed notes; weeks 1–5 only)\n\n\nProject brief published\nWed 28 Oct\n\n\nProject checkpoint\nWed 18 Nov (PCA lab day; criteria with brief)\n\n\nProject presentations\nMon 30 Nov & Wed 2 Dec\n\n\n\n\nNo homework/quiz/project dues: 5–7 Oct (midterm week)."
+    "text": "Quick reference\n\nHomeworks\n\n\n\n\n\n\n\n\n\nHW\nReleased\nDeadline\nFocus\n\n\n\n\nHW1\n2 Sep\n17 Sep\nRegression + metrics / basic evaluation\n\n\nHW2\n21 Sep\n28 Sep\nTrain/test + regularization\n\n\nHW3\n21 Oct\n28 Oct\nLogistic + classification metrics\n\n\nHW4\n2 Nov\n9 Nov\nTrees + boosting + PCA if needed\n\n\n\n\n\nQuizzes (paper, ~10–15 min)\n\n\n\nQuiz\nDate\n\n\n\n\nQ1\nMon 31 Aug\n\n\nQ2\nMon 21 Sep\n\n\nQ3\nWed 21 Oct\n\n\nQ4\nWed 25 Nov\n\n\n\n\n\nExam & project\n\n\n\n\n\n\n\nItem\nDate\n\n\n\n\nMidterm review\nMon 5 Oct\n\n\nMidterm\nWed 7 Oct (closed notes; weeks 1–5 only)\n\n\nProject brief published\nWed 28 Oct\n\n\nProject checkpoint\nWed 18 Nov (PCA lab day; criteria with brief)\n\n\nProject presentations\nMon 30 Nov & Wed 2 Dec\n\n\n\n\nNo homework/quiz/project dues: 5–7 Oct (midterm week)."
   },
   {
     "objectID": "schedule.html#week-by-week",
@@ -368,7 +368,7 @@
     "href": "schedule.html#master-deadline-list",
     "title": "Schedule",
     "section": "Master deadline list",
-    "text": "Master deadline list\n\n\n\nDate\nEvent\n\n\n\n\n31 Aug\nQuiz 1\n\n\n2 Sep\nHW1 released\n\n\n15 Sep\nHW1 deadline\n\n\n21 Sep\nQuiz 2 · HW2 released\n\n\n28 Sep\nHW2 deadline\n\n\n5 Oct\nMidterm review\n\n\n7 Oct\nMidterm\n\n\n21 Oct\nQuiz 3 · HW3 released\n\n\n28 Oct\nHW3 deadline · Project brief published\n\n\n2 Nov\nHW4 released\n\n\n9 Nov\nHW4 deadline\n\n\n18 Nov\nProject checkpoint (PCA lab day)\n\n\n25 Nov\nQuiz 4\n\n\n30 Nov–2 Dec\nProject presentations"
+    "text": "Master deadline list\n\n\n\nDate\nEvent\n\n\n\n\n31 Aug\nQuiz 1\n\n\n2 Sep\nHW1 released\n\n\n17 Sep\nHW1 deadline\n\n\n21 Sep\nQuiz 2 · HW2 released\n\n\n28 Sep\nHW2 deadline\n\n\n5 Oct\nMidterm review\n\n\n7 Oct\nMidterm\n\n\n21 Oct\nQuiz 3 · HW3 released\n\n\n28 Oct\nHW3 deadline · Project brief published\n\n\n2 Nov\nHW4 released\n\n\n9 Nov\nHW4 deadline\n\n\n18 Nov\nProject checkpoint (PCA lab day)\n\n\n25 Nov\nQuiz 4\n\n\n30 Nov–2 Dec\nProject presentations"
   },
   {
     "objectID": "slides/index.html",
@@ -383,5 +383,12 @@
     "title": "Slides",
     "section": "Week 1 — Launch + linear regression",
     "text": "Week 1 — Launch + linear regression\n\nMon 24 Aug · Introduction\nOpen in Chrome · PDF\n\n\nWed 26 Aug and Mon 31 Aug · Linear regression\nOpen in Chrome · PDF"
+  },
+  {
+    "objectID": "slides/index.html#week-3-evaluating-model-accuracy",
+    "href": "slides/index.html#week-3-evaluating-model-accuracy",
+    "title": "Slides",
+    "section": "Week 3 — Evaluating model accuracy",
+    "text": "Week 3 — Evaluating model accuracy\n\nMon 7 Sep · Train/test and cross-validation\nOpen in Chrome · PDF"
   }
 ]
