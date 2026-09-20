@@ -303,7 +303,7 @@ cat("Best subset size 4:", paste(selected_at(best_train, 4), collapse = ", "), "
 ```{r}
 #| label: forward-adds
 #| fig-width: 8
-#| fig-height: 3.6
+#| fig-height: 5.2
 # Which predictor is new at each step?
 fwd_path <- data.frame(size = 1:11, added = NA_character_)
 already <- character(0)
@@ -313,19 +313,21 @@ for (i in 1:11) {
   already <- now
 }
 fwd_path
+fwd_path$added <- factor(fwd_path$added, levels = rev(fwd_path$added))
 
-ggplot(fwd_path, aes(x = size, y = 0, label = added)) +
-  geom_label(fill = "#156082", color = "white", label.size = 0, size = 3) +
-  scale_x_continuous(breaks = 1:11, limits = c(0.4, 11.6)) +
-  scale_y_continuous(limits = c(-1, 1), breaks = NULL) +
+# Why a lollipop, not one row of labels? Eleven names on one line
+# overwrite each other. The path should be readable from the back row.
+ggplot(fwd_path, aes(x = size, y = added)) +
+  geom_segment(aes(x = 0.8, xend = size, yend = added), color = "#8eb4cc") +
+  geom_point(size = 3.2, color = "#156082") +
+  scale_x_continuous(breaks = 1:11, limits = c(0.8, 11.4)) +
   labs(
     x = "Forward step (model size after the add)",
     y = NULL,
     title = "Predictor added by forward stepwise",
     subtitle = "Once a name appears, forward will not drop it later."
   ) +
-  theme_minimal() +
-  theme(panel.grid = element_blank())
+  theme_minimal()
 
 # Interpret: Forward commits early. If Rating enters at size 1, Rating
 # is still there at size 4. Best subset is allowed to swap Rating for
@@ -455,7 +457,15 @@ size4_err$team <- factor(size4_err$team, levels = rev(size4_err$team))
 
 ggplot(size4_err, aes(x = rmse, y = team)) +
   geom_col(fill = "#156082", width = 0.65) +
-  scale_x_continuous(labels = label_dollar(accuracy = 1)) +
+  geom_text(
+    aes(label = dollar(rmse, accuracy = 0.1)),
+    hjust = -0.08,
+    size = 3.2
+  ) +
+  scale_x_continuous(
+    labels = label_dollar(accuracy = 1),
+    expand = expansion(mult = c(0.02, 0.18))
+  ) +
   labs(
     x = "Training RMSE on the 280",
     y = NULL,
@@ -549,7 +559,13 @@ mark <- function(df, y, which_row) {
   )
 }
 
+vline_at <- function(size) {
+  geom_vline(xintercept = size, color = "#e97132", linetype = "dashed",
+             linewidth = 0.5, alpha = 0.7)
+}
+
 p_cp <- ggplot(crit, aes(x = size, y = Cp)) +
+  vline_at(which.min(crit$Cp)) +
   geom_line(color = "#156082", linewidth = 0.9) +
   geom_point(color = "#156082", size = 2) +
   mark(crit, "Cp", which.min(crit$Cp)) +
@@ -558,6 +574,7 @@ p_cp <- ggplot(crit, aes(x = size, y = Cp)) +
   theme_minimal()
 
 p_aic <- ggplot(crit, aes(x = size, y = AIC)) +
+  vline_at(which.min(crit$AIC)) +
   geom_line(color = "#156082", linewidth = 0.9) +
   geom_point(color = "#156082", size = 2) +
   mark(crit, "AIC", which.min(crit$AIC)) +
@@ -566,6 +583,7 @@ p_aic <- ggplot(crit, aes(x = size, y = AIC)) +
   theme_minimal()
 
 p_bic <- ggplot(crit, aes(x = size, y = BIC)) +
+  vline_at(which.min(crit$BIC)) +
   geom_line(color = "#156082", linewidth = 0.9) +
   geom_point(color = "#156082", size = 2) +
   mark(crit, "BIC", which.min(crit$BIC)) +
@@ -574,6 +592,7 @@ p_bic <- ggplot(crit, aes(x = size, y = BIC)) +
   theme_minimal()
 
 p_adj <- ggplot(crit, aes(x = size, y = adjR2)) +
+  vline_at(which.max(crit$adjR2)) +
   geom_line(color = "#156082", linewidth = 0.9) +
   geom_point(color = "#156082", size = 2) +
   mark(crit, "adjR2", which.max(crit$adjR2)) +
@@ -700,7 +719,7 @@ predict.regsubsets <- function(object, newdata, id, ...) {
 ```{r}
 #| label: cv-size
 #| fig-width: 7.8
-#| fig-height: 4.6
+#| fig-height: 7.2
 # 10-fold CV over size, on the 280 only.
 # Why a new set.seed(46704)? The fold assignment is random. Fixing it
 # means the room is looking at the same picture. It is not a claim
@@ -728,14 +747,17 @@ for (j in 1:k) {
 # in dollars. Why? That matches how we have been reading training RMSE.
 cv_rmse <- sqrt(colMeans(cv_mse))
 cv_rmse
-which.min(cv_rmse)
+as.integer(which.min(cv_rmse))
 
 err_both <- rbind(
   data.frame(size = 1:11, rmse = train_rmse, source = "Training (280)"),
   data.frame(size = 1:11, rmse = as.numeric(cv_rmse), source = "10-fold CV (280)")
 )
 
-ggplot(err_both, aes(x = size, y = rmse, color = source, group = source)) +
+# Two panels: the full drop, then a zoom so the flat band is visible.
+# Why? Size 1–2 stretch the y-axis. The decision among sizes 4–7 lives
+# in a few dollars, and that is the part a single plot hides.
+p_cv_full <- ggplot(err_both, aes(x = size, y = rmse, color = source, group = source)) +
   geom_line(linewidth = 1) +
   geom_point(size = 2.4) +
   scale_color_manual(values = c("Training (280)" = "#156082",
@@ -751,6 +773,28 @@ ggplot(err_both, aes(x = size, y = rmse, color = source, group = source)) +
   ) +
   theme_minimal() +
   theme(legend.position = "bottom")
+
+p_cv_zoom <- ggplot(
+  subset(err_both, size >= 3),
+  aes(x = size, y = rmse, color = source, group = source)
+) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2.4) +
+  scale_color_manual(values = c("Training (280)" = "#156082",
+                                "10-fold CV (280)" = "#e97132")) +
+  scale_x_continuous(breaks = 3:11) +
+  scale_y_continuous(labels = label_dollar(accuracy = 1)) +
+  labs(
+    x = "Number of predictors",
+    y = "RMSE (dollars)",
+    color = NULL,
+    title = "Same comparison, sizes 3 to 11",
+    subtitle = "CV sits in a band. The exact minimum is less important than the band."
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+p_cv_full / p_cv_zoom
 
 # Interpret: Training RMSE keeps falling. CV RMSE drops sharply at
 # first and then sits in a band. The exact minimum of a wiggly CV
