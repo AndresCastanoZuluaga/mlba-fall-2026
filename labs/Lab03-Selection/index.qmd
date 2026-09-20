@@ -1,0 +1,35 @@
+---
+title: "Lab 3: Selecting a model for Balance on a QNB credit card"
+subtitle: "Mon 21 Sep"
+format:
+  html:
+    toc: false
+    body-classes: "mlba-page"
+    code-tools: false
+---
+
+<p class="page-lead">Read the case before class, including the codebook on page 2. Download the data and look at it with the codebook open. Think about the problem in the case: a good predictive model for Balance among many possible models, without overfitting to the 400 accounts we already have.</p>
+
+::: {.sch-chip-row}
+<span class="sch-chip">Case + data + starter</span>
+:::
+
+::: {.sch-week-card}
+### Case
+
+[PDF](lab03-credit-problem.pdf) · (problem description + codebook)
+:::
+
+::: {.sch-week-card}
+### Data
+
+[Credit.csv](data/Credit.csv) · 400 credit-card accounts. Balance in dollars. For this lab, treat these as balances on QNB cards.
+:::
+
+::: {.sch-week-card}
+### Starter
+
+[lab03-credit.qmd](lab03-credit.qmd)
+
+Put the csv in a folder named `data` next to the qmd. Open the qmd in RStudio and Knit / Render. The first chunk installs `leaps` and `patchwork` if you do not have them.
+:::
