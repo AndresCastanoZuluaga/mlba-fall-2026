@@ -106,6 +106,18 @@ rmse <- function(y, yhat) {
 selected_at <- function(object, size) {
   setdiff(names(coef(object, id = size)), "(Intercept)")
 }
+
+# Turn a regsubsets team into an lm() formula.
+# Why? leaps reports dummy names (StudentYes, RegionWest). lm() wants
+# the original factor (Student, Region). After class, if you change the
+# seed, use this helper so the fit matches the new team.
+team_formula <- function(object, size) {
+  vars <- selected_at(object, size)
+  vars <- sub("Yes$", "", vars)
+  vars <- sub("^Region.*", "Region", vars)
+  vars <- unique(vars)
+  as.formula(paste("Balance ~", paste(vars, collapse = " + ")))
+}
 ```
 
 ```{r}
@@ -130,6 +142,13 @@ n
 mean(credit$Balance)
 sum(credit$Balance == 0)
 sum(is.na(credit))
+
+# Mean Balance by the Yes/No and Region predictors.
+# Why? The Discuss below is about who actually sits away from $520.
+tapply(credit$Balance, credit$Student, mean)
+tapply(credit$Balance, credit$Own, mean)
+tapply(credit$Balance, credit$Married, mean)
+tapply(credit$Balance, credit$Region, mean)
 
 # Question: How many accounts? How many predictors sit beside Balance?
 # Confirm there are no missing values before you search.
@@ -293,11 +312,18 @@ fwd_train <- regsubsets(Balance ~ ., data = train, nvmax = 11, method = "forward
 fwd_train_sum <- summary(fwd_train)
 fwd_train_sum$outmat
 
-# Student Exercise: Find the first size where the forward team is not
-# the same as the best-subset team. Write the two lists of predictors.
-# Then come back to this chunk after you have both outmats on screen.
-cat("Forward size 4:    ", paste(selected_at(fwd_train, 4), collapse = ", "), "\n")
-cat("Best subset size 4:", paste(selected_at(best_train, 4), collapse = ", "), "\n")
+# Student Exercise: Walk sizes 1 through 5 on both outmats. Find the
+# first size where the forward team is not the same as the best-subset
+# team. Write the two lists of predictors before you look at the
+# size-4 section below.
+for (i in 1:5) {
+  cat(
+    "Size", i,
+    "| best:", paste(selected_at(best_train, i), collapse = ", "),
+    "| forward:", paste(selected_at(fwd_train, i), collapse = ", "),
+    "\n"
+  )
+}
 ```
 
 ```{r}
@@ -403,9 +429,10 @@ ggplot(train_err, aes(x = size, y = rmse)) +
   theme_minimal()
 
 # Interpret: The big drop is in the first few sizes. After that the
-# curve is almost flat. Adding Education at the end will still nudge
-# training RMSE down. That nudge is not evidence that Education belongs
-# in a model we will take off these 280 accounts.
+# curve is almost flat. Education arrives late on this training path
+# (size 9 in the heatmap). It will still nudge training RMSE down.
+# That nudge is not evidence that Education belongs in a model we
+# will take off these 280 accounts.
 #
 # Question: If you handed this plot to a colleague and said nothing
 # else, which size would they pick? Why is that the wrong prompt?
@@ -644,17 +671,24 @@ summary(fit_limit)
 summary(fit_rating)
 summary(fit_both)
 
+# Kitchen sink on all 400. Why? The Question below is about stars in
+# the full model, not only Limit + Rating. On this file both Limit
+# and Rating stay starred once everything else is in the equation.
+fit_sink <- lm(Balance ~ ., data = credit)
+summary(fit_sink)
+
 # Slopes, standard errors, and p-values side by side.
+# Why format.pval()? scipen = 999 makes raw p-values unreadable.
 brief <- function(fit, label) {
   s <- summary(fit)$coefficients
   data.frame(
     model = label,
     predictor = rownames(s),
-    slope = s[, "Estimate"],
-    se = s[, "Std. Error"],
-    p = s[, "Pr(>|t|)"],
-    r2 = summary(fit)$r.squared,
-    rse = summary(fit)$sigma,
+    slope = round(s[, "Estimate"], 4),
+    se = round(s[, "Std. Error"], 4),
+    p = format.pval(s[, "Pr(>|t|)"], digits = 3, eps = 0.001),
+    r2 = round(summary(fit)$r.squared, 4),
+    rse = round(summary(fit)$sigma, 2),
     row.names = NULL
   )
 }
@@ -677,9 +711,9 @@ rbind(
 # one slope keeps a small p-value and the other does not. The RSE of
 # the two-predictor fit is not an improvement on Rating alone.
 #
-# Question: If you had only starred coefficients from the kitchen-sink
-# model, would you have kept both Limit and Rating? Why is that a
-# bad selection rule on this file?
+# Question: Look at the kitchen-sink stars. Do Limit and Rating both
+# stay starred there? If you had only those stars, would you have
+# kept both? Why is that a bad selection rule on this file?
 #
 # Discuss: Someone says "Rating is significant, Limit is not, so drop
 # Limit." What did they condition on? What would they have said if
@@ -823,12 +857,13 @@ RMSE in this notebook.
 
 ```{r}
 #| label: chosen-model
-# Size 4 on the 280: Income, Limit, Cards, Student.
+# Size 4 on the 280: on this seed, Income, Limit, Cards, Student.
 # Why this size? It is BIC's pick on the 400, and it sits in the
 # flat CV region on the 280. Size 6 can win a CV minimum by a
 # fraction of a dollar. That is not a strong argument for the
 # extra predictors on a $520 outcome.
-chosen <- lm(Balance ~ Income + Limit + Cards + Student, data = train)
+team_formula(best_train, 4)
+chosen <- lm(team_formula(best_train, 4), data = train)
 summary(chosen)
 coef(chosen)
 
@@ -873,7 +908,8 @@ coef(best_train, 4)
 # interpretation yourself.
 size6_team <- selected_at(best_train, 6)
 size6_team
-fit6 <- lm(Balance ~ Income + Limit + Rating + Cards + Age + Student, data = train)
+team_formula(best_train, 6)
+fit6 <- lm(team_formula(best_train, 6), data = train)
 coef(chosen)
 coef(fit6)
 rmse(train$Balance, fitted(chosen))
