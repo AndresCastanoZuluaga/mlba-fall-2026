@@ -1,0 +1,862 @@
+---
+title: "Lab 3: Selecting a model for Balance on a QNB credit card"
+subtitle: "70-467 · Monday 21 September · bring a laptop"
+author: "Andrés Castaño Zuluaga"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    toc-location: right
+    body-classes: "mlba-page"
+    code-fold: false
+    code-tools: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+<!--
+Student starter for the hour. Code is filled on purpose. Run each chunk,
+read the comments, and talk through the Interpret / Question / Discuss
+prompts in the room. The 120 held-out accounts stay closed.
+-->
+
+# Introduction to the Business Problem
+
+We have been using the Credit data in class. For this lab, treat the 400
+rows as credit-card accounts on QNB (Qatar National Bank) cards. The
+outcome is `Balance`: the average amount on the card, in dollars. Mean
+Balance on this file is about $520. Ninety accounts sit at zero.
+
+QNB has already issued the cards. For each account we observe income,
+credit limit, credit rating, number of cards, age, years of education,
+whether the person owns a home, is married, is a student, and region
+(East, South, or West). That is many predictors, so there are many
+possible least-squares models. If we put every predictor into one fit,
+or we keep adding predictors because the training fit looks better, we
+can overfit these 400 accounts. A closer fit here does not mean the
+model will predict well for a new customer.
+
+The question for the hour is the one from class: how can we select a
+good predictive model for Balance among many, and how can we avoid
+overfitting?
+
+We will search with three methods from class: best subset, forward
+stepwise, and backward stepwise. That gives the best model of each size.
+Then we will pick a size in the two ways we discussed.
+
+- Cp, AIC, BIC, and adjusted $R^2$ adjust the training error. We will
+  compute those on all 400 accounts and label that fact.
+- Cross-validation scores accounts we did not use to pick the
+  predictors. We will do that only on the 280 training accounts.
+
+Do not pick predictors from the $p$-values of the model that uses every
+predictor. We will see why that fails when two predictors move together.
+
+Open the case PDF before you run code and keep the codebook in view.
+Income is in thousands of dollars. Balance, Limit are in dollars. Rating
+is in points. `Student`, `Own`, and `Married` are Yes/No. `Region` is
+East, South, or West.
+
+**Think 1.** Why can a model that fits these 400 accounts very well still
+be a poor model for the next QNB customer?
+
+**Think 2.** Ninety accounts have Balance exactly zero, and the mean is
+about $520. What should you keep in mind when you read a least-squares
+slope on this file?
+
+# Loading Packages and Data
+
+```{r}
+#| label: setup
+# leaps: regsubsets() for best subset, forward, and backward search.
+# ggplot2 / patchwork / scales: figures that we can read in the room.
+# Why? Base par(mfrow) stacks plots. patchwork keeps the comparison
+# aligned and labeled, which is the point of the criteria panel later.
+if (!requireNamespace("leaps", quietly = TRUE)) {
+  install.packages("leaps")
+}
+if (!requireNamespace("ggplot2", quietly = TRUE)) {
+  install.packages("ggplot2")
+}
+if (!requireNamespace("patchwork", quietly = TRUE)) {
+  install.packages("patchwork")
+}
+if (!requireNamespace("scales", quietly = TRUE)) {
+  install.packages("scales")
+}
+
+library(leaps)
+library(ggplot2)
+library(patchwork)
+library(scales)
+
+options(scipen = 999)
+
+# Dollar-scale RMSE. Why? Balance is in dollars. A unitless MSE is
+# harder to hold next to the $520 mean.
+rmse <- function(y, yhat) {
+  sqrt(mean((y - yhat)^2))
+}
+
+# Names of the predictors in a regsubsets() model of a given size.
+# Why? We will compare teams often. One helper keeps the output short.
+selected_at <- function(object, size) {
+  setdiff(names(coef(object, id = size)), "(Intercept)")
+}
+```
+
+```{r}
+#| label: load-data
+# Read the shipped file. Do not load a different Credit table from a
+# package: this file uses Region (East / South / West) and has no extra
+# demographic predictor beyond the codebook.
+credit <- read.csv("data/Credit.csv")
+
+# Why? read.csv() leaves Yes/No and Region as character. lm() and
+# regsubsets() need factors so the dummy coding is explicit.
+credit$Own <- factor(credit$Own)
+credit$Student <- factor(credit$Student)
+credit$Married <- factor(credit$Married)
+credit$Region <- factor(credit$Region)
+
+str(credit)
+summary(credit)
+
+n <- nrow(credit)
+n
+mean(credit$Balance)
+sum(credit$Balance == 0)
+sum(is.na(credit))
+
+# Question: How many accounts? How many predictors sit beside Balance?
+# Confirm there are no missing values before you search.
+#
+# Interpret: Mean Balance should be about $520. The 90 zeros are real
+# accounts, not missing values. Least squares will spend some fit on
+# that pile at zero.
+#
+# Discuss: Own, Married, and Region means sit close to the file mean.
+# Student does not. Why might a student indicator move Balance when
+# home ownership barely does?
+```
+
+```{r}
+#| label: hist-balance
+#| fig-width: 8
+#| fig-height: 4.2
+ggplot(credit, aes(x = Balance)) +
+  geom_histogram(bins = 36, fill = "#156082", color = "white", linewidth = 0.2) +
+  geom_vline(
+    xintercept = mean(credit$Balance),
+    color = "#e97132",
+    linewidth = 1.1
+  ) +
+  scale_x_continuous(labels = label_dollar(accuracy = 1)) +
+  labs(
+    x = "Balance (dollars)",
+    y = "Number of accounts",
+    title = "Balance on 400 QNB-card accounts",
+    subtitle = "Orange line: mean, about $520. The spike at zero is 90 accounts."
+  ) +
+  theme_minimal()
+
+# Interpret: The mass at zero and the long right tail both matter. A
+# single linear model is a compromise across those accounts.
+# Question: If QNB cares more about high-balance accounts than about
+# the zeros, is training RMSE on all 400 the loss they would write
+# down in a product meeting?
+```
+
+```{r}
+#| label: split
+# Hold out 120 accounts. Search and cross-validation use the other 280.
+# Seed 46704 so the room shares one split.
+# Why? If we pick predictors on all 400 and then congratulate ourselves
+# on a holdout that already influenced the pick, the holdout is no
+# longer a test. That is leakage.
+set.seed(46704)
+test_id <- sample(nrow(credit), 120)
+train <- credit[-test_id, ]
+test <- credit[test_id, ]
+
+nrow(train)
+nrow(test)
+mean(train$Balance)
+mean(test$Balance)
+
+# Question: The two means need not match. What would it mean for
+# selection if we now used the 120 to choose a size?
+#
+# Discuss: Suppose someone runs best subset on all 400, then reports
+# error on these 120. Which step used information from the 120? Why
+# is that a problem for a claim about new customers?
+#
+# The 120 stay closed for the rest of this notebook. We print their
+# size and mean only to record the split. Do not score models on test.
+```
+
+# Best Subset Selection
+
+Best subset, for each size $k$, finds the $k$ predictors that minimize
+training RSS. It is a search over teams, not a search over $p$-values.
+
+As we add predictors the fit can follow the 280 more closely (lower
+bias) and also follow noise (higher variance). The outmat is the team
+sheet. An asterisk means that predictor is in the best model of that
+size.
+
+```{r}
+#| label: best-subset
+# nvmax = 11 because Region has three levels (two dummies) and the
+# three Yes/No variables each contribute one dummy. That is 11
+# predictors after dummy coding, not 10 raw names.
+# Why? If nvmax is too small, we never see the kitchen-sink team and
+# the criteria plots get cut off.
+best_train <- regsubsets(Balance ~ ., data = train, nvmax = 11)
+best_train_sum <- summary(best_train)
+best_train_sum$outmat
+
+cat("Size 1:", paste(selected_at(best_train, 1), collapse = ", "), "\n")
+cat("Size 2:", paste(selected_at(best_train, 2), collapse = ", "), "\n")
+cat("Size 3:", paste(selected_at(best_train, 3), collapse = ", "), "\n")
+cat("Size 4:", paste(selected_at(best_train, 4), collapse = ", "), "\n")
+
+# Interpret: Who enters at size 1? At size 2? At size 3? Student
+# typically arrives by size 3. Limit and Rating do not both stay in
+# the size-4 team — we will come back to that.
+#
+# Question: Size 1 is a single numeric score. Why is that predictor
+# a plausible first pick for Balance on a credit card?
+#
+# Discuss: Best subset re-optimizes at every size. The size-4 team
+# is not required to contain the size-3 team. Find the first size
+# where the nested pattern breaks. What swapped?
+#
+# Business implication: A search that is allowed to drop a predictor
+# later is more honest than a story that says "we already included
+# Rating, so it has to stay."
+```
+
+```{r}
+#| label: best-heatmap
+#| fig-width: 8.5
+#| fig-height: 4.8
+# Optional picture of the same outmat. Dark tiles are selected.
+# Why? A table is precise. A tile plot makes the Limit / Rating swap
+# and the late arrival of Education visible from across the room.
+om <- best_train_sum$outmat
+best_tiles <- do.call(
+  rbind,
+  lapply(seq_len(nrow(om)), function(i) {
+    data.frame(
+      size = i,
+      predictor = colnames(om),
+      selected = om[i, ] == "*",
+      row.names = NULL
+    )
+  })
+)
+best_tiles$predictor <- factor(best_tiles$predictor, levels = colnames(om))
+
+ggplot(best_tiles, aes(x = size, y = predictor, fill = selected)) +
+  geom_tile(color = "white", linewidth = 0.4) +
+  scale_fill_manual(values = c("TRUE" = "#156082", "FALSE" = "#e8eef2"),
+                    labels = c("TRUE" = "In the team", "FALSE" = "Out")) +
+  scale_x_continuous(breaks = 1:11) +
+  labs(
+    x = "Number of predictors",
+    y = NULL,
+    fill = NULL,
+    title = "Best subset on the 280 training accounts",
+    subtitle = "Each row is a predictor (after dummy coding). Dark = selected at that size."
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+# Interpret: Education stays out for a long time. Region dummies
+# arrive late. The interesting movement is in Limit, Rating, Cards,
+# and Student.
+```
+
+# Forward Stepwise Selection
+
+Forward stepwise starts at the intercept and adds one predictor at a
+time. Once a predictor is in, it stays. The search is nested by
+construction.
+
+```{r}
+#| label: forward
+fwd_train <- regsubsets(Balance ~ ., data = train, nvmax = 11, method = "forward")
+fwd_train_sum <- summary(fwd_train)
+fwd_train_sum$outmat
+
+# Student Exercise: Find the first size where the forward team is not
+# the same as the best-subset team. Write the two lists of predictors.
+# Then come back to this chunk after you have both outmats on screen.
+cat("Forward size 4:    ", paste(selected_at(fwd_train, 4), collapse = ", "), "\n")
+cat("Best subset size 4:", paste(selected_at(best_train, 4), collapse = ", "), "\n")
+```
+
+```{r}
+#| label: forward-adds
+#| fig-width: 8
+#| fig-height: 3.6
+# Which predictor is new at each step?
+fwd_path <- data.frame(size = 1:11, added = NA_character_)
+already <- character(0)
+for (i in 1:11) {
+  now <- selected_at(fwd_train, i)
+  fwd_path$added[i] <- setdiff(now, already)
+  already <- now
+}
+fwd_path
+
+ggplot(fwd_path, aes(x = size, y = 0, label = added)) +
+  geom_label(fill = "#156082", color = "white", label.size = 0, size = 3) +
+  scale_x_continuous(breaks = 1:11, limits = c(0.4, 11.6)) +
+  scale_y_continuous(limits = c(-1, 1), breaks = NULL) +
+  labs(
+    x = "Forward step (model size after the add)",
+    y = NULL,
+    title = "Predictor added by forward stepwise",
+    subtitle = "Once a name appears, forward will not drop it later."
+  ) +
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+
+# Interpret: Forward commits early. If Rating enters at size 1, Rating
+# is still there at size 4. Best subset is allowed to swap Rating for
+# Cards when that swap wins on training RSS.
+#
+# Question: Is a method that cannot change its mind safer, or just
+# cheaper to compute?
+#
+# Discuss: For 11 predictors, best subset is feasible. When would you
+# still prefer forward in a business setting?
+```
+
+# Backward Stepwise Selection
+
+Backward stepwise starts from the model that uses every predictor and
+drops the one whose removal hurts training RSS the least. The path is
+nested in the other direction.
+
+```{r}
+#| label: backward
+bwd_train <- regsubsets(Balance ~ ., data = train, nvmax = 11, method = "backward")
+bwd_train_sum <- summary(bwd_train)
+bwd_train_sum$outmat
+
+cat("Backward size 1:", paste(selected_at(bwd_train, 1), collapse = ", "), "\n")
+cat("Best subset size 1:", paste(selected_at(best_train, 1), collapse = ", "), "\n")
+cat("Backward size 4:", paste(selected_at(bwd_train, 4), collapse = ", "), "\n")
+
+# Question: The size-1 backward model need not match the size-1 best
+# subset model. Why can those two searches disagree at the small end?
+#
+# Discuss: Look across the three outmats at sizes 1, 4, and 6. Where
+# do the methods agree, and where do they fork? If three searches
+# disagree, what should you not do with the first asterisk you see?
+#
+# Interpret: Backward has already lived with Limit and Rating in the
+# same model. When it is forced to shrink, it has to drop one of them
+# while the rest of the kitchen sink is still there. That is a
+# different question than "which single predictor is best alone."
+```
+
+# Training Error by Model Size
+
+Training RMSE is the in-sample fit of the best model of each size on
+the 280. It should fall as we add predictors. That is why it cannot
+choose a size.
+
+```{r}
+#| label: train-rmse
+#| fig-width: 7.5
+#| fig-height: 4.2
+mm_train <- model.matrix(Balance ~ ., data = train)
+train_rmse <- sapply(1:11, function(i) {
+  cf <- coef(best_train, id = i)
+  pred <- as.numeric(mm_train[, names(cf), drop = FALSE] %*% cf)
+  rmse(train$Balance, pred)
+})
+
+train_err <- data.frame(size = 1:11, rmse = train_rmse)
+train_err
+
+ggplot(train_err, aes(x = size, y = rmse)) +
+  geom_line(color = "#156082", linewidth = 1) +
+  geom_point(color = "#156082", size = 2.4) +
+  scale_x_continuous(breaks = 1:11) +
+  scale_y_continuous(labels = label_dollar(accuracy = 1)) +
+  labs(
+    x = "Number of predictors",
+    y = "Training RMSE",
+    title = "Training RMSE falls as we add predictors",
+    subtitle = "280 training accounts. Best subset at each size."
+  ) +
+  theme_minimal()
+
+# Interpret: The big drop is in the first few sizes. After that the
+# curve is almost flat. Adding Education at the end will still nudge
+# training RMSE down. That nudge is not evidence that Education belongs
+# in a model we will take off these 280 accounts.
+#
+# Question: If you handed this plot to a colleague and said nothing
+# else, which size would they pick? Why is that the wrong prompt?
+#
+# Discuss: Why do we need Cp / AIC / BIC / adjusted R^2, or
+# cross-validation, if training RMSE already tells a clear story?
+#
+# Business implication: A dashboard that only reports training fit
+# will keep asking for more predictors. That is a process failure,
+# not a data failure.
+```
+
+# Comparing Best Subset and Forward Stepwise at Size 4
+
+Size 4 is the first place the two searches usually disagree on this
+file. The disagreement is about Limit, Rating, and Cards.
+
+```{r}
+#| label: size4-teams
+cat("Best subset, size 4:\n")
+print(selected_at(best_train, 4))
+cat("\nForward, size 4:\n")
+print(selected_at(fwd_train, 4))
+cat("\nBackward, size 4:\n")
+print(selected_at(bwd_train, 4))
+
+# Same size, different teams. Fit each one on the 280 so the RSS
+# comparison is in dollars.
+size4 <- list(
+  "Income + Limit + Cards + Student"  = Balance ~ Income + Limit + Cards + Student,
+  "Income + Limit + Rating + Student" = Balance ~ Income + Limit + Rating + Student,
+  "Income + Rating + Cards + Student" = Balance ~ Income + Rating + Cards + Student,
+  "Income + Limit + Rating + Cards"   = Balance ~ Income + Limit + Rating + Cards
+)
+
+size4_err <- data.frame(
+  team = names(size4),
+  rmse = sapply(size4, function(f) rmse(train$Balance, fitted(lm(f, data = train)))),
+  row.names = NULL
+)
+size4_err
+```
+
+```{r}
+#| label: size4-plot
+#| fig-width: 8
+#| fig-height: 4.4
+size4_err$team <- factor(size4_err$team, levels = rev(size4_err$team))
+
+ggplot(size4_err, aes(x = rmse, y = team)) +
+  geom_col(fill = "#156082", width = 0.65) +
+  scale_x_continuous(labels = label_dollar(accuracy = 1)) +
+  labs(
+    x = "Training RMSE on the 280",
+    y = NULL,
+    title = "Four size-4 teams, same training accounts",
+    subtitle = "The last bar drops Student. That omission is expensive."
+  ) +
+  theme_minimal()
+
+# Interpret: Best subset's size-4 team keeps Cards and drops Rating.
+# Forward keeps Rating and drops Cards. The training RMSEs are close.
+# The team that drops Student is not close.
+#
+# Question: Limit and Rating move together. If you could keep only
+# one of them at size 4, what else do you want on the team?
+#
+# Discuss: A colleague says "both Limit and Rating are important, so
+# both should be in the model." What does this plot say back?
+#
+# Business implication: Importance in a sentence is not the same as
+# a seat on a four-predictor team. Student is easy to miss in a
+# credit-limit conversation and expensive to omit on this file.
+```
+
+# Model Comparison (Cp, AIC, BIC, Adjusted R²)
+
+These are the criteria from class that adjust training error. We compute
+them on **all 400 accounts** and we label that. They are not an estimate
+of error on new customers. They are a ranking of sizes on the file we
+already have.
+
+leaps reports Cp, BIC, and adjusted $R^2$. AIC we get by refitting the
+best model of each size with `lm()`.
+
+```{r}
+#| label: criteria-all400
+# Why? The outline for the hour is: criteria on all 400, labeled;
+# cross-validation on the 280. Mixing those two without a label is
+# how people later claim an "honest" number that used every account.
+best_all <- regsubsets(Balance ~ ., data = credit, nvmax = 11)
+best_all_sum <- summary(best_all)
+
+aic_vals <- numeric(11)
+mm_all <- model.matrix(Balance ~ ., data = credit)
+for (i in 1:11) {
+  cf <- coef(best_all, id = i)
+  vars <- setdiff(names(cf), "(Intercept)")
+  dat_i <- data.frame(
+    Balance = credit$Balance,
+    mm_all[, vars, drop = FALSE],
+    check.names = FALSE
+  )
+  aic_vals[i] <- AIC(lm(Balance ~ ., data = dat_i))
+}
+
+crit <- data.frame(
+  size = 1:11,
+  Cp = as.numeric(best_all_sum$cp),
+  AIC = aic_vals,
+  BIC = as.numeric(best_all_sum$bic),
+  adjR2 = as.numeric(best_all_sum$adjr2)
+)
+crit
+
+cat("Cp minimum at size", which.min(crit$Cp), "\n")
+cat("AIC minimum at size", which.min(crit$AIC), "\n")
+cat("BIC minimum at size", which.min(crit$BIC), "\n")
+cat("Adjusted R^2 maximum at size", which.max(crit$adjR2), "\n")
+
+cat("\nBest subset on all 400, size 4:", paste(selected_at(best_all, 4), collapse = ", "), "\n")
+cat("Best subset on all 400, size 6:", paste(selected_at(best_all, 6), collapse = ", "), "\n")
+cat("Best subset on all 400, size 7:", paste(selected_at(best_all, 7), collapse = ", "), "\n")
+```
+
+```{r}
+#| label: criteria-panel
+#| fig-width: 9
+#| fig-height: 6.4
+# Four panels, one comparison. Orange marks the preferred size.
+# Why? A single number from one criterion is easy to over-trust.
+# Seeing the four together is the exercise.
+# Orange marker for the preferred size. Built as a one-row data frame
+# so we do not fight ggplot's inherited y mapping.
+mark <- function(df, y, which_row) {
+  hit <- df[which_row, , drop = FALSE]
+  geom_point(
+    data = data.frame(size = hit$size, y = hit[[y]]),
+    aes(x = size, y = y),
+    color = "#e97132",
+    size = 3.2,
+    inherit.aes = FALSE
+  )
+}
+
+p_cp <- ggplot(crit, aes(x = size, y = Cp)) +
+  geom_line(color = "#156082", linewidth = 0.9) +
+  geom_point(color = "#156082", size = 2) +
+  mark(crit, "Cp", which.min(crit$Cp)) +
+  scale_x_continuous(breaks = 1:11) +
+  labs(x = "Number of predictors", y = expression(C[p]), title = "Mallows Cp") +
+  theme_minimal()
+
+p_aic <- ggplot(crit, aes(x = size, y = AIC)) +
+  geom_line(color = "#156082", linewidth = 0.9) +
+  geom_point(color = "#156082", size = 2) +
+  mark(crit, "AIC", which.min(crit$AIC)) +
+  scale_x_continuous(breaks = 1:11) +
+  labs(x = "Number of predictors", y = "AIC", title = "AIC from lm() at each size") +
+  theme_minimal()
+
+p_bic <- ggplot(crit, aes(x = size, y = BIC)) +
+  geom_line(color = "#156082", linewidth = 0.9) +
+  geom_point(color = "#156082", size = 2) +
+  mark(crit, "BIC", which.min(crit$BIC)) +
+  scale_x_continuous(breaks = 1:11) +
+  labs(x = "Number of predictors", y = "BIC", title = "BIC") +
+  theme_minimal()
+
+p_adj <- ggplot(crit, aes(x = size, y = adjR2)) +
+  geom_line(color = "#156082", linewidth = 0.9) +
+  geom_point(color = "#156082", size = 2) +
+  mark(crit, "adjR2", which.max(crit$adjR2)) +
+  scale_x_continuous(breaks = 1:11) +
+  labs(x = "Number of predictors", y = expression("Adjusted " ~ R^2),
+       title = "Adjusted R-squared") +
+  theme_minimal()
+
+(p_cp | p_aic) / (p_bic | p_adj) +
+  plot_annotation(
+    title = "Strategy 1 criteria on all 400 accounts",
+    subtitle = "Orange point: preferred size for that criterion. These numbers use every account."
+  )
+
+# Interpret: Cp and AIC agree on one size. BIC prefers a smaller
+# model. Adjusted R^2 prefers a larger one. That disagreement is
+# the lesson, not a bug in the code.
+#
+# Question: BIC penalizes extra predictors more heavily than AIC.
+# On a file whose mean Balance is about $520, which way of scoring
+# extra predictors is closer to how you would defend a model?
+#
+# Discuss: These four numbers all used the same 400 accounts we
+# might later want to claim as "new." What can you still use them
+# for, and what must you not use them for?
+#
+# Student Exercise: Defend BIC's size against a colleague who wants
+# the adjusted-R^2 size. Use the training-RMSE curve, the $520 mean,
+# and the list of predictors that enter after size 4. Write four
+# sentences, not a dump of coefficients.
+```
+
+# Limit, Rating, and p-values
+
+Limit and Rating almost duplicate each other on this file. That is why
+selection and $p$-values tell different stories.
+
+```{r}
+#| label: limit-rating
+cor(credit$Limit, credit$Rating)
+cor(credit$Limit, credit$Balance)
+cor(credit$Rating, credit$Balance)
+
+fit_limit  <- lm(Balance ~ Limit, data = credit)
+fit_rating <- lm(Balance ~ Rating, data = credit)
+fit_both   <- lm(Balance ~ Limit + Rating, data = credit)
+
+summary(fit_limit)
+summary(fit_rating)
+summary(fit_both)
+
+# Slopes, standard errors, and p-values side by side.
+brief <- function(fit, label) {
+  s <- summary(fit)$coefficients
+  data.frame(
+    model = label,
+    predictor = rownames(s),
+    slope = s[, "Estimate"],
+    se = s[, "Std. Error"],
+    p = s[, "Pr(>|t|)"],
+    r2 = summary(fit)$r.squared,
+    rse = summary(fit)$sigma,
+    row.names = NULL
+  )
+}
+rbind(
+  brief(fit_limit, "Limit only"),
+  brief(fit_rating, "Rating only"),
+  brief(fit_both, "Limit + Rating")
+)
+
+# Why not select by p-values?
+# 1. A p-value in a joint model asks a conditional question: does this
+#    predictor help given the others already in the equation? That is
+#    not a search over models.
+# 2. When two predictors move together, the same slope can look
+#    decisive alone and look like noise once its twin is in the room.
+# 3. A small p-value can sit next to almost no gain in fit. Look at
+#    R^2 and RSE for Rating alone versus Limit + Rating.
+#
+# Interpret: Alone, Limit and Rating each look like the model. Together,
+# one slope keeps a small p-value and the other does not. The RSE of
+# the two-predictor fit is not an improvement on Rating alone.
+#
+# Question: If you had only starred coefficients from the kitchen-sink
+# model, would you have kept both Limit and Rating? Why is that a
+# bad selection rule on this file?
+#
+# Discuss: Someone says "Rating is significant, Limit is not, so drop
+# Limit." What did they condition on? What would they have said if
+# they had run the two simple models first?
+#
+# Business implication: Do not let a software star decide a credit
+# model when the two strongest scores are nearly the same number
+# twice. Selection is a comparison of models, not a row of p-values.
+```
+
+# Choosing Among Models with Cross-Validation
+
+The criteria above used all 400 accounts. Cross-validation on the 280
+is the second way from class: score accounts that were not used to pick
+the team of a given size.
+
+`regsubsets()` has no `predict()` method, so we add one. The helper
+rebuilds the model matrix, lines up the coefficients, and multiplies.
+We then run best subset **inside each training fold**. That is the
+step people skip, and it is the step that keeps selection from leaking
+across the fold.
+
+```{r}
+#| label: predict-helper
+# Why? Without this helper we would have to rebuild the matrix math
+# in every fold. The function is the same idea as predict(lm()):
+# new accounts in, fitted Balance out, for a chosen size.
+predict.regsubsets <- function(object, newdata, id, ...) {
+  form <- as.formula(object$call[[2]])
+  mat <- model.matrix(form, newdata)
+  coefi <- coef(object, id = id)
+  xvars <- names(coefi)
+  mat[, xvars] %*% coefi
+}
+```
+
+```{r}
+#| label: cv-size
+#| fig-width: 7.8
+#| fig-height: 4.6
+# 10-fold CV over size, on the 280 only.
+# Why a new set.seed(46704)? The fold assignment is random. Fixing it
+# means the room is looking at the same picture. It is not a claim
+# that this fold cut is magic.
+k <- 10
+set.seed(46704)
+folds <- sample(rep(1:k, length = nrow(train)))
+cv_mse <- matrix(NA, k, 11, dimnames = list(NULL, paste(1:11)))
+
+for (j in 1:k) {
+  # Selection happens on 9 folds only.
+  fold_fit <- regsubsets(
+    Balance ~ .,
+    data = train[folds != j, ],
+    nvmax = 11
+  )
+  for (i in 1:11) {
+    pred <- predict(fold_fit, train[folds == j, ], id = i)
+    y_fold <- train$Balance[folds == j]
+    cv_mse[j, i] <- mean((y_fold - pred)^2)
+  }
+}
+
+# Average MSE across folds, then take the square root so the axis is
+# in dollars. Why? That matches how we have been reading training RMSE.
+cv_rmse <- sqrt(colMeans(cv_mse))
+cv_rmse
+which.min(cv_rmse)
+
+err_both <- rbind(
+  data.frame(size = 1:11, rmse = train_rmse, source = "Training (280)"),
+  data.frame(size = 1:11, rmse = as.numeric(cv_rmse), source = "10-fold CV (280)")
+)
+
+ggplot(err_both, aes(x = size, y = rmse, color = source, group = source)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2.4) +
+  scale_color_manual(values = c("Training (280)" = "#156082",
+                                "10-fold CV (280)" = "#e97132")) +
+  scale_x_continuous(breaks = 1:11) +
+  scale_y_continuous(labels = label_dollar(accuracy = 1)) +
+  labs(
+    x = "Number of predictors",
+    y = "RMSE (dollars)",
+    color = NULL,
+    title = "Training RMSE versus 10-fold CV RMSE",
+    subtitle = "Selection is re-run inside each fold. The 120 held-out accounts are not used."
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+# Interpret: Training RMSE keeps falling. CV RMSE drops sharply at
+# first and then sits in a band. The exact minimum of a wiggly CV
+# curve is less important than that band.
+#
+# Question: Which sizes are in the flat region? Does BIC's size from
+# the 400-account panel sit in that region?
+#
+# Discuss: We re-ran best subset inside each fold. What would go
+# wrong if we picked the size-4 team once on all 280 and only
+# cross-validated that one team?
+#
+# Business implication: A one-dollar CV gap on a $520 outcome is not
+# a reason to add three more predictors. Flat is a finding.
+```
+
+# Choosing a Model
+
+We need one model we are willing to take off the 280 accounts. BIC on
+the 400 preferred a small model. CV on the 280 is already flat in that
+neighborhood. We take the size-4 best-subset team and fit it with
+`lm()` on the training accounts.
+
+The 120 held-out accounts stay closed. We are not reporting a test
+RMSE in this notebook.
+
+```{r}
+#| label: chosen-model
+# Size 4 on the 280: Income, Limit, Cards, Student.
+# Why this size? It is BIC's pick on the 400, and it sits in the
+# flat CV region on the 280. Size 6 can win a CV minimum by a
+# fraction of a dollar. That is not a strong argument for the
+# extra predictors on a $520 outcome.
+chosen <- lm(Balance ~ Income + Limit + Cards + Student, data = train)
+summary(chosen)
+coef(chosen)
+
+# Same team from regsubsets(), for the coefficient table without
+# the extra lm() printout.
+coef(best_train, 4)
+
+# Interpret the slopes on the training fit:
+# - Income is in thousands of dollars. Holding Limit, Cards, and
+#   Student fixed, a $10,000 higher income is 10 times the Income
+#   coefficient. The sign is negative on this file.
+# - Limit is in dollars. A $1,000 higher limit is 1000 times the
+#   Limit coefficient.
+# - Cards is a count. One extra card on the account, holding the
+#   rest fixed.
+# - StudentYes is the difference in fitted Balance for a student
+#   versus the reference (not a student), holding the rest fixed.
+#
+# Question: Why can Income have a negative slope after we control
+# for Limit? What would go wrong if someone read that slope as
+# "raise income so that balances fall"?
+#
+# Business implication: This is a predictive model for Balance on
+# accounts QNB has already issued. It is not a lever list. Do not
+# talk as if the bank can flip Student, or as if raising Limit will
+# cause Balance to rise by the slope. Those are associations on
+# this file, after the cards exist.
+#
+# Discuss: If you had to defend this four-predictor model to a
+# colleague who wants the kitchen sink because "more information
+# is better," what two pictures from this notebook do you open?
+#
+# Student Exercise: Fit the size-6 best-subset team on the same 280
+# accounts. Compare the Limit slope, the Student gap, and the
+# training RMSE with size 4. What moved enough to matter at a $520
+# mean, and what did not?
+```
+
+```{r}
+#| label: chosen-size6-exercise
+# Filled so you can run the comparison in the room. Write the
+# interpretation yourself.
+size6_team <- selected_at(best_train, 6)
+size6_team
+fit6 <- lm(Balance ~ Income + Limit + Rating + Cards + Age + Student, data = train)
+coef(chosen)
+coef(fit6)
+rmse(train$Balance, fitted(chosen))
+rmse(train$Balance, fitted(fit6))
+```
+
+# After class
+
+Work these on your own after the hour. Do not open the 120 accounts
+unless you are later told to.
+
+1. **Second seed.** Change the seed that draws the 120 held-out
+   accounts (or the seed that draws the 10 folds). Rerun the search
+   and the CV plot. Does the flat region still cover size 4? What
+   moved: the team, the size, or only the dollars?
+
+2. **Validation versus 10-fold.** On the 280, hold out one validation
+   slice (for example 70 accounts). Pick a size by validation RMSE.
+   Compare that size with the 10-fold curve. Why can a single split
+   be noisier than 10 folds as a way to choose among sizes?
+
+3. **Three reasons against $p$-value selection.** Write three short
+   reasons, in your own words, that you would not pick predictors
+   from the kitchen-sink $p$-values on this file. Use Limit and
+   Rating in at least one reason.
+
+4. **Optional: Education.** Add Education to the size-4 training
+   model. What happens to RMSE and to the other slopes? When would
+   you still keep Education because a person asked for it, even if
+   the fit does not want it?

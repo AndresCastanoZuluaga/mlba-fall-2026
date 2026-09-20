@@ -17,7 +17,14 @@ format:
 <span class="sch-chip sch-chip-soft">Bring laptop</span>
 :::
 
-<p class="page-lead">On lab days, read the problem before you sit down. Bring a laptop to labs. On Wednesdays, laptops are required for R. You will get the problem before class and a starter notebook with parts already working. In the hour we work on approach, interpretation, figures, and what the results mean for the decision. <strong>Wednesday 26 Aug is still a lecture</strong> (linear regression, in R). The first lab is <strong>2 September</strong>. Nothing is posted yet. I will put each lab here before you need it.</p>
+<p class="page-lead">On lab days, read the problem before you sit down. Bring a laptop to labs. On Wednesdays, laptops are required for R. You will get the problem before class and a starter notebook with parts already working. In the hour we work on approach, interpretation, figures, and what the results mean for the decision. <strong>Wednesday 26 Aug is still a lecture</strong> (linear regression, in R). The first lab is <strong>2 September</strong>. I will put each lab here before you need it.</p>
+
+::: {.sch-week-card}
+### Lab 3 is posted
+
+[Case, data, and starter](Lab03-Selection/) · Selecting a model for Balance on a QNB credit card (Mon 21 Sep).
+:::
+
 
 ## Pattern
 
@@ -34,7 +41,7 @@ format:
 |-----|---------|-------|--------|
 | L1 Regression | **Wed 2 Sep** | Linear regression lab | Not posted yet |
 | L2 Evaluation | Wed 9 Sep | Honest evaluation · leakage habits | Not posted yet |
-| L3 Regularization | Wed 23 Sep | Ridge/lasso in R | Not posted yet |
+| L3 Selection | **Mon 21 Sep** | Model selection for Balance (QNB cards) | [Posted](Lab03-Selection/) |
 | L4 CV / selection | Wed 30 Sep | CV · no leakage across folds | Not posted yet |
 | L5 Logistic | Wed 21 Oct | Logistic in R | Not posted yet |
 | L6 Metrics / cutoffs | Wed 28 Oct | ROC, AUC, **decision cutoffs** | Not posted yet |
