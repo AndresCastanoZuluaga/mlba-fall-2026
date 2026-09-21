@@ -228,7 +228,7 @@
     "href": "labs/index.html",
     "title": "Labs",
     "section": "",
-    "text": "Default: Wednesday lab This week: lab Monday and Wednesday Bring laptop\nOn lab days, read the problem before you sit down. Bring a laptop. You will get the problem before class and a starter notebook with parts already working. In the hour we work on approach, interpretation, figures, and what the results mean for the decision. Lab 3 is Monday 21 September (model selection). The case and the data are up. Starter before class. Lab 4 (regularization) is Wednesday 23 September."
+    "text": "Default: Wednesday lab This week: lab Monday and Wednesday Bring laptop\nOn lab days, read the problem before you sit down. Bring a laptop. You will get the problem before class and a starter notebook with parts already working. In the hour we work on approach, interpretation, figures, and what the results mean for the decision. Lab 3 is Monday 21 September (model selection). Case, data, and starter are up. Lab 4 (regularization) is Wednesday 23 September."
   },
   {
     "objectID": "labs/index.html#pattern",
@@ -242,7 +242,7 @@
     "href": "labs/index.html#lab-index",
     "title": "Labs",
     "section": "Lab index",
-    "text": "Lab index\n\n\n\nLab\nMeeting\nFocus\nStatus\n\n\n\n\nL1 Regression\nWed 2 Sep\nLinear regression lab\nCase + data + starter\n\n\nL2 Evaluation\nWed 9 Sep\nHonest evaluation · leakage habits\nCase + data + starter\n\n\nL3 Selection\nMon 21 Sep\nModel selection in R\nCase + data\n\n\nL4 Regularization\nWed 23 Sep\nRidge/lasso in R\nNot posted yet\n\n\nL5 Logistic\nWed 30 Sep\nLogistic in R\nNot posted yet\n\n\nL6 Metrics / cutoffs\nWed 21 Oct\nROC, AUC, decision cutoffs\nNot posted yet\n\n\nL7 Trees\nWed 28 Oct\nTrees in R\nNot posted yet\n\n\nL8 Forests / boosting\nWed 4 Nov\nForests / boosting in R\nNot posted yet\n\n\nL9 PCA\nMon 16 Nov\nPCA lab\nNot posted yet\n\n\nL10 Clustering + literacy\nWed 25 Nov\nClustering · short modern-AI talk\nNot posted yet\n\n\n\nSee Schedule for the full calendar."
+    "text": "Lab index\n\n\n\nLab\nMeeting\nFocus\nStatus\n\n\n\n\nL1 Regression\nWed 2 Sep\nLinear regression lab\nCase + data + starter\n\n\nL2 Evaluation\nWed 9 Sep\nHonest evaluation · leakage habits\nCase + data + starter\n\n\nL3 Selection\nMon 21 Sep\nModel selection in R\nCase + data + starter\n\n\nL4 Regularization\nWed 23 Sep\nRidge/lasso in R\nNot posted yet\n\n\nL5 Logistic\nWed 30 Sep\nLogistic in R\nNot posted yet\n\n\nL6 Metrics / cutoffs\nWed 21 Oct\nROC, AUC, decision cutoffs\nNot posted yet\n\n\nL7 Trees\nWed 28 Oct\nTrees in R\nNot posted yet\n\n\nL8 Forests / boosting\nWed 4 Nov\nForests / boosting in R\nNot posted yet\n\n\nL9 PCA\nMon 16 Nov\nPCA lab\nNot posted yet\n\n\nL10 Clustering + literacy\nWed 25 Nov\nClustering · short modern-AI talk\nNot posted yet\n\n\n\nSee Schedule for the full calendar."
   },
   {
     "objectID": "labs/Lab02-Evaluation/index.html",
@@ -326,7 +326,7 @@
     "href": "labs/Lab03-Selection/index.html",
     "title": "Lab 3: Selecting a model for Balance on a QNB credit card",
     "section": "",
-    "text": "Read the case before class, including the codebook on page 2. Download the data and look at it with the codebook open. The starter notebook will go up before class tomorrow.\n\n\nCase + data\n\n\nCase\nPDF · (problem description + codebook)\n\n\nData\nCredit.csv · 400 credit-card accounts. Balance in dollars. For this lab, treat these as balances on QNB cards."
+    "text": "Read the case before class, including the codebook on page 2. Download the data and look at it with the codebook open. The starter is the notebook we work from in the room.\n\n\nCase + data + starter\n\n\nCase\nPDF · (problem description + codebook)\n\n\nData\nCredit.csv · 400 credit-card accounts. Balance in dollars. For this lab, treat these as balances on QNB cards.\n\n\nStarter\nlab03-credit.qmd · zip (qmd + data folder)\nPut the csv in a folder named data next to the qmd (the zip already has that layout). Open the qmd in RStudio and Knit / Render."
   },
   {
     "objectID": "notes/index.html",
