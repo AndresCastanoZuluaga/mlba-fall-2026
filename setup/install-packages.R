@@ -35,7 +35,9 @@ core <- c(
   "knitr",
   "gt",
   "broom",
-  "here"
+  "here",
+  "leaps",
+  "patchwork"
 )
 
 recommended <- c("xgboost")
