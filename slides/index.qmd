@@ -15,7 +15,7 @@ format:
 <span class="sch-chip sch-chip-soft">PDF = print</span>
 :::
 
-## Week 1 — Launch + linear regression
+## Introduction
 
 ::: {.sch-week-card}
 ### Mon 24 Aug · Introduction
@@ -23,9 +23,26 @@ format:
 [Open in Chrome](70-467_MLBA_2026-08-24_Introduction.html) · [PDF](70-467_MLBA_2026-08-24_Introduction.pdf)
 :::
 
+## Linear regression
+
 ::: {.sch-week-card}
 ### Wed 26 Aug and Mon 31 Aug · Linear regression
 
 [Open in Chrome](70-467_MLBA_2026-08-26_LinearRegression.html) · [PDF](70-467_MLBA_2026-08-26_LinearRegression.pdf)
 :::
 
+## Evaluating model accuracy
+
+::: {.sch-week-card}
+### Mon 7 Sep · Train/test and cross-validation
+
+[Open in Chrome](70-467_MLBA_2026-09-07_EvaluatingModelAccuracy.html) · [PDF](70-467_MLBA_2026-09-07_EvaluatingModelAccuracy.pdf)
+:::
+
+## Model selection and regularization
+
+::: {.sch-week-card}
+### Wed 16 Sep · Model selection and regularization
+
+[Open in Chrome](70-467_MLBA_2026-09-16_ModelSelectionAndRegularization.html) · [PDF](70-467_MLBA_2026-09-16_ModelSelectionAndRegularization.pdf)
+:::
