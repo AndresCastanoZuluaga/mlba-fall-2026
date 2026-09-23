@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Lecture notes – 70-467 MLBA Fall 2026</title>
+<title>Lab 4: Predicting yearly spending from browsing – 70-467 MLBA Fall 2026</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -23,23 +23,23 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../site_libs/quarto-nav/headroom.min.js"></script>
-<script src="../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../">
-<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../site_libs/quarto-html/popper.min.js"></script>
-<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -69,17 +69,17 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
-<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed mlba-page quarto-light">
+<body class="nav-fixed mlba-page fullcontent quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="../index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">70-467 MLBA Fall 2026</span>
     </a>
   </div>
@@ -90,23 +90,23 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../index.html"> 
+    <a class="nav-link" href="../../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../syllabus.html"> 
+    <a class="nav-link" href="../../syllabus.html"> 
 <span class="menu-text">Syllabus</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../schedule.html"> 
+    <a class="nav-link" href="../../schedule.html"> 
 <span class="menu-text">Schedule</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../setup/index.html"> 
+    <a class="nav-link" href="../../setup/index.html"> 
 <span class="menu-text">Setup</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../slides/index.html"> 
+    <a class="nav-link" href="../../slides/index.html"> 
 <span class="menu-text">Slides</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -115,11 +115,11 @@ ul.task-list li input[type="checkbox"] {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-notes">    
         <li>
-    <a class="dropdown-item" href="../notes/index.html">
+    <a class="dropdown-item" href="../../notes/index.html">
  <span class="dropdown-text">Overview</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notes/week01-linear-regression.qmd">
+    <a class="dropdown-item" href="../../notes/week01-linear-regression.qmd">
  <span class="dropdown-text">Week 1</span></a>
   </li>  
     </ul>
@@ -130,23 +130,23 @@ ul.task-list li input[type="checkbox"] {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-labs">    
         <li>
-    <a class="dropdown-item" href="../labs/index.html">
+    <a class="dropdown-item" href="../../labs/index.html">
  <span class="dropdown-text">Overview</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../labs/Lab01-Regression/index.html">
+    <a class="dropdown-item" href="../../labs/Lab01-Regression/index.html">
  <span class="dropdown-text">Lab 1</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../labs/Lab02-Evaluation/index.html">
+    <a class="dropdown-item" href="../../labs/Lab02-Evaluation/index.html">
  <span class="dropdown-text">Lab 2</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../labs/Lab03-Selection/index.html">
+    <a class="dropdown-item" href="../../labs/Lab03-Selection/index.html">
  <span class="dropdown-text">Lab 3</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../labs/Lab04-Regularization/index.html">
+    <a class="dropdown-item" href="../../labs/Lab04-Regularization/index.html">
  <span class="dropdown-text">Lab 4</span></a>
   </li>  
     </ul>
@@ -157,17 +157,17 @@ ul.task-list li input[type="checkbox"] {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-homework">    
         <li>
-    <a class="dropdown-item" href="../hw/index.html">
+    <a class="dropdown-item" href="../../hw/index.html">
  <span class="dropdown-text">Overview</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../hw/HW01-Garment/index.html">
+    <a class="dropdown-item" href="../../hw/HW01-Garment/index.html">
  <span class="dropdown-text">Homework 1</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="../project/index.html"> 
+    <a class="nav-link" href="../../project/index.html"> 
 <span class="menu-text">Project</span></a>
   </li>  
 </ul>
@@ -181,23 +181,14 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#how-to-use-notes" id="toc-how-to-use-notes" class="nav-link active" data-scroll-target="#how-to-use-notes">How to use notes</a></li>
-  <li><a href="#notes-index" id="toc-notes-index" class="nav-link" data-scroll-target="#notes-index">Notes index</a></li>
-  </ul>
-</nav>
-    </div>
+    
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Lecture notes</h1>
-<p class="subtitle lead">Primary learning resource</p>
+<h1 class="title">Lab 4: Predicting yearly spending from browsing</h1>
+<p class="subtitle lead">Wed 23 Sep</p>
 </div>
 
 
@@ -214,133 +205,25 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<div class="sch-chip-row">
-<p><span class="sch-chip">Before class: read &amp; run</span> <span class="sch-chip">Notes = durable book</span> <span class="sch-chip sch-chip-soft">Slides PDF after class</span></p>
-</div>
 <p class="page-lead">
-Lecture notes are notebooks: the ideas, short problems, and R you can run. Slides are what we use in the room; notes are what you keep. I will put each week up as we go.
+Read the case before class, including the codebook on page 2. Download the three files and look at them with the codebook open.
 </p>
-<section id="how-to-use-notes" class="level2">
-<h2 class="anchored" data-anchor-id="how-to-use-notes">How to use notes</h2>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>When</th>
-<th>What to do</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>Before class</strong></td>
-<td>Read and run the assigned notes</td>
-</tr>
-<tr class="even">
-<td><strong>In class</strong></td>
-<td>Keep notes open as reference if useful</td>
-</tr>
-<tr class="odd">
-<td><strong>After class</strong></td>
-<td>Revisit for homework and exams</td>
-</tr>
-</tbody>
-</table>
+<div class="sch-chip-row">
+<p><span class="sch-chip">Case + data</span></p>
+</div>
+<section id="case" class="level3 sch-week-card">
+<h3 class="anchored" data-anchor-id="case">Case</h3>
+<p><a href="lab04-browser-problem.pdf">PDF</a> · (problem description + codebook)</p>
 </section>
-<section id="notes-index" class="level2">
-<h2 class="anchored" data-anchor-id="notes-index">Notes index</h2>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Week</th>
-<th>Topic (from schedule)</th>
-<th>Status</th>
-<th>Link</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>01</td>
-<td>Launch + linear regression</td>
-<td>Posted</td>
-<td><a href="week01-linear-regression.qmd">Week 1</a></td>
-</tr>
-<tr class="even">
-<td>02</td>
-<td><em>(Lab week — see Labs; notes track evaluation path)</em></td>
-<td>Not yet built</td>
-<td>—</td>
-</tr>
-<tr class="odd">
-<td>03</td>
-<td>Train/test &amp; generalization · <strong>leakage primary</strong></td>
-<td>Not yet built</td>
-<td>—</td>
-</tr>
-<tr class="even">
-<td>04</td>
-<td>Regularization</td>
-<td>Not yet built</td>
-<td>—</td>
-</tr>
-<tr class="odd">
-<td>05</td>
-<td>CV &amp; model selection · <strong>leakage reinforced</strong></td>
-<td>Not yet built</td>
-<td>—</td>
-</tr>
-<tr class="even">
-<td>06</td>
-<td>Midterm week (review + exam — no new notes package)</td>
-<td>Review sheet TBD</td>
-<td>—</td>
-</tr>
-<tr class="odd">
-<td>07</td>
-<td>Logistic regression</td>
-<td>Not yet built</td>
-<td>—</td>
-</tr>
-<tr class="even">
-<td>08</td>
-<td>Classification metrics &amp; <strong>decision cutoffs</strong> · prediction vs acting · leakage reminder</td>
-<td>Not yet built</td>
-<td>—</td>
-</tr>
-<tr class="odd">
-<td>09</td>
-<td>Decision trees</td>
-<td>Not yet built</td>
-<td>—</td>
-</tr>
-<tr class="even">
-<td>10</td>
-<td>Random forests &amp; boosting</td>
-<td>Not yet built</td>
-<td>—</td>
-</tr>
-<tr class="odd">
-<td>11</td>
-<td>PCA</td>
-<td>Not yet built</td>
-<td>—</td>
-</tr>
-<tr class="even">
-<td>12</td>
-<td>Clustering · short modern-AI literacy</td>
-<td>Not yet built</td>
-<td>—</td>
-</tr>
-<tr class="odd">
-<td>13</td>
-<td>Project presentations</td>
-<td>n/a</td>
-<td>—</td>
-</tr>
-</tbody>
-</table>
-<p>Full meeting dates: <a href="../schedule.html">Schedule</a>.</p>
+<section id="data" class="level3 sch-week-card">
+<h3 class="anchored" data-anchor-id="data">Data</h3>
+<p><a href="data/browser-totalspend.csv">browser-totalspend.csv</a> · 10,000 households, yearly online spending in dollars</p>
+<p><a href="data/browser-domains.csv">browser-domains.csv</a> · household, site code, and visit count</p>
+<p><a href="data/browser-sites.txt">browser-sites.txt</a> · 1,000 website names, one per line. Line 1 is site code 1.</p>
+<p><a href="lab04-data.zip">zip of the three files</a></p>
+</section>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
