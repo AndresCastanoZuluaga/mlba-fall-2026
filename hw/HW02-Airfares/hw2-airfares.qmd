@@ -1,0 +1,625 @@
+---
+title: "Homework 2. Model selection and regularization: A model for the average fare"
+subtitle: "70-467"
+author: "Andrés Castaño Zuluaga"
+date: last-modified
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    toc-location: right
+    embed-resources: true
+    code-fold: false
+    theme: cosmo
+    include-in-header:
+      text: |
+        <style>
+        .hw-q {
+          border-left: 6px solid #C41230;
+          background: #f8f1f2;
+          padding: 0.85rem 1rem;
+          margin: 1.25rem 0 0.35rem 0;
+        }
+        .hw-q p { margin: 0; }
+        .hw-q strong { color: #C41230; }
+        </style>
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+Please read the case first, including the codebook.
+
+Submit on Canvas by Sunday, 4 October 2026, 11:59 pm:
+
+- this notebook (knitted), with the code you add and your written answers,
+- at most six slides, and
+- a video of at most five minutes.
+
+The last section is the video. The notebook, the slides, and the video must use the same model and the same dollar figures.
+
+Where you see a question in a box, write the answer under **WRITE YOUR ANSWER BELOW** directly under that box. Where you see **WRITE YOUR CODE BELOW**, add code in that chunk.
+
+```{r}
+#| label: setup
+options(scipen = 999)
+library(leaps)
+library(glmnet)
+library(ggplot2)
+
+theme_hw <- function() {
+  theme_minimal(base_size = 13) +
+    theme(
+      panel.grid.minor = element_blank(),
+      plot.title = element_text(face = "bold", size = 14)
+    )
+}
+
+# Root mean squared error. For fares, y and yhat are in dollars, so this is dollars.
+rmse <- function(y, yhat) sqrt(mean((y - yhat)^2))
+
+# Variable names in a regsubsets model of a given size.
+# The intercept is dropped. It is not one of the variables being counted.
+selected_at <- function(object, size) {
+  setdiff(names(coef(object, id = size)), "(Intercept)")
+}
+
+# Predicted fares from a regsubsets fit of one size, on new rows.
+# coef(..., id = size) stores that size. The prediction uses those
+# coefficients and the matching columns of Xnew.
+predict_size <- function(object, Xnew, size) {
+  cf <- coef(object, id = size)
+  vars <- setdiff(names(cf), "(Intercept)")
+  if (length(vars) == 0) {
+    return(rep(unname(cf[["(Intercept)"]]), nrow(Xnew)))
+  }
+  mm <- cbind(`(Intercept)` = 1, Xnew[, vars, drop = FALSE])
+  as.numeric(mm %*% cf[c("(Intercept)", vars)])
+}
+```
+
+# The dataset
+
+```{r}
+#| label: load
+# The csv in the data folder next to this file.
+# stringsAsFactors = FALSE keeps city and airport names as text.
+routes <- read.csv("data/airfares.csv", stringsAsFactors = FALSE)
+nrow(routes)
+names(routes)
+```
+
+```{r}
+#| label: fare-summary
+# Mean, standard deviation, and range of FARE, in dollars, on all 638 routes.
+mean(routes$FARE)
+sd(routes$FARE)
+range(routes$FARE)
+```
+
+`FARE` is the average price on a route, in dollars. When you report an error later, put it in dollars next to this mean and this standard deviation.
+
+The red line is the mean. The width of the histogram is the spread of fares. Set the error next to that spread, not next to zero.
+
+```{r}
+#| label: fare-hist
+#| fig-width: 7.2
+#| fig-height: 4.2
+ggplot(routes, aes(FARE)) +
+  # bins = 30 is only for the picture.
+  geom_histogram(bins = 30, fill = "#182C4B", color = "white") +
+  # The red line is the mean printed above.
+  geom_vline(xintercept = mean(routes$FARE), color = "#C41230", linewidth = 1) +
+  labs(
+    x = "Average fare (dollars)",
+    y = "Number of routes",
+    title = "Average fare on 638 routes"
+  ) +
+  theme_hw()
+```
+
+How many distinct origin cities and destination cities are in the dataset?
+
+```{r}
+#| label: cities
+# Distinct origin cities, then distinct destination cities.
+length(unique(routes$S_CITY))
+length(unique(routes$E_CITY))
+```
+
+Distance is one variable. This picture is only distance and the fare. It is not yet the model.
+
+```{r}
+#| label: fare-distance
+#| fig-width: 7.2
+#| fig-height: 4.2
+ggplot(routes, aes(DISTANCE, FARE)) +
+  # One point per route. alpha makes overlapping points visible.
+  geom_point(alpha = 0.45, color = "#182C4B", size = 1.6) +
+  labs(
+    x = "Distance (miles)",
+    y = "Average fare (dollars)",
+    title = "Fare and distance"
+  ) +
+  theme_hw()
+```
+
+In this picture, compare distance with the average fare. The search below uses the other variables as well.
+
+There are many cities.
+
+<div class="hw-q">
+
+**Question 1.** Which variables will you leave out, and why? The code below drops `S_CODE`, `S_CITY`, `E_CODE`, and `E_CITY`. If you would keep one of them, change that code and say why.
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+```{r}
+#| label: which-columns
+# drop_names is removed before the model matrix is built.
+# FARE is the outcome, so it is not a predictor.
+# The four names are in the list below. Change the list if you keep one of them.
+# PAX is not in the list. A later chunk is where you drop it or keep it.
+# factor() stores Yes/No and Free/Controlled so model.matrix can build dummies.
+drop_names <- c("S_CODE", "S_CITY", "E_CODE", "E_CITY", "FARE")
+use <- routes[, setdiff(names(routes), drop_names)]
+use$VACATION <- factor(use$VACATION)
+use$SW <- factor(use$SW)
+use$SLOT <- factor(use$SLOT)
+use$GATE <- factor(use$GATE)
+names(use)
+```
+
+# One split
+
+Fit on the training routes. Use the test routes only after you have chosen the variables. The number you want from the test routes is the error in dollars.
+
+```{r}
+#| label: split
+# Seed 46704 so the split is the same each time you knit.
+# Why? If the test routes help you choose the variables, the dollar error
+# is no longer the error on a route you did not use.
+# floor(0.30 * n) is 30 percent of the rows, assigned at random to the test set.
+# The training set is every remaining row.
+# y is FARE. X is every column still in `use`, after dummy coding.
+# model.matrix puts an intercept in column 1. [, -1] drops it.
+# regsubsets and glmnet add their own intercept.
+set.seed(46704)
+n <- nrow(routes)
+test_id <- sample(n, floor(0.30 * n))
+train_id <- setdiff(seq_len(n), test_id)
+y <- routes$FARE
+y_train <- y[train_id]
+y_test <- y[test_id]
+X <- model.matrix(~ ., data = use)[, -1, drop = FALSE]
+X_train <- X[train_id, , drop = FALSE]
+X_test <- X[test_id, , drop = FALSE]
+length(train_id)
+length(test_id)
+```
+
+# The average fare, with no other variables
+
+```{r}
+#| label: mean-only
+# Average FARE on the training routes only.
+# sd(y) is the standard deviation of FARE on all 638 routes.
+# This chunk does not score the average on the test routes.
+mean_fare <- mean(y_train)
+mean_fare
+sd(y)
+```
+
+This is the average fare on the training routes. The standard deviation is for all 638 routes. The error of this average on the test routes is in the last picture, with the other models.
+
+# Least squares, and choosing variables
+
+```{r}
+#| label: ols
+# Least squares of training FARE on every column of X_train.
+# sigma() is the residual standard error on those training routes, in dollars.
+# It is not the error on the test routes.
+ols <- lm(y_train ~ X_train)
+sigma(ols)
+```
+
+```{r}
+#| label: best-subset
+# Best subset on the training routes only.
+# For each size, regsubsets finds the variables with the smallest
+# training residual sum of squares.
+# nvmax is every column of X_train, so the search runs up to the full set.
+# Cp and BIC: smaller is the criterion's preferred size.
+# Adjusted R²: larger is the criterion's preferred size.
+# The table prints all three. It does not choose a size.
+best <- regsubsets(x = X_train, y = y_train, nvmax = ncol(X_train))
+best_sum <- summary(best)
+data.frame(
+  size = seq_along(best_sum$cp),
+  cp = best_sum$cp,
+  bic = best_sum$bic,
+  adjr2 = best_sum$adjr2
+)
+```
+
+```{r}
+#| label: sizes
+# which.min and which.max read the table above.
+# The three sizes do not have to be the same.
+# selected_at prints the variable names at that size.
+cp_size <- which.min(best_sum$cp)
+bic_size <- which.min(best_sum$bic)
+adj_size <- which.max(best_sum$adjr2)
+cat("Cp size:", cp_size, "\n")
+cat("BIC size:", bic_size, "\n")
+cat("Adjusted R2 size:", adj_size, "\n")
+cat("Cp keeps:", paste(selected_at(best, cp_size), collapse = ", "), "\n")
+cat("BIC keeps:", paste(selected_at(best, bic_size), collapse = ", "), "\n")
+cat("Adjusted R2 keeps:", paste(selected_at(best, adj_size), collapse = ", "), "\n")
+```
+
+Cp, BIC, and adjusted R² adjust the training fit. The red mark is the size that criterion prefers. They do not have to prefer the same size. The picture of training error and cross-validated error comes after the cross-validation, so you can see both curves together.
+
+```{r}
+#| label: criteria
+#| fig-width: 8
+#| fig-height: 3.4
+# One panel per criterion. The red point is the size that panel prefers.
+# scales = "free_y" because Cp, BIC, and adjusted R² are not in the same units.
+crit <- rbind(
+  data.frame(size = seq_along(best_sum$cp), value = best_sum$cp, which = "Cp", pick = seq_along(best_sum$cp) == cp_size),
+  data.frame(size = seq_along(best_sum$bic), value = best_sum$bic, which = "BIC", pick = seq_along(best_sum$bic) == bic_size),
+  data.frame(size = seq_along(best_sum$adjr2), value = best_sum$adjr2, which = "Adjusted R2", pick = seq_along(best_sum$adjr2) == adj_size)
+)
+ggplot(crit, aes(size, value)) +
+  geom_line(color = "#156082", linewidth = 0.8) +
+  geom_point(color = "#156082", size = 1.8) +
+  geom_point(data = crit[crit$pick, ], color = "#C41230", size = 2.6) +
+  facet_wrap(~ which, scales = "free_y", nrow = 1) +
+  labs(x = "Number of variables", y = NULL) +
+  theme_hw()
+```
+
+The dark tiles are the variables in the best model of that size. Read across a row to see when a variable enters and when it drops out.
+
+```{r}
+#| label: which-in
+#| fig-width: 8.2
+#| fig-height: 5.2
+# outmat uses "*" when that variable is in the best model of that size.
+# The tile plot is that table. Dark means in. Light means out.
+om <- best_sum$outmat
+tiles <- do.call(rbind, lapply(seq_len(nrow(om)), function(i) {
+  data.frame(
+    size = i,
+    column = colnames(om),
+    selected = ifelse(om[i, ] == "*", "in", "out"),
+    row.names = NULL
+  )
+}))
+ggplot(tiles, aes(size, column, fill = selected)) +
+  geom_tile(color = "white", linewidth = 0.4) +
+  scale_fill_manual(values = c("in" = "#182C4B", "out" = "#E6E8EB"), guide = "none") +
+  scale_x_continuous(breaks = seq_len(nrow(om))) +
+  labs(x = "Number of variables", y = NULL, title = "Which variables best subset keeps") +
+  theme_hw()
+```
+
+<div class="hw-q">
+
+**Question 2.** Which variables would you use at this point, and which size? You will check that choice against cross-validation next.
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+Forward stepwise adds one variable at a time and does not go back. Best subset can drop a variable that was in a smaller model.
+
+```{r}
+#| label: forward
+# method = "forward" adds one variable at a time and does not remove one later.
+# Both lines use the BIC size from best subset, so the comparison is at one size.
+fwd <- regsubsets(x = X_train, y = y_train, nvmax = ncol(X_train), method = "forward")
+cat("Best subset at the BIC size:", paste(selected_at(best, bic_size), collapse = ", "), "\n")
+cat("Forward at the BIC size:", paste(selected_at(fwd, bic_size), collapse = ", "), "\n")
+```
+
+<div class="hw-q">
+
+**Question 3.** At the BIC size, does forward keep the same variables as best subset?
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+Cross-validation repeats the search inside the training routes. The one-standard-error size is the smallest size whose cross-validated error is still within one standard error of the minimum.
+
+```{r}
+#| label: cv-size
+# Ten-fold cross-validation of the best-subset search, on the training routes only.
+# Why the training routes only? The test routes are not used to choose the size.
+# Each fold holds out one tenth of the training routes, refits best subset
+# on the other nine tenths, and scores every size on the held-out tenth.
+# cv_mean is the average of those ten errors, in dollars, at each size.
+# cv_se is the standard error of that average.
+# cv_min is the size with the lowest average.
+# cv_1se is the smallest size whose average is still within one standard
+# error of that minimum. The code stores that size. It does not require you to use it.
+set.seed(46704)
+nfolds <- 10
+fold <- sample(rep(seq_len(nfolds), length.out = length(y_train)))
+nvmax <- ncol(X_train)
+err <- matrix(NA_real_, nfolds, nvmax)
+for (k in seq_len(nfolds)) {
+  tr <- fold != k
+  fit_k <- regsubsets(x = X_train[tr, , drop = FALSE], y = y_train[tr], nvmax = nvmax)
+  for (j in seq_len(nvmax)) {
+    err[k, j] <- rmse(y_train[fold == k], predict_size(fit_k, X_train[fold == k, , drop = FALSE], j))
+  }
+}
+cv_mean <- colMeans(err)
+cv_se <- apply(err, 2, sd) / sqrt(nfolds)
+cv_min <- which.min(cv_mean)
+cv_1se <- min(which(cv_mean <= min(cv_mean) + cv_se[cv_min]))
+data.frame(size = seq_len(nvmax), cv_rmse = cv_mean, cv_se = cv_se)
+cat("CV minimum size:", cv_min, "\n")
+cat("One-standard-error size:", cv_1se, "\n")
+cat("One-standard-error keeps:", paste(selected_at(best, cv_1se), collapse = ", "), "\n")
+```
+
+Training RMSE falls as variables are added. The cross-validated error is an estimate of the error on routes that did not choose the size. The red line is the lowest cross-validated error. The gray line is the one-standard-error size.
+
+```{r}
+#| label: both-curves
+#| fig-width: 7.4
+#| fig-height: 4.4
+# Training RMSE of the best model of each size, on the training routes
+# that were used to choose those variables.
+# The red line is cv_min. The dashed line is cv_1se.
+train_rmse <- sapply(seq_len(ncol(X_train)), function(i) {
+  rmse(y_train, predict_size(best, X_train, i))
+})
+both <- rbind(
+  data.frame(size = seq_along(train_rmse), rmse = train_rmse, which = "Training"),
+  data.frame(size = seq_len(nvmax), rmse = cv_mean, which = "Cross-validation")
+)
+ggplot(both, aes(size, rmse, color = which)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  geom_vline(xintercept = cv_min, color = "#C41230", linewidth = 0.7) +
+  geom_vline(xintercept = cv_1se, color = "#6D6E71", linewidth = 0.7, linetype = "dashed") +
+  scale_color_manual(values = c("Training" = "#182C4B", "Cross-validation" = "#156082")) +
+  scale_x_continuous(breaks = seq_len(nvmax)) +
+  labs(x = "Number of variables", y = "RMSE (dollars)", color = NULL, title = "Training error and cross-validated error") +
+  theme_hw()
+```
+
+<div class="hw-q">
+
+**Question 4.** Which curve would you use to choose the size? Say which size you keep, and why.
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+# Shrink the coefficients
+
+`COUPON` and `DISTANCE` move together in this dataset. The correlation is about 0.75. In class, Limit and Rating moved together much more tightly. The picture is here so you can see a milder pair. A small p-value is a poor reason to drop one of them.
+
+```{r}
+#| label: coupon-distance
+#| fig-width: 7.2
+#| fig-height: 4.2
+# One point per route. Horizontal axis is miles. Vertical axis is coupons.
+ggplot(routes, aes(DISTANCE, COUPON)) +
+  geom_point(alpha = 0.45, color = "#182C4B", size = 1.6) +
+  labs(x = "Distance (miles)", y = "Average number of coupons", title = "Distance and coupons") +
+  theme_hw()
+```
+
+The variables are not in the same units. Miles, dollars, and an index that runs to 10,000 cannot share one penalty unless they are put on a common scale first. `cv.glmnet` does that when `standardize = TRUE`.
+
+Ridge keeps every variable and shrinks the coefficients. The lasso can set some coefficients to zero. Both are fit on the training routes. `lambda.min` is the penalty with the lowest cross-validated error. `lambda.1se` is the largest penalty still within one standard error of that minimum.
+
+```{r}
+#| label: ridge-lasso
+# alpha = 0 is ridge. alpha = 1 is the lasso.
+# The same seed and the same nfolds give both fits the same fold split.
+# standardize = TRUE rescales the variables before the penalty is applied.
+# Why? A penalty on raw coefficients treats a mile and a point of the
+# concentration index as if they were the same unit.
+# nz counts coefficients other than the intercept that are not zero.
+set.seed(46704)
+cv_ridge <- cv.glmnet(X_train, y_train, alpha = 0, nfolds = 10, standardize = TRUE)
+set.seed(46704)
+cv_lasso <- cv.glmnet(X_train, y_train, alpha = 1, nfolds = 10, standardize = TRUE)
+nz <- function(fit, s) sum(coef(fit, s = s)[-1] != 0)
+cat("Ridge lambda.min, variables kept:", nz(cv_ridge, "lambda.min"), "\n")
+cat("Ridge lambda.1se, variables kept:", nz(cv_ridge, "lambda.1se"), "\n")
+cat("Lasso lambda.min, variables kept:", nz(cv_lasso, "lambda.min"), "\n")
+cat("Lasso lambda.1se, variables kept:", nz(cv_lasso, "lambda.1se"), "\n")
+```
+
+The vertical axis is cross-validated mean squared error. The left dotted line is `lambda.min`. The right dotted line is `lambda.1se`. A larger penalty is to the right. Training error cannot choose λ, because it is smallest when the penalty is zero.
+
+```{r}
+#| label: cv-plots
+#| fig-width: 8
+#| fig-height: 3.6
+# Vertical axis: cross-validated mean squared error, not RMSE.
+# Left dotted line: lambda.min. Right dotted line: lambda.1se.
+# A larger penalty is to the right.
+# The numbers along the top of the lasso plot count nonzero coefficients.
+par(mfrow = c(1, 2))
+plot(cv_ridge, main = "Ridge")
+plot(cv_lasso, main = "Lasso")
+```
+
+```{r}
+#| label: holdout-once
+# The models above were chosen on the training routes.
+# This chunk scores them once on the test routes.
+# The passenger decision below is the one place you may drop a variable after you see this error.
+# predict() for glmnet needs newx = X_test and s = "lambda.min" or "lambda.1se".
+# The training-mean row predicts every test route with mean_fare and nothing else.
+# Least squares uses the training coefficients. NA coefficients are set to 0
+# so the matrix product can run. That does not add a variable.
+score_glm <- function(fit, s) {
+  rmse(y_test, as.numeric(predict(fit, newx = X_test, s = s)))
+}
+rmse_mean <- rmse(y_test, rep(mean_fare, length(y_test)))
+b_ols <- coef(ols)
+b_ols[is.na(b_ols)] <- 0
+ols_hat <- as.numeric(cbind(1, X_test) %*% b_ols)
+data.frame(
+  description = c(
+    "training mean",
+    "least squares",
+    paste("best subset, size", cp_size),
+    paste("best subset, size", bic_size),
+    paste("best subset, size", cv_1se),
+    "ridge, lambda.min",
+    "ridge, lambda.1se",
+    "lasso, lambda.min",
+    "lasso, lambda.1se"
+  ),
+  holdout_rmse = c(
+    rmse_mean,
+    rmse(y_test, as.numeric(ols_hat)),
+    rmse(y_test, predict_size(best, X_test, cp_size)),
+    rmse(y_test, predict_size(best, X_test, bic_size)),
+    rmse(y_test, predict_size(best, X_test, cv_1se)),
+    score_glm(cv_ridge, "lambda.min"),
+    score_glm(cv_ridge, "lambda.1se"),
+    score_glm(cv_lasso, "lambda.min"),
+    score_glm(cv_lasso, "lambda.1se")
+  )
+)
+```
+
+Each dot is the error on the test routes, in dollars. These models were chosen on the training routes. The test routes are scored once.
+
+```{r}
+#| label: holdout-plot
+#| fig-width: 7.4
+#| fig-height: 4.4
+# The same test errors as the table above.
+# rev() puts the first row of the table at the top of the picture.
+holdout <- data.frame(
+  description = c(
+    "training mean", "least squares",
+    paste("Cp size", cp_size),
+    paste("BIC size", bic_size),
+    paste("1 SE size", cv_1se),
+    "ridge min", "ridge 1se", "lasso min", "lasso 1se"
+  ),
+  holdout_rmse = c(
+    rmse_mean,
+    rmse(y_test, as.numeric(ols_hat)),
+    rmse(y_test, predict_size(best, X_test, cp_size)),
+    rmse(y_test, predict_size(best, X_test, bic_size)),
+    rmse(y_test, predict_size(best, X_test, cv_1se)),
+    score_glm(cv_ridge, "lambda.min"),
+    score_glm(cv_ridge, "lambda.1se"),
+    score_glm(cv_lasso, "lambda.min"),
+    score_glm(cv_lasso, "lambda.1se")
+  )
+)
+holdout$description <- factor(holdout$description, levels = rev(holdout$description))
+ggplot(holdout, aes(holdout_rmse, description)) +
+  geom_point(color = "#182C4B", size = 2.8) +
+  labs(
+    x = "Holdout RMSE (dollars)",
+    y = NULL,
+    title = "Error on routes that did not choose the model"
+  ) +
+  theme_hw()
+```
+
+<div class="hw-q">
+
+**Question 5.** This continues Question 1. Do it before Question 6. `PAX` is already in the model above. It is the number of passengers recorded on the route. To take `PAX` out, change the code below and write the new error in dollars. To keep it, leave the chunk empty and say why.
+
+</div>
+
+```{r}
+#| label: pax
+# If you leave PAX out, refit on the same training rows without PAX
+# and score the test routes once. Use train_id and test_id from the split above.
+# If you keep PAX, leave this chunk empty.
+# WRITE YOUR CODE BELOW if you drop PAX, or if you want a comparison
+# with and without it.
+```
+
+**WRITE YOUR ANSWER BELOW**
+
+<div class="hw-q">
+
+**Question 6.** How many dollars off is your model on routes you did not use to fit it? Also say how many dollars off you are if you predict those same routes with the average fare and no other variables. Write both errors next to the standard deviation of `FARE`.
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+<div class="hw-q">
+
+**Question 7.** If two models are close in dollars on those routes, which one do you use? The one with more variables, or the simpler one?
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+<div class="hw-q">
+
+**Question 8.** Some variables move together. If you shrink the coefficients instead of dropping one of them, does the error in dollars on the routes you did not use to fit the model change enough that you would change the model?
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+The coefficients below are in dollars of average fare. They come from the one-standard-error subset and from the lasso at `lambda.1se`, with passengers still in the model. If you left passengers out, print one coefficient from the fit you just ran. Read one coefficient from the model you kept.
+
+```{r}
+#| label: one-coef
+# Two fits already chosen on the training routes.
+# A coefficient is the change in FARE, in dollars, for a one-unit change
+# in that variable, with the other variables in that fit held fixed.
+# The unit of each variable is in the codebook.
+# The printout does not choose which coefficient you read.
+cat("Best subset, one-standard-error size:\n")
+print(coef(best, id = cv_1se))
+cat("\nLasso, lambda.1se:\n")
+print(coef(cv_lasso, s = "lambda.1se"))
+```
+
+<div class="hw-q">
+
+**Question 9.** What does a one-unit change in that variable do to the average fare, in dollars? Set that number next to the mean of `FARE` and its standard deviation.
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+# The video
+
+Please record a video of at most five minutes, with at most six slides. The camera must be on. I need to see you delivering. Please refrain from reading the slides. That is a zero on the slides and the video. AI can assist you in preparing, but it should not be used to deliver the video.
+
+<div class="hw-q">
+
+**Question 10.** Imagine that you are recording a presentation of your analysis for the Vice President of Pricing and Revenue Management. The Vice President may consider your analysis when deciding what average fare to count on in the revenue plan, how far off that plan may be, and which features of the route that fare depends on. The revenue plan is built on that fare. Use the answers you have already written.
+
+</div>
+
+Before you record, answer these for yourself. Then use what you decided in the presentation.
+
+1. What decision will this person make with your estimate?
+2. What does the Vice President need to hear in order to use it, and what can stay in the notebook?
+3. Which model are you handing the Vice President, and which variables does it use? Why did the others stay out?
+4. How will you show the size of the error, in dollars, so the Vice President can tell whether to count on the estimate? What will you set that error next to?
+5. Where two models are close, why are you using the one you chose? Does shrinking the coefficients change that reason?
+6. Where could this person misuse your estimate?
+7. Which graph carries that case? What does its title say, in dollars? If you show another graph, can you say in a sentence or two how it bears on the choice?
+8. How will you order the presentation so the decision is clear before the methods?
