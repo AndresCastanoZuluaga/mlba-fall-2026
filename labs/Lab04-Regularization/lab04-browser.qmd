@@ -19,8 +19,9 @@ execute:
 
 <!--
 Student starter for the hour. Code is filled on purpose. Run each chunk
-and read the comments. The choice of method and of lambda is yours.
-Score that choice once.
+and read the comments. We will talk through only some of the Question
+and Discuss prompts in the room. You choose one method and one lambda,
+then score that choice once.
 -->
 
 # Introduction to the Business Problem
@@ -60,30 +61,51 @@ household with about 48,000. Talk this through with the person next to
 you. Why would a model on raw visit counts treat those two households
 as if the site mattered the same amount?
 
-# Roadmap
+# Outline of the analysis
 
-1. **Load the three files.** Match the codebook.
-2. **Build a share for each site.** Percent of that household's page
-   views. The shares sum to 100.
-3. **See why the response is log(spend).** The dollar distribution has
-   a long right tail.
-4. **Fit ridge and the lasso.** Same folds, seed 369.
-5. **Read the two values of $\lambda$.** They will not keep the same
-   websites.
-6. **Read a coefficient at a share a household actually has.** One
-   percentage point is a large share on this file.
-7. **Commit to one model and score it once.**
-8. **After class.** Elastic net.
+1. **Load the three files.** Match each file to the codebook. Count
+   households, browsing rows, and site names before you build anything.
+2. **Build a share for each site.** A visit count is not comparable
+   across households. The column we fit is that site's percent of the
+   household's page views. The shares in a row sum to 100.
+3. **See why the response is log(spend).** Spending in dollars has a
+   long right tail. A few households would dominate a fit on that scale.
+4. **Fit ridge and the lasso on the same folds.** Ridge shrinks every
+   coefficient and keeps every site. The lasso can set coefficients to
+   exactly zero. Seed 369 so the room is looking at the same curves.
+5. **Read the two values of $\lambda$.** `lambda.min` is the lowest
+   cross-validated error. `lambda.1se` is the largest $\lambda$ within
+   one standard error of that minimum. The two rules will not keep the
+   same websites.
+6. **Read one coefficient at a share a household actually has.** A one
+   percentage point share is large on this file. The median share among
+   visitors is much smaller.
+7. **Commit to one method and one $\lambda$, then score that choice
+   once.**
+8. **After class.** Elastic net, only after the choice in class is
+   already written down.
 
 # Load the three files
 
+`Matrix` builds the household-by-site table without storing a zero for
+every site a household did not open. `glmnet` fits ridge and the lasso
+and chooses $\lambda$ by cross-validation.
+
 ```{r}
 #| label: load
+# Matrix::sparseMatrix stores only the nonzero shares.
+# glmnet::cv.glmnet fits the penalized regression and the 10 folds.
 library(Matrix)
 library(glmnet)
 
+# Spending: one row per household. Columns are id and spend (dollars).
 spend <- read.csv("data/browser-totalspend.csv")
+
+# Browsing, long form: one row is one household and one site they opened.
+# Columns are id, site (1 to 1,000), and visits (page views).
 web <- read.csv("data/browser-domains.csv")
+
+# Names: no header. Line 1 is site code 1. scan() reads one name per line.
 sites <- scan("data/browser-sites.txt", what = "character", quiet = TRUE)
 
 # Question: How many households? How many rows in the browsing file?
@@ -94,27 +116,44 @@ length(sites)
 head(spend)
 head(web)
 head(sites, 5)
+
+# Interpret: 10,000 households, about 2.27 million browsing rows, and
+# 1,000 names. Each household opened many sites, so the browsing file
+# has many rows per household.
+#
+# Question: What would go wrong if you treated each browsing row as a
+# separate household when you predict yearly spending?
 ```
 
 # Build a share for each site
 
 A visit count is not comparable across households. Some households have
 25 page views. Some have about 48,000. The column we fit is that site's
-share of the household's page views.
+share of the household's page views. After this step, every household's
+shares sum to 100.
 
 ```{r}
 #| label: shares
 # A count of 10, as a percent, at the two ends of the page-view range
-# named in the case.
+# named in the case. Run these two lines before you build the matrix.
 100 * 10 / 25
 100 * 10 / 48786
 
+# Total page views for each household. The name of each total is the id.
 tot <- tapply(web$visits, web$id, sum)
+
+# Share, in percent, of that household's page views. as.numeric() keeps
+# the value a plain number, which sparseMatrix requires.
 web$pct <- as.numeric(100 * web$visits / tot[as.character(web$id)])
 
+# Row number in the spending file for each browsing row. Household ids
+# are not 1, 2, 3, ..., so we look them up.
 id_index <- setNames(seq_len(nrow(spend)), as.character(spend$id))
 i <- as.integer(id_index[as.character(web$id)])
 
+# i is the household row. j is the site code. x is the share, in percent.
+# The table has 10,000 rows and 1,000 columns. A site the household
+# did not open stays zero. Column names are the domains, in site-code order.
 X <- sparseMatrix(
   i = i,
   j = as.integer(web$site),
@@ -123,16 +162,17 @@ X <- sparseMatrix(
   dimnames = list(NULL, sites)
 )
 
-# Why? glmnet can take this sparse matrix. A dense table of 10,000
-# rows and 1,000 columns would store a zero for every site a household
-# did not visit.
 dim(X)
 range(Matrix::rowSums(X))
 summary(Matrix::rowSums(X > 0))
 
+# Why? glmnet can take this sparse matrix. A dense table of 10,000
+# rows and 1,000 columns would store a zero for every site a household
+# did not visit. Most of those cells are zero. The median household
+# opened about 219 of the 1,000 sites.
+#
 # Interpret: Each row sums to 100. That is the household's page views,
-# split across the sites they visited. The median household has a
-# positive share on about 219 of the 1,000 sites.
+# split across the sites they visited.
 #
 # Question: Why is a raw count of 10 a poor column to put in the model?
 #
@@ -141,6 +181,12 @@ summary(Matrix::rowSums(X > 0))
 ```
 
 # Why the response is log(spend)
+
+In dollars, the median is $510 and the maximum is $401,338. Least
+squares squares the errors, so a few very large households would
+dominate a fit on the dollar scale. Every household spent at least $1,
+so $\log(\text{spend})$ is defined. The smallest log is 0, the household
+that spent $1.
 
 ```{r}
 #| label: response
@@ -155,38 +201,49 @@ hist(y, breaks = 40, main = "log(spend)", xlab = "log dollars")
 # The standard deviation of log(spend) is the scale of the outcome.
 # Predicting the mean for every household has RMSE equal to that
 # standard deviation, up to a small difference between sd() and the
-# RMSE formula.
+# RMSE formula. sd() divides by n - 1. The RMSE line divides by n.
 sd(y)
 sqrt(mean((y - mean(y))^2))
 
-# Interpret: In dollars, the median is $510 and the maximum is
-# $401,338. A few households would dominate a least-squares fit on
-# the dollar scale. log(spend) is the response we fit. Every household
-# spent at least $1, so the log is defined. On this file the smallest
-# log is 0.
+# Interpret: The dollar histogram has a long right tail. The log
+# histogram does not. log(spend) is the response we fit.
 #
 # Question: The standard deviation of log(spend) is about 1.67. What
 # does a cross-validated RMSE near that number say about the fit?
+#
+# Discuss: Predicting the mean of log(spend) misses by about 1.67.
+# How much smaller than 1.67 should the cross-validated RMSE be
+# before you would use the sites?
 ```
 
 # Fit ridge and the lasso
 
 Ridge (`alpha = 0`) shrinks coefficients toward zero and keeps every
-site. The lasso (`alpha = 1`) can set coefficients to zero. We use the
-same 10 folds and the same seed for both, and we standardize the
-shares before the penalty. `glmnet` does that when `standardize = TRUE`.
+site. The lasso (`alpha = 1`) can set coefficients to exactly zero, so
+some sites drop out. Both fits use 10 folds. The same seed is set
+before each fit, so both use the same folds.
+
+`standardize = TRUE` scales the shares before the penalty. The
+coefficients are returned on the original scale: the change in
+log(spend) for a one percentage point share, other shares held fixed.
 
 ```{r}
 #| label: cv-fits
+# Why a fixed seed? The fold assignment is random. Fixing it means
+# everyone in the room is looking at the same curves. Set it again
+# before the lasso so that fit does not inherit the random draws
+# already used inside the ridge fit.
 set.seed(369)
 cv_ridge <- cv.glmnet(X, y, alpha = 0, nfolds = 10, standardize = TRUE)
 
 set.seed(369)
 cv_lasso <- cv.glmnet(X, y, alpha = 1, nfolds = 10, standardize = TRUE)
-
-# Why a fixed seed? The fold assignment is random. Fixing it means
-# everyone in the room is looking at the same curves.
 ```
+
+The vertical axis of each plot is cross-validated mean squared error
+on log(spend). The left dotted line is `lambda.min`. The right dotted
+line is `lambda.1se`. The numbers along the top of the lasso plot are
+how many sites still have a nonzero coefficient at that $\lambda$.
 
 ```{r}
 #| label: cv-plots
@@ -196,24 +253,39 @@ par(mfrow = c(1, 2))
 plot(cv_ridge, main = "Ridge")
 plot(cv_lasso, main = "Lasso")
 
-# Interpret: The vertical axis is cross-validated mean squared error
-# on log(spend). The left dotted line is lambda.min, the value with
-# the lowest cross-validated error. The right dotted line is
-# lambda.1se, the largest lambda within one standard error of that
-# minimum.
+# Interpret: As lambda increases, the penalty gets stronger and the
+# cross-validated error eventually rises. The left line is the bottom
+# of that curve. The right line is a stronger penalty that is still
+# close to that bottom, within one standard error.
 #
 # Question: As lambda increases, what happens to the number of sites
 # at the top of the lasso plot? What happens on the ridge plot?
+#
+# Discuss: Ridge does not print a shrinking site count along the top.
+# Why not?
 ```
 
 # Two values of lambda
 
+`lambda.min` is the $\lambda$ with the lowest cross-validated mean
+squared error. `lambda.1se` is the largest $\lambda$ still within one
+standard error of that minimum.
+
+The RMSE below is the square root of that mean squared error, on the
+scale of log(spend). The site count leaves out the intercept. A
+coefficient of zero means that site is out.
+
 ```{r}
 #| label: lambda-table
+# How many site coefficients are not zero at a chosen lambda.
 n_sites <- function(fit, s) {
   b <- as.matrix(coef(fit, s = s))
   sum(b[rownames(b) != "(Intercept)", 1] != 0)
 }
+
+# Cross-validated RMSE at lambda.min or lambda.1se.
+# cvm is mean squared error. The square root puts it next to the
+# standard deviation of log(spend).
 cv_rmse <- function(fit, s) {
   ix <- which.min(abs(fit$lambda - fit[[s]]))
   sqrt(fit$cvm[ix])
@@ -255,30 +327,38 @@ sqrt(mean((y - mean(y))^2))
 # Discuss: The one-standard-error lambda is not a better score. What
 # is it for?
 #
-# Business implication: A list of sites and a score for a new
-# household are different uses of the same fits. Say which use you
-# are serving before you pick.
+# Business implication: A short list of sites and a score for a new
+# household are two uses of these fits. Name which one you are using
+# when you pick.
 ```
 
 # Read a coefficient at a share a household actually has
 
 A coefficient from `glmnet` is the change in log(spend) for a one
-percentage point share on that site, other shares held fixed. Households
-do not put one percent of their page views on these sites.
+percentage point share on that site, other shares held fixed.
+$\exp(\text{coefficient})$ is the factor on spending for that one-point
+share. Households do not put one percent of their page views on these
+sites. Read the coefficient at a share you can see in the matrix, not
+only at one percentage point.
+
+We read the largest coefficient on the lasso at `lambda.1se`, the
+short list.
 
 ```{r}
 #| label: one-coefficient
-# Lasso at lambda.1se, the short list. Take the coefficient with the
-# largest absolute value and read it at the median share among
-# households who visit that site.
+# Coefficients at the short list. Drop the intercept. Drop the zeros.
 b <- as.matrix(coef(cv_lasso, s = "lambda.1se"))
 b <- b[rownames(b) != "(Intercept)", 1]
 b <- b[b != 0]
+
+# The site whose coefficient is farthest from zero.
 site_name <- names(b)[which.max(abs(b))]
 site_coef <- b[site_name]
 site_name
 site_coef
 
+# Shares on that site among households who opened it. Drop the zeros.
+# Those households did not open the site.
 j <- match(site_name, colnames(X))
 visited <- as.numeric(X[, j])
 visited <- visited[visited > 0]
@@ -287,6 +367,7 @@ median_share
 quantile(visited, 0.99)
 
 # Change in log(spend) at a one-point share, and at the median share.
+# exp() turns that change into a factor on spending.
 site_coef * 1
 site_coef * median_share
 exp(site_coef * 1)
@@ -314,8 +395,8 @@ method and which $\lambda$ follow from that?
 
 # Commit to one model and score it once
 
-Write your choice in the next chunk, then run the score. Do not go
-back and change the choice after you have seen that number.
+Write your choice in the next chunk, then run the score. Do not change
+the choice after you have seen that number.
 
 `alpha = 0` is ridge. `alpha = 1` is the lasso. `chosen_s` is
 `"lambda.min"` or `"lambda.1se"`.
@@ -325,6 +406,7 @@ with the choice you just made.
 
 ```{r}
 #| label: commit
+# Starting point only, so the chunk runs. Replace both lines.
 chosen_alpha <- 1
 chosen_s <- "lambda.1se"
 chosen_fit <- if (chosen_alpha == 1) cv_lasso else cv_ridge
@@ -333,6 +415,8 @@ c(alpha = chosen_alpha, rule = chosen_s)
 chosen_fit[[chosen_s]]
 cv_rmse(chosen_fit, chosen_s)
 n_sites(chosen_fit, chosen_s)
+
+# The null RMSE again, so the score sits next to "predict the mean."
 sqrt(mean((y - mean(y))^2))
 
 # Interpret: Put your cross-validated RMSE next to 1.67, the RMSE
@@ -352,14 +436,15 @@ sqrt(mean((y - mean(y))^2))
 # After class: elastic net
 
 Work this after you have committed. Do not change `chosen_alpha` or
-`chosen_s` because this fit looks a little different.
+`chosen_s`.
 
-Elastic net uses `alpha = 0.5`, between ridge and the lasso. It was
-the last question in an older lab on these files. It is not on the
-lecture slides.
+Elastic net uses `alpha = 0.5`, between ridge (`alpha = 0`) and the
+lasso (`alpha = 1`). It was the last question in an older lab on these
+files. It is not on the lecture slides.
 
 ```{r}
 #| label: after-class-enet
+# Same folds and the same standardization. alpha is 0.5.
 set.seed(369)
 cv_enet <- cv.glmnet(X, y, alpha = 0.5, nfolds = 10, standardize = TRUE)
 
