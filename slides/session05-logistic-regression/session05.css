@@ -204,6 +204,7 @@ vertical-align: top;
 line-height: 1.3;
 }
 .cb td:first-child { font-weight: 700; }
+.cb tr.file-row td { background: #E7EEF5; }
 .reveal table.islr,
 .islr {
 width: 100%;

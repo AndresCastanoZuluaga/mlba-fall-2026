@@ -1,6 +1,6 @@
 # Ready to copy onto the Academic folder
 
-The Mac worker was offline. This branch is the cloud build. When the Academic tree is available, copy the classroom source beside Session 04. Do not publish into the student site.
+The Mac worker was offline. This branch is the cloud build of the **24-slide** lock (not the retired 35-slide draft). When the Academic tree is available, copy the classroom source beside Session 04. Do not publish into the student site.
 
 ## Copy these files
 
