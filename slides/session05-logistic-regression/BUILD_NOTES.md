@@ -4,7 +4,7 @@ Classroom source for the logistic hour. Not published. `slides/index.qmd` is unc
 
 ## Slide count
 
-The locked outline is the **24-slide** synthesis (title + 23 content slides). An earlier 35-slide draft in this branch was the wrong lock and has been replaced.
+The locked outline is the **24-slide** synthesis (title + 23 content slides). The audit in `slides/session05-logistic-regression/_instructor/DECK_AUDIT_vs_S04.md` failed the earlier 35-slide draft. This file is the rewrite that audit asked for.
 
 1. Title
 2. Pair — Cas and Abdullah
@@ -23,7 +23,7 @@ The locked outline is the **24-slide** synthesis (title + 23 content slides). An
 15. Checkpoint — two cards, two clicks
 16. Maximum likelihood {.section-start}
 17. Example — −2.76 / 6.09
-18. Example — +0.1 loyalty, odds × 1.84; $\Delta p$ depends on the start
+18. Example — +0.1 loyalty, odds × 1.84; rise about 0.11 at LoyalCH 0.20 and about 0.05 at 0.80
 19. Add PriceDiff {.section-start} — held fixed, not a confounding story
 20. Example — +$0.10, odds × 1.33
 21. Hand score {.section-start} — 0.522 → 0.63, then `predict`
@@ -31,7 +31,7 @@ The locked outline is the **24-slide** synthesis (title + 23 content slides). An
 23. What to remember — OJ numbers, then the opening question
 24. Before next class — the cutoff deferral is in the notes only
 
-Slides 1–6 have no fragments. The Logistic row is static `class="here"`. Section openers use the weaver band with a red left border, not a blank navy slide. Plot slides state the claim, then reveal the figure. Plot swaps (curve vs overlay, the two loyalty starts, two bars vs three) use `.r-stack`.
+Slides 1–6 have no fragments. The Logistic row is static `class="here"`. Section openers (7, 11, 16, 19, 21) use the weaver band on the heading and carry the act under it, not a blank navy slide and not a one-sentence divider. Plot slides state the claim, then reveal the figure. Plot swaps use `.r-stack`: the logistic function against the score, then the fitted OJ curve with purchases; the two loyalty steps; two bars, then three. The function curve is $p = e^{\eta}/(1+e^{\eta})$ against the score. It is not a fitted sketch.
 
 There is no dos/don’ts block and no cutoff slide. The word “ROC” appears once, in the Thresholds tools cell of the course grid. That cell is not a lesson.
 
@@ -60,7 +60,7 @@ Do not render from the website root. `_quarto.yml` is a website (`title-prefix`,
 - `glm(y ~ LoyalCH + PriceDiff)`: −3.25, 6.40, 2.86
 - new rows: 0.63, 0.35, 0.92
 - +0.1 LoyalCH multiplies odds by 1.84 (`exp(0.1 * 6.09)` on the rounded slope)
-- from those same rounded coefficients, loyalty 0.32 goes about 0.31 → 0.45, and 0.72 goes about 0.84 → 0.90
+- from those same rounded coefficients, LoyalCH 0.20 goes about 0.18 → 0.28 (rise about 0.11) and LoyalCH 0.80 goes about 0.89 → 0.94 (rise about 0.05)
 - +$0.10 PriceDiff multiplies odds by 1.33 (`exp(0.10 * 2.86)`)
 - at LoyalCH 0.5, that ten-cent step is about 0.49 → 0.56 (`predict` on fit2)
 - hand score from the rounded two-predictor coefficients: $\hat\eta = 0.522$, $\hat p \approx 0.63$, and `predict` prints 0.63

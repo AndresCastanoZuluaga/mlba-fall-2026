@@ -133,10 +133,14 @@ p_hand <- as.numeric(plogis(eta_hand))
 p_glass1 <- function(x) {
   plogis(unname(b1_glass[1]) + unname(b1_glass[2]) * x)
 }
-p_lo <- p_glass1(0.32)
-p_lo_step <- p_glass1(0.42)
-p_hi <- p_glass1(0.72)
-p_hi_step <- p_glass1(0.82)
+# Human-sized +0.1 steps on the rounded one-predictor line.
+# 0.20 → rise about 0.11; 0.80 → rise about 0.05.
+p_lo <- p_glass1(0.20)
+p_lo_step <- p_glass1(0.30)
+p_hi <- p_glass1(0.80)
+p_hi_step <- p_glass1(0.90)
+dp_lo <- p_lo_step - p_lo
+dp_hi <- p_hi_step - p_hi
 p_pd0 <- as.numeric(predict(
   fit2, newdata = data.frame(LoyalCH = 0.5, PriceDiff = 0), type = "response"
 ))
@@ -153,6 +157,9 @@ price_grid$p_hat <- as.numeric(predict(fit2, newdata = price_grid, type = "respo
 
 glass_curve <- data.frame(LoyalCH = seq(0, 1, length.out = 240))
 glass_curve$p_hat <- p_glass1(glass_curve$LoyalCH)
+# The logistic function itself: p = plogis(η). Not a fit, and not a loyalty axis.
+score_curve <- data.frame(eta = seq(-6, 6, length.out = 241))
+score_curve$p <- plogis(score_curve$eta)
 
 r2 <- function(x) sprintf("%.2f", x)
 r3 <- function(x) sprintf("%.3f", x)
@@ -171,8 +178,8 @@ stopifnot(r2(odds_loyal_step) == "1.84")
 stopifnot(r2(odds_price_step) == "1.33")
 stopifnot(r3(eta_hand) == "0.522")
 stopifnot(r2(p_hand) == "0.63")
-stopifnot(r2(p_lo) == "0.31", r2(p_lo_step) == "0.45")
-stopifnot(r2(p_hi) == "0.84", r2(p_hi_step) == "0.90")
+stopifnot(r2(p_lo) == "0.18", r2(p_lo_step) == "0.28", r2(dp_lo) == "0.11")
+stopifnot(r2(p_hi) == "0.89", r2(p_hi_step) == "0.94", r2(dp_hi) == "0.05")
 stopifnot(r2(p_pd0) == "0.49", r2(p_pd1) == "0.56")
 ```
 
@@ -296,26 +303,45 @@ Point at LoyalCH and PriceDiff. If asked: PriceCH, PriceMM, DiscCH, DiscMM, Spec
 ## What we will do today
 
 <ol class="today-list">
-<li>Why a straight line fails for a brand choice, on this file</li>
-<li>The curve, the odds, and what a coefficient multiplies</li>
-<li>Fit loyalty, then the price gap with loyalty held fixed</li>
-<li>Score one new visit — a probability — and stop</li>
+<li>Why the line breaks on this file</li>
+<li>The curve, then the odds</li>
+<li>How <code>glm</code> chooses the coefficients</li>
+<li>A human-sized reading of loyalty, then of the price gap</li>
+<li>One visit, scored by hand</li>
 </ol>
 
 ::: {.notes}
-Four lines. No book section numbers on the glass. No cutoff, no hit/miss table, no other dataset. The closing slide names the lab and the midterm; this slide does not.
+Five beats, no clicks. No book section numbers on the glass. No cutoff, no hit/miss table, no other dataset. The closing slide names the lab and the midterm; this slide does not.
 :::
 
 ## Brand choice is a probability, not a line {.section-start}
 
 <p class="act-kicker">This file</p>
 
-<p class="setup-line">We want the chance a shopper buys Citrus Hill. A straight line was built for a number that can sit anywhere — a dollar balance, not a brand.</p>
+Code a Citrus Hill purchase as 1 and a Minute Maid purchase as 0. The target is a probability, so it has to stay between 0 and 1.
+
+::: {.formula}
+$$
+Y_i =
+\begin{cases}
+1 & \text{if Purchase}_i = \text{CH},\\
+0 & \text{if Purchase}_i = \text{MM}.
+\end{cases}
+$$
+:::
+
+::: {.fragment}
+A straight line was built for a dollar amount. On a 0/1 purchase it is not forced to stay inside (0, 1).
+:::
+
+::: {.fragment}
+<p class="q-prompt">The next pictures are on this file: who is loyal, where the line leaves the fence, and whether the CH rate climbs in equal steps.</p>
+:::
 
 ::: {.notes}
-Section start: weaver band, one sentence, then the OJ pictures. Not a blank dark slide.
+Section start with the idea under the band, not a blank navy slide and not a one-sentence divider. Two clicks: the line is the wrong tool, then what the next three OJ pictures will show.
 
-ISLR ~pp. 129–133: a binary response, then why not least squares on 0/1. OJ only.
+Do not read 0.036 or 1.051 yet. That measurement is the fence slide. ISLR ~pp. 129–133. OJ only.
 :::
 
 ## Example on OJ — loyal shoppers and CH
@@ -489,31 +515,31 @@ $\eta$ will be a line in the shopper’s features. $p$ is $\mathrm{P}(\mathrm{CH
 ::: {.column width="56%"}
 ::: {.r-stack}
 ::: {.fragment .fade-in-then-out}
-<p class="caption">The function. It cannot cross 0 or 1.</p>
+<p class="caption">The function. The horizontal axis is the score, not loyalty.</p>
 ```{r}
 #| fig-width: 6.3
 #| fig-height: 3.35
-#| fig-alt: "A smooth curve of fitted P(CH) against LoyalCH, staying between 0 and 1."
-ggplot(grid_loyal, aes(LoyalCH, p_hat)) +
+#| fig-alt: "The logistic function: probability versus the score, staying between 0 and 1."
+ggplot(score_curve, aes(eta, p)) +
   geom_line(color = weaver, linewidth = 1.25) +
   geom_hline(yintercept = c(0, 1), linetype = "dashed", color = iron, linewidth = 0.35) +
   scale_y_continuous(limits = c(0, 1), breaks = c(0, 0.5, 1)) +
-  labs(x = "LoyalCH", y = "P(CH)") +
+  labs(x = "Score", y = "p") +
   theme_mlba(13)
 ```
 :::
 ::: {.fragment .fade-in}
-<p class="caption">Same curve, with this file’s purchases.</p>
+<p class="caption">Fitted on this file, with the purchases laid on the curve.</p>
 ```{r}
 #| fig-width: 6.3
 #| fig-height: 3.35
-#| fig-alt: "The same fitted curve with each purchase drawn at 0 or 1."
+#| fig-alt: "Fitted probability of CH against LoyalCH, with each purchase drawn at 0 or 1."
 ggplot(oj, aes(LoyalCH, y)) +
   geom_jitter(height = 0.04, width = 0, alpha = 0.22, color = iron, size = 1.15) +
-  geom_line(data = grid_loyal, aes(LoyalCH, p_hat), color = weaver, linewidth = 1.25) +
+  geom_line(data = glass_curve, aes(LoyalCH, p_hat), color = weaver, linewidth = 1.25) +
   geom_hline(yintercept = c(0, 1), linetype = "dashed", color = iron, linewidth = 0.35) +
   scale_y_continuous(limits = c(-0.08, 1.08), breaks = c(0, 0.5, 1)) +
-  labs(x = "LoyalCH", y = "Purchase (0/1) and P(CH)") +
+  labs(x = "LoyalCH", y = "Purchase (0/1) and fitted P(CH)") +
   theme_mlba(13)
 ```
 :::
@@ -522,9 +548,9 @@ ggplot(oj, aes(LoyalCH, y)) +
 ::::
 
 ::: {.notes}
-Section start with the function, then the picture. First click: the curve alone. Second click: the 0/1 purchases from this file laid on it. That is the ISLR Figure 4.2 move, on OJ.
+Section start. First click: the logistic function against the score. That curve is $p = e^{\eta}/(1+e^{\eta})$. It is not a fit and it is not loyalty. Second click swaps to the fitted curve from the rounded one-predictor coefficients, with this file’s 0/1 purchases on it. That is the ISLR Figure 4.2 move, on OJ.
 
-The curve is `glm(y ~ LoyalCH)` on this file. Do not read the coefficients yet — they are the next fit. Do not name another dataset.
+Do not read −2.76 or 6.09 yet. Maximum likelihood and the table come after the odds. Do not name another dataset.
 :::
 
 ## Odds come out of that function
@@ -641,14 +667,20 @@ Then maximum likelihood, lightly, and the measured coefficients −2.76 and 6.09
 
 ## R picks the coefficients that fit these purchases {.section-start}
 
-<p class="act-kicker">One idea</p>
+<p class="act-kicker">Before the numbers</p>
 
-<p class="setup-line">Maximum likelihood chooses $\beta$ so the CH and MM purchases in this file are as likely as possible under the curve. `glm` does the search. We read the result.</p>
+Maximum likelihood chooses $\beta$ so the CH and MM purchases in this file are as likely as possible under the curve.
+
+::: {.fragment}
+`glm` does that search. We will not derive it, and we will not invent a second criterion.
+:::
+
+::: {.fragment}
+<p class="q-prompt">Next slide: the fitted loyalty line from this file. Read the two numbers. Do not turn the slope into a change in the probability yet.</p>
+:::
 
 ::: {.notes}
-Section start. Light. No derivation, no likelihood product on the glass.
-
-ISLR estimation, one sentence. Then the measured table. OJ only.
+Section start, before any coefficient table. Two clicks. No likelihood product, no −2.76 yet — that is the next slide. OJ only.
 :::
 
 ## Example on OJ — loyalty alone
@@ -707,18 +739,23 @@ Answer: no. 6.09 is on the log-odds scale. The next slide measures a step of +0.
 - That multiplier does not depend on where you start.
 - The change in the **probability** does.
 
-- Start at 0.32 (MM buyers’ mean): about **`r r2(p_lo)`** → **`r r2(p_lo_step)`**.
-- Start at 0.72 (CH buyers’ mean): about **`r r2(p_hi)`** → **`r r2(p_hi_step)`**.
+::: {.fragment fragment-index=1}
+- Start at LoyalCH 0.20: about **`r r2(p_lo)`** → **`r r2(p_lo_step)`**. The chance rises by about **`r r2(dp_lo)`**.
+:::
+
+::: {.fragment fragment-index=3}
+- Start at LoyalCH 0.80: about **`r r2(p_hi)`** → **`r r2(p_hi_step)`**. The chance rises by about **`r r2(dp_hi)`**.
+:::
 :::
 ::: {.column width="58%"}
 ::: {.r-stack}
-::: {.fragment .fade-in-then-out}
+::: {.fragment .fade-in-then-out fragment-index=2}
 ```{r}
 #| fig-width: 6.4
-#| fig-height: 3.55
-#| fig-alt: "Logistic curve with a +0.1 loyalty step starting at 0.32. The chance moves from about 0.31 to about 0.45."
-seg_lo <- data.frame(x = 0.32, xend = 0.42, y = p_lo, yend = p_lo_step)
-pts_lo <- data.frame(LoyalCH = c(0.32, 0.42), p_hat = c(p_lo, p_lo_step))
+#| fig-height: 3.45
+#| fig-alt: "Logistic curve with a +0.1 loyalty step starting at 0.20. The chance rises by about 0.11."
+seg_lo <- data.frame(x = 0.20, xend = 0.30, y = p_lo, yend = p_lo_step)
+pts_lo <- data.frame(LoyalCH = c(0.20, 0.30), p_hat = c(p_lo, p_lo_step))
 ggplot(glass_curve, aes(LoyalCH, p_hat)) +
   geom_line(color = weaver, linewidth = 1.15) +
   geom_segment(
@@ -729,17 +766,17 @@ ggplot(glass_curve, aes(LoyalCH, p_hat)) +
   geom_point(data = pts_lo, color = red, size = 3.1) +
   geom_hline(yintercept = c(0, 1), linetype = "dashed", color = iron, linewidth = 0.3) +
   scale_y_continuous(limits = c(0, 1), breaks = c(0, 0.5, 1)) +
-  labs(x = "LoyalCH", y = "Chance of CH", caption = "Start at 0.32") +
+  labs(x = "LoyalCH", y = "Chance of CH", caption = "Start at 0.20. Rise about 0.11.") +
   theme_mlba(13)
 ```
 :::
-::: {.fragment .fade-in}
+::: {.fragment .fade-in fragment-index=4}
 ```{r}
 #| fig-width: 6.4
-#| fig-height: 3.55
-#| fig-alt: "The same curve with a +0.1 loyalty step starting at 0.72. The chance moves from about 0.84 to about 0.90."
-seg_hi <- data.frame(x = 0.72, xend = 0.82, y = p_hi, yend = p_hi_step)
-pts_hi <- data.frame(LoyalCH = c(0.72, 0.82), p_hat = c(p_hi, p_hi_step))
+#| fig-height: 3.45
+#| fig-alt: "The same curve with a +0.1 loyalty step starting at 0.80. The chance rises by about 0.05."
+seg_hi <- data.frame(x = 0.80, xend = 0.90, y = p_hi, yend = p_hi_step)
+pts_hi <- data.frame(LoyalCH = c(0.80, 0.90), p_hat = c(p_hi, p_hi_step))
 ggplot(glass_curve, aes(LoyalCH, p_hat)) +
   geom_line(color = weaver, linewidth = 1.15) +
   geom_segment(
@@ -750,7 +787,7 @@ ggplot(glass_curve, aes(LoyalCH, p_hat)) +
   geom_point(data = pts_hi, color = red, size = 3.1) +
   geom_hline(yintercept = c(0, 1), linetype = "dashed", color = iron, linewidth = 0.3) +
   scale_y_continuous(limits = c(0, 1), breaks = c(0, 0.5, 1)) +
-  labs(x = "LoyalCH", y = "Chance of CH", caption = "Start at 0.72") +
+  labs(x = "LoyalCH", y = "Chance of CH", caption = "Start at 0.80. Rise about 0.05.") +
   theme_mlba(13)
 ```
 :::
@@ -759,11 +796,11 @@ ggplot(glass_curve, aes(LoyalCH, p_hat)) +
 ::::
 
 ::: {.notes}
-Odds multiplier first, in the claim: about 1.84, from $e^{0.1 \times 6.09}$ using the rounded slope. It is the same at both starts.
+Claim first: about 1.84, from $e^{0.1 \times 6.09}$ on the rounded slope. Same multiplier at both starts.
 
-Then the pictures, one click each. At 0.32 the chance goes about 0.31 → 0.45. At 0.72 it goes about 0.84 → 0.90. Same step in loyalty, different $\Delta p$. Those four probabilities use the rounded coefficients −2.76 and 6.09.
+Then the low baseline (about 0.18 → 0.28, rise about 0.11), with its picture. Then the high baseline (about 0.89 → 0.94, rise about 0.05), and the picture swaps. Rounded coefficients −2.76 and 6.09.
 
-Do not call 1.84 a change in the probability.
+Do not call 1.84 a change in the probability. Do not print $e^{6.09}$.
 :::
 
 ## Add the price gap, loyalty held fixed {.section-start}
@@ -867,9 +904,9 @@ $$
 new <- data.frame(LoyalCH = 0.5, PriceDiff = 0.2)
 round(predict(fit2, new, type = "response"), 2)
 ```
-:::
 
-<p class="caption">The hand score uses the rounded coefficients. `predict` on the same row agrees at two decimals: about 0.63.</p>
+<p class="caption">`predict` on the same row agrees at two decimals: about 0.63.</p>
+:::
 
 ::: {.notes}
 Section start. Three beats: write $\hat\eta = 0.522$, turn it into $\hat p \approx 0.63$, then show `predict` prints 0.63.
