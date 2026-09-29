@@ -1,0 +1,1019 @@
+---
+title: "Logistic regression"
+author: "Andrés Castaño Zuluaga"
+format:
+  revealjs:
+    theme: simple
+    css:
+      - ../_theme/mlba-reveal.css
+      - session05.css
+    slide-number: true
+    embed-resources: true
+    html-math-method: katex
+    width: 1280
+    height: 720
+    margin: 0.04
+    center: false
+    auto-stretch: false
+    min-scale: 0.2
+    max-scale: 1.4
+    transition: none
+    navigation-mode: linear
+    controls-tutorial: false
+    hash-type: number
+    highlight-style: arrow
+    code-copy: false
+    code-overflow: wrap
+    title-slide-attributes:
+      data-background-color: "#182C4B"
+      class: "quarto-title-block"
+    footer: "70-467 · Logistic regression"
+    template-partials:
+      - title-slide.html
+execute:
+  echo: false
+  warning: false
+  message: false
+fig-dpi: 140
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(ggplot2)
+
+# ---- File -------------------------------------------------------------------
+oj_path_candidates <- c(
+  "OJ.csv",
+  "../../_project/data_pack/teaching/w05_slides/OJ.csv",
+  "../../../_project/data_pack/teaching/w05_slides/OJ.csv",
+  "../../_project/data_pack/teaching/backups/OJ.csv",
+  "../../../_project/data_pack/teaching/backups/OJ.csv"
+)
+oj_path <- oj_path_candidates[file.exists(oj_path_candidates)][1]
+if (is.na(oj_path)) stop("OJ.csv not found next to the deck or in the data pack")
+
+oj <- read.csv(oj_path, stringsAsFactors = FALSE)
+# Some exports keep an unnamed row-id in the first column. Drop it.
+if (!names(oj)[1] %in% c("Purchase", "LoyalCH", "PriceDiff")) {
+  oj <- oj[, -1, drop = FALSE]
+}
+oj$Purchase <- factor(oj$Purchase, levels = c("CH", "MM"))
+oj$y <- as.integer(oj$Purchase == "CH")
+
+n <- nrow(oj)
+n_ch <- sum(oj$y)
+n_mm <- n - n_ch
+share_ch <- mean(oj$y)
+
+# ---- Plot theme (same ink as Session 04) ------------------------------------
+weaver <- "#182C4B"; red <- "#C41230"; iron <- "#6D6E71"; paper <- "#F4F6F8"; teal <- "#008F91"
+theme_mlba <- function(base = 15) {
+  theme_minimal(base_family = "sans", base_size = base) +
+    theme(
+      plot.background = element_rect(fill = paper, color = NA),
+      panel.background = element_rect(fill = paper, color = NA),
+      panel.grid.minor = element_blank(),
+      panel.grid.major = element_line(color = "#E0E0E0", linewidth = 0.3),
+      axis.title = element_text(color = iron, size = base - 2),
+      axis.text = element_text(color = weaver, size = base - 3),
+      legend.position = "none",
+      plot.margin = margin(6, 10, 4, 4),
+      plot.caption = element_text(color = iron, size = base - 5, hjust = 0),
+      strip.text = element_text(color = weaver, face = "bold", size = base - 2),
+      strip.background = element_rect(fill = "#E0E0E0", color = NA)
+    )
+}
+brand_fill <- c(CH = "#D6DEE8", MM = "#E4E5E7")
+
+# ---- Locked teaching fits: CH = 1, MM = 0 -----------------------------------
+fit_lin <- lm(y ~ LoyalCH, data = oj)
+lin_hat <- predict(fit_lin)
+lin_min <- min(lin_hat)
+lin_max <- max(lin_hat)
+
+fit1 <- glm(y ~ LoyalCH, data = oj, family = binomial)
+fit2 <- glm(y ~ LoyalCH + PriceDiff, data = oj, family = binomial)
+
+oj$loyal_bin <- cut(
+  oj$LoyalCH,
+  breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1),
+  include.lowest = TRUE,
+  right = FALSE
+)
+bin_df <- data.frame(
+  bin = levels(oj$loyal_bin),
+  n = as.integer(tapply(oj$y, oj$loyal_bin, length)),
+  rate = as.numeric(tapply(oj$y, oj$loyal_bin, mean)),
+  stringsAsFactors = FALSE
+)
+bin_df$label <- sprintf("%.2f", bin_df$rate)
+
+loyal_means <- tapply(oj$LoyalCH, oj$Purchase, mean)
+grid_loyal <- data.frame(LoyalCH = seq(0, 1, length.out = 240))
+grid_loyal$p_hat <- as.numeric(predict(fit1, newdata = grid_loyal, type = "response"))
+grid_loyal$lin <- as.numeric(predict(fit_lin, newdata = grid_loyal))
+
+new3 <- data.frame(
+  LoyalCH = c(0.5, 0.5, 0.9),
+  PriceDiff = c(0.2, -0.2, 0)
+)
+new3$p_hat <- as.numeric(predict(fit2, newdata = new3, type = "response"))
+new3$who <- factor(
+  c("LoyalCH 0.5\nPriceDiff +0.2", "LoyalCH 0.5\nPriceDiff −0.2", "LoyalCH 0.9\nPriceDiff 0"),
+  levels = c("LoyalCH 0.5\nPriceDiff +0.2", "LoyalCH 0.5\nPriceDiff −0.2", "LoyalCH 0.9\nPriceDiff 0")
+)
+# Rounded glass coefficients. Steps below use these, so the arithmetic matches the board.
+b1_glass <- round(coef(fit1), 2)
+b2_glass <- round(coef(fit2), 2)
+odds_loyal_step <- exp(0.1 * unname(b1_glass[2]))
+odds_price_step <- exp(0.10 * unname(b2_glass[3]))
+eta_hand <- unname(b2_glass[1] + b2_glass[2] * 0.5 + b2_glass[3] * 0.2)
+p_hand <- as.numeric(plogis(eta_hand))
+p_glass1 <- function(x) {
+  plogis(unname(b1_glass[1]) + unname(b1_glass[2]) * x)
+}
+# Human-sized +0.1 steps on the rounded one-predictor line.
+# 0.20 → rise about 0.11; 0.80 → rise about 0.05.
+p_lo <- p_glass1(0.20)
+p_lo_step <- p_glass1(0.30)
+p_hi <- p_glass1(0.80)
+p_hi_step <- p_glass1(0.90)
+dp_lo <- p_lo_step - p_lo
+dp_hi <- p_hi_step - p_hi
+p_pd0 <- as.numeric(predict(
+  fit2, newdata = data.frame(LoyalCH = 0.5, PriceDiff = 0), type = "response"
+))
+p_pd1 <- as.numeric(predict(
+  fit2, newdata = data.frame(LoyalCH = 0.5, PriceDiff = 0.1), type = "response"
+))
+odds_file <- round(share_ch, 2) / (1 - round(share_ch, 2))
+
+price_grid <- data.frame(
+  LoyalCH = 0.5,
+  PriceDiff = seq(-0.4, 0.55, length.out = 180)
+)
+price_grid$p_hat <- as.numeric(predict(fit2, newdata = price_grid, type = "response"))
+
+glass_curve <- data.frame(LoyalCH = seq(0, 1, length.out = 240))
+glass_curve$p_hat <- p_glass1(glass_curve$LoyalCH)
+# The logistic function itself: p = plogis(η). Not a fit, and not a loyalty axis.
+score_curve <- data.frame(eta = seq(-6, 6, length.out = 241))
+score_curve$p <- plogis(score_curve$eta)
+
+r2 <- function(x) sprintf("%.2f", x)
+r3 <- function(x) sprintf("%.3f", x)
+
+# Hard lock. If a future OJ export drifts, stop rather than teach a new number.
+stopifnot(n == 1070L, n_ch == 653L, n_mm == 417L)
+stopifnot(r2(share_ch) == "0.61")
+stopifnot(sprintf("%.2f", odds_file) == "1.56")
+stopifnot(r2(loyal_means["CH"]) == "0.72", r2(loyal_means["MM"]) == "0.32")
+stopifnot(r3(lin_min) == "0.036", r3(lin_max) == "1.051")
+stopifnot(all(bin_df$label == c("0.12", "0.28", "0.53", "0.77", "0.96")))
+stopifnot(r2(coef(fit1)[1]) == "-2.76", r2(coef(fit1)[2]) == "6.09")
+stopifnot(r2(coef(fit2)[1]) == "-3.25", r2(coef(fit2)[2]) == "6.40", r2(coef(fit2)[3]) == "2.86")
+stopifnot(all(r2(new3$p_hat) == c("0.63", "0.35", "0.92")))
+stopifnot(r2(odds_loyal_step) == "1.84")
+stopifnot(r2(odds_price_step) == "1.33")
+stopifnot(r3(eta_hand) == "0.522")
+stopifnot(r2(p_hand) == "0.63")
+stopifnot(r2(p_lo) == "0.18", r2(p_lo_step) == "0.28", r2(dp_lo) == "0.11")
+stopifnot(r2(p_hi) == "0.89", r2(p_hi_step) == "0.94", r2(dp_hi) == "0.05")
+stopifnot(r2(p_pd0) == "0.49", r2(p_pd1) == "0.56")
+```
+
+## Where Cas and Abdullah left us
+
+```{=html}
+<div class="pair-card">
+  <p><strong>Cas</strong> and <strong>Abdullah</strong> opened logistic regression on Monday.</p>
+  <p>Today we continue — same topic, one store file, one decision.</p>
+  <p>We will not re-teach their intro from a cold start.</p>
+</div>
+```
+
+::: {.notes}
+Bridge only. Thank them by name. One sentence on what they opened, then the grid and the OJ file.
+
+Do not steal their examples onto later slides. Do not put the Monday date on the title. Book pages stay in these notes: ISLR 2nd ed. §4.1–4.3 (~pp. 129–141). Logistics stay in your mouth or the final next-slide.
+:::
+
+## Where are we on the grid?
+
+<p class="q-prompt">Last week we shrank slopes for a dollar balance. What changes when the thing we want to predict is a <strong>yes/no</strong> at the shelf?</p>
+
+```{=html}
+<div class="grid-wrap">
+<table class="mlba-grid">
+  <colgroup>
+    <col class="topic" /><col class="desc" /><col class="tools" />
+  </colgroup>
+  <thead>
+    <tr><th>Topic</th><th>Description</th><th>Tools</th></tr>
+  </thead>
+  <tbody>
+    <tr class="band"><td colspan="3">Fit &amp; evaluate</td></tr>
+    <tr class="done"><td>Linear regression</td><td>Predict a number</td><td>OLS</td></tr>
+    <tr class="done"><td>Metrics</td><td>Size of the errors</td><td>RMSE, R²</td></tr>
+    <tr class="done"><td>Train/test, leakage, cross-validation</td><td>Error on new data</td><td>Holdout, k-fold</td></tr>
+    <tr class="done"><td>Selection + regularization</td><td>Select variables or shrink coefficients</td><td>Best subset, ridge, lasso</td></tr>
+    <tr class="band"><td colspan="3">Classify &amp; decide</td></tr>
+    <tr class="here"><td>Logistic</td><td>Predict a yes/no outcome</td><td>Logistic regression</td></tr>
+    <tr><td>Thresholds</td><td>Turn a probability into a decision</td><td>ROC, cutoff</td></tr>
+    <tr class="band"><td colspan="3">Flexible &amp; unsupervised</td></tr>
+    <tr><td>Trees</td><td>Split the predictors in sequence</td><td>Decision trees</td></tr>
+    <tr><td>Forests / boosting</td><td>Combine many trees</td><td>Random forest, boosting</td></tr>
+    <tr><td>PCA</td><td>Fewer combinations of the predictors</td><td>Principal components</td></tr>
+    <tr><td>Clustering</td><td>Group similar observations</td><td>K-means</td></tr>
+  </tbody>
+</table>
+</div>
+```
+
+<p class="caption">The marked cell is this hour: a probability of a brand choice. Thresholds stay later. Do not reopen ridge or lasso.</p>
+
+::: {.notes}
+Open block — no click. The Logistic row is already marked. You name “probability of a brand choice.”
+
+The Thresholds cell is the later week on the same roadmap. Do not open it. No confusion matrix. ISLR Ch. 4 starts classification here; we stop at $\hat p$.
+:::
+
+## Can we predict which OJ brand a shopper buys?
+
+:::: {.columns}
+::: {.column .spaced-list width="52%"}
+- One row = one store purchase of orange juice ($n$ = `r format(n, big.mark = ",")`).
+- $Y$: `Purchase` — **CH** (Citrus Hill) or **MM** (Minute Maid).
+- Measured mix: CH `r n_ch` (`r sprintf("%.1f%%", 100 * n_ch / n)`) / MM `r n_mm` (`r sprintf("%.1f%%", 100 * n_mm / n)`). No missing values.
+- Decision this hour: a **new** visit is about to happen. What is the chance they pick Citrus Hill?
+:::
+::: {.column width="48%"}
+```{r}
+#| fig-width: 5.6
+#| fig-height: 3.55
+#| fig-alt: "Bar chart of 653 Citrus Hill purchases and 417 Minute Maid purchases."
+brand_n <- data.frame(
+  Purchase = factor(c("CH", "MM"), levels = c("CH", "MM")),
+  n = c(n_ch, n_mm)
+)
+ggplot(brand_n, aes(Purchase, n, fill = Purchase)) +
+  geom_col(width = 0.62) +
+  geom_text(aes(label = format(n, big.mark = ",")), vjust = -0.35,
+            fontface = "bold", color = weaver, size = 5) +
+  scale_fill_manual(values = c(CH = weaver, MM = iron)) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.14)), limits = c(0, 820)) +
+  labs(x = NULL, y = "Purchases") +
+  theme_mlba(15)
+```
+:::
+::::
+
+<p class="q-prompt">If headquarters only said “most people buy CH,” is that enough for <strong>this</strong> shopper, with a loyalty score and a price gap?</p>
+
+::: {.notes}
+Sit with the question. The answer comes back on the remember slide. Do not say the file name on the title.
+
+The CH share is about 0.61. Name it as the mix in the file, not as a classification score. ISLR 4.1: a qualitative response. OJ only.
+:::
+
+## What is in the file?
+
+```{=html}
+<table class="cb">
+  <thead>
+    <tr><th>Variable</th><th>Type</th><th>Unit</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Purchase</td><td>CH / MM</td><td>brand</td><td>Which OJ they bought (Y)</td></tr>
+    <tr><td>LoyalCH</td><td>numeric</td><td>0–1 score</td><td>Customer loyalty toward Citrus Hill</td></tr>
+    <tr><td>PriceDiff</td><td>numeric</td><td>dollars</td><td>Sale price MM − sale price CH</td></tr>
+    <tr><td>SalePriceCH</td><td>numeric</td><td>dollars</td><td>CH shelf / sale price</td></tr>
+    <tr><td>SalePriceMM</td><td>numeric</td><td>dollars</td><td>MM shelf / sale price</td></tr>
+  </tbody>
+</table>
+```
+
+<p class="caption">Workhorses this hour: <strong>LoyalCH</strong> and <strong>PriceDiff</strong>. List prices, discounts, special-display flags, and store ids stay in the file. We will not use them today.</p>
+
+::: {.notes}
+Point at LoyalCH and PriceDiff. If asked: PriceCH, PriceMM, DiscCH, DiscMM, SpecialCH, SpecialMM, StoreID, STORE, Store7, PctDiscCH, PctDiscMM, ListPriceDiff. WeekofPurchase stays off unless asked.
+:::
+
+## What we will do today
+
+<ol class="today-list">
+<li>Why the line breaks on this file</li>
+<li>The curve, then the odds</li>
+<li>How <code>glm</code> chooses the coefficients</li>
+<li>A human-sized reading of loyalty, then of the price gap</li>
+<li>One visit, scored by hand</li>
+</ol>
+
+::: {.notes}
+Five beats, no clicks. No book section numbers on the glass. No cutoff, no hit/miss table, no other dataset. The closing slide names the lab and the midterm; this slide does not.
+:::
+
+## Brand choice is a probability, not a line {.section-start}
+
+<p class="act-kicker">This file</p>
+
+Code a Citrus Hill purchase as 1 and a Minute Maid purchase as 0. The target is a probability, so it has to stay between 0 and 1.
+
+::: {.formula}
+$$
+Y_i =
+\begin{cases}
+1 & \text{if Purchase}_i = \text{CH},\\
+0 & \text{if Purchase}_i = \text{MM}.
+\end{cases}
+$$
+:::
+
+::: {.fragment}
+A straight line was built for a dollar amount. On a 0/1 purchase it is not forced to stay inside (0, 1).
+:::
+
+::: {.fragment}
+<p class="q-prompt">The next pictures are on this file: who is loyal, where the line leaves the fence, and whether the CH rate climbs in equal steps.</p>
+:::
+
+::: {.notes}
+Section start with the idea under the band, not a blank navy slide and not a one-sentence divider. Two clicks: the line is the wrong tool, then what the next three OJ pictures will show.
+
+Do not read 0.036 or 1.051 yet. That measurement is the fence slide. ISLR ~pp. 129–133. OJ only.
+:::
+
+## Example on OJ — loyal shoppers and CH
+
+:::: {.columns}
+::: {.column .spaced-list width="42%"}
+- Mean `LoyalCH` ≈ **`r r2(loyal_means["CH"])`** among CH buyers.
+- Mean `LoyalCH` ≈ **`r r2(loyal_means["MM"])`** among MM buyers.
+- Loyalty already separates the two brands. We still need a probability.
+
+```{r}
+#| echo: true
+round(tapply(oj$LoyalCH, oj$Purchase, mean), 2)
+```
+:::
+::: {.column width="58%"}
+::: {.fragment}
+```{r}
+#| fig-width: 6.4
+#| fig-height: 3.7
+#| fig-alt: "Boxplots of LoyalCH for CH and MM buyers, with means 0.72 and 0.32."
+means_df <- data.frame(
+  Purchase = factor(c("CH", "MM"), levels = c("CH", "MM")),
+  LoyalCH = as.numeric(loyal_means[c("CH", "MM")])
+)
+ggplot(oj, aes(Purchase, LoyalCH)) +
+  geom_boxplot(aes(fill = Purchase), width = 0.55, color = weaver,
+               outlier.size = 0.8, outlier.alpha = 0.35) +
+  geom_point(data = means_df, color = red, size = 3.2, shape = 18) +
+  geom_text(
+    data = means_df,
+    aes(label = sprintf("mean %.2f", LoyalCH)),
+    color = red, fontface = "bold", size = 4.2, nudge_x = 0.28, nudge_y = 0.04
+  ) +
+  scale_fill_manual(values = brand_fill) +
+  coord_cartesian(ylim = c(0, 1)) +
+  labs(x = NULL, y = "LoyalCH") +
+  theme_mlba(14)
+```
+:::
+:::
+::::
+
+::: {.fragment}
+<p class="q-prompt">Before any formula: which shopper would you bet on for CH — loyalty near 0.3, or near 0.7?</p>
+:::
+
+::: {.notes}
+Claim first, then the boxplots. The two means are the picture: 0.72 versus 0.32.
+
+Association only. PriceDiff also runs higher among CH buyers — do not quote a new mean. No cause.
+:::
+
+## Example on OJ — a fitted “chance” of 1.05
+
+:::: {.columns}
+::: {.column width="44%"}
+- Treat $Y$ like a dollar amount: `lm(y ~ LoyalCH)`.
+- On **this** file the fitted values run from about **`r r3(lin_min)`** to about **`r r3(lin_max)`**.
+- A number above 1, or below 0, is not a chance.
+
+```{r}
+#| echo: true
+fit_lin <- lm(y ~ LoyalCH, oj)
+range(round(predict(fit_lin), 3))
+```
+:::
+::: {.column width="56%"}
+::: {.fragment}
+```{r}
+#| fig-width: 6.4
+#| fig-height: 3.85
+#| fig-alt: "Least-squares line crossing the fences at 0 and 1. The fitted values run from about 0.036 to about 1.051."
+fence_lab <- data.frame(
+  LoyalCH = c(0.18, 0.72),
+  y = c(lin_min + 0.10, 1.08),
+  lab = c(sprintf("min ≈ %.3f", lin_min), sprintf("max ≈ %.3f", lin_max))
+)
+ggplot(oj, aes(LoyalCH, y)) +
+  geom_jitter(height = 0.035, width = 0, alpha = 0.22, color = weaver, size = 1.25) +
+  geom_line(data = grid_loyal, aes(LoyalCH, lin), color = red, linewidth = 1.05) +
+  geom_hline(yintercept = c(0, 1), linetype = "dashed", color = iron, linewidth = 0.4) +
+  geom_text(data = fence_lab, aes(label = lab), color = red, fontface = "bold", size = 4) +
+  scale_y_continuous(breaks = c(0, 0.5, 1), limits = c(-0.08, 1.2)) +
+  labs(x = "LoyalCH", y = "Least-squares fit") +
+  theme_mlba(13)
+```
+:::
+:::
+::::
+
+::: {.fragment}
+<p class="q-prompt">Would you report “`r r3(lin_max)` chance of buying CH” to the store?</p>
+:::
+
+::: {.notes}
+Claim first: 0.036 to 1.051, measured on this file. Then the picture of the line leaving the fences.
+
+The class says no. That is the why-not-linear beat, in OJ. Do not read a new metric off the plot.
+:::
+
+## Example on OJ — CH share by loyalty bin
+
+:::: {.columns}
+::: {.column width="40%"}
+The CH rate climbs with loyalty. The steps are not equal.
+
+```{=html}
+<table class="cb odds-mini">
+  <thead><tr><th>LoyalCH</th><th>CH rate</th></tr></thead>
+  <tbody>
+```
+```{r}
+#| results: asis
+cat(paste0(
+  "<tr><td>", bin_df$bin, "</td><td>", bin_df$label, "</td></tr>",
+  collapse = "\n"
+))
+```
+```{=html}
+  </tbody>
+</table>
+```
+
+```{r}
+#| echo: true
+round(tapply(oj$y, oj$loyal_bin, mean), 2)
+```
+:::
+::: {.column width="60%"}
+::: {.fragment}
+```{r}
+#| fig-width: 6.6
+#| fig-height: 3.9
+#| fig-alt: "Bar chart of the Citrus Hill rate in five LoyalCH bins: about 0.12, 0.28, 0.53, 0.77, 0.96."
+ggplot(bin_df, aes(bin, rate)) +
+  geom_col(width = 0.72, fill = weaver) +
+  geom_text(aes(label = label), vjust = -0.35, fontface = "bold", color = weaver, size = 4.4) +
+  scale_y_continuous(limits = c(0, 1.12), breaks = seq(0, 1, 0.25), expand = c(0, 0)) +
+  labs(x = "LoyalCH bin", y = "Share who bought CH") +
+  theme_mlba(13)
+```
+:::
+:::
+::::
+
+::: {.fragment}
+<p class="q-prompt">Is the step from the first bin to the second the same size as the step near the top?</p>
+:::
+
+::: {.notes}
+Claim is the five rates: 0.12, 0.28, 0.53, 0.77, 0.96. Then the bars.
+
+You say: a straight line cannot tell this climb. Steeper through the middle, flatter near the ends. That is the shape we fit next.
+:::
+
+## The curve stays between 0 and 1 {.section-start}
+
+:::: {.columns}
+::: {.column width="44%"}
+For a score $\eta$, the logistic function is a probability:
+
+::: {.formula}
+$$
+p = \frac{e^{\eta}}{1 + e^{\eta}}, \qquad 0 < p < 1.
+$$
+:::
+
+$\eta$ will be a line in the shopper’s features. $p$ is $\mathrm{P}(\mathrm{CH})$ for that shopper.
+:::
+::: {.column width="56%"}
+::: {.r-stack}
+::: {.fragment .fade-in-then-out}
+<p class="caption">The function. The horizontal axis is the score, not loyalty.</p>
+```{r}
+#| fig-width: 6.3
+#| fig-height: 3.35
+#| fig-alt: "The logistic function: probability versus the score, staying between 0 and 1."
+ggplot(score_curve, aes(eta, p)) +
+  geom_line(color = weaver, linewidth = 1.25) +
+  geom_hline(yintercept = c(0, 1), linetype = "dashed", color = iron, linewidth = 0.35) +
+  scale_y_continuous(limits = c(0, 1), breaks = c(0, 0.5, 1)) +
+  labs(x = "Score", y = "p") +
+  theme_mlba(13)
+```
+:::
+::: {.fragment .fade-in}
+<p class="caption">Fitted on this file, with the purchases laid on the curve.</p>
+```{r}
+#| fig-width: 6.3
+#| fig-height: 3.35
+#| fig-alt: "Fitted probability of CH against LoyalCH, with each purchase drawn at 0 or 1."
+ggplot(oj, aes(LoyalCH, y)) +
+  geom_jitter(height = 0.04, width = 0, alpha = 0.22, color = iron, size = 1.15) +
+  geom_line(data = glass_curve, aes(LoyalCH, p_hat), color = weaver, linewidth = 1.25) +
+  geom_hline(yintercept = c(0, 1), linetype = "dashed", color = iron, linewidth = 0.35) +
+  scale_y_continuous(limits = c(-0.08, 1.08), breaks = c(0, 0.5, 1)) +
+  labs(x = "LoyalCH", y = "Purchase (0/1) and fitted P(CH)") +
+  theme_mlba(13)
+```
+:::
+:::
+:::
+::::
+
+::: {.notes}
+Section start. First click: the logistic function against the score. That curve is $p = e^{\eta}/(1+e^{\eta})$. It is not a fit and it is not loyalty. Second click swaps to the fitted curve from the rounded one-predictor coefficients, with this file’s 0/1 purchases on it. That is the ISLR Figure 4.2 move, on OJ.
+
+Do not read −2.76 or 6.09 yet. Maximum likelihood and the table come after the odds. Do not name another dataset.
+:::
+
+## Odds come out of that function
+
+- If $p = \mathrm{P}(\mathrm{CH})$, the odds of CH are $p / (1 - p)$.
+- Substitute the logistic function. The odds equal $e^{\eta}$.
+- We still report $p$. The odds are the scale the line is written on.
+
+::: {.formula}
+$$
+\frac{p}{1-p} = e^{\eta}.
+$$
+:::
+
+::: {.fragment}
+<p class="q-prompt">If $\eta$ rises by $\log 2$, what happens to the odds of CH?</p>
+:::
+
+::: {.fragment}
+<p class="today-note">They double. $p$ does not double. The next slides separate those two.</p>
+:::
+
+::: {.notes}
+Algebra only. No new OJ metric on this slide. The file’s own odds are the ladder after this.
+
+ISLR ~pp. 133–136: logistic function, then odds. Glass stays in CH / MM.
+:::
+
+## This file’s share, on the odds ladder
+
+<p class="setup-line">A probability of 0.61 is not odds of 0.61. On this file the CH share is about **`r r2(share_ch)`**, so the odds of CH are about **`r sprintf("%.2f", odds_file)`**.</p>
+
+```{=html}
+<table class="cb">
+  <thead>
+    <tr><th>p = P(CH)</th><th>Odds p / (1 − p)</th><th>In words</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>0.25</td><td>0.33</td><td>one to three against CH</td></tr>
+    <tr><td>0.50</td><td>1</td><td>even</td></tr>
+    <tr class="file-row"><td>0.61</td><td>1.56</td><td>CH share in this file</td></tr>
+    <tr><td>0.75</td><td>3</td><td>three to one for CH</td></tr>
+  </tbody>
+</table>
+```
+
+```{r}
+#| echo: true
+p <- round(mean(oj$y), 2)
+round(p / (1 - p), 2)
+```
+
+::: {.fragment}
+<p class="q-prompt">The code prints 1.56. Which row is this file, and which rows are only the language of odds?</p>
+:::
+
+::: {.notes}
+The highlighted row is the measured pair: 0.61 ↔ 1.56. The other rows teach the ladder. Do not invent a second share.
+
+If the odds are 1, $p = 0.5$. Say that if someone asks. Do not open a classification cutoff.
+:::
+
+## A coefficient multiplies the odds, not $p$
+
+- Write the score as a line: $\eta = \beta_0 + \beta_1 \mathrm{LoyalCH}$.
+- A step of size $\Delta$ in loyalty **adds** $\beta_1 \Delta$ to the log-odds.
+- That **multiplies** the odds of CH by $e^{\beta_1 \Delta}$.
+- It does **not** add $\beta_1 \Delta$ to the probability.
+
+::: {.formula}
+$$
+\frac{\text{odds after}}{\text{odds before}} = e^{\beta_1 \Delta}.
+$$
+:::
+
+<p class="caption">The size of the change in $p$ still depends on where you start. The bins already showed unequal steps.</p>
+
+::: {.notes}
+The rule, before the estimated number. Do not quote $e^{6.09}$ as a “600 times” story — LoyalCH only moves inside 0 to 1, and the worked step is +0.1 on the example after the fit.
+
+Association, not a cause. ISLR reading-a-coefficient beat, held until we have $\hat\beta$ on OJ.
+:::
+
+## What to remember — and what we do next
+
+:::: {.two-box}
+::: {.fragment}
+::: {.box-card}
+<p class="card-h">Remember</p>
+<ul>
+<li>On this file a straight line left (0, 1): about 0.036 to 1.051.</li>
+<li>The logistic curve stays inside (0, 1).</li>
+<li>A coefficient multiplies the <strong>odds</strong>. It does not add a constant to $p$.</li>
+</ul>
+:::
+:::
+::: {.fragment}
+::: {.box-card .alt}
+<p class="card-h">Next</p>
+<ul>
+<li>Fit that curve on OJ. Loyalty first.</li>
+<li>Then the price gap, with loyalty held fixed.</li>
+<li>Score <strong>one</strong> new visit as a probability. Stop there.</li>
+</ul>
+:::
+:::
+::::
+
+::: {.notes}
+Two clicks, one card each. Do not add a third card.
+
+Then maximum likelihood, lightly, and the measured coefficients −2.76 and 6.09.
+:::
+
+## R picks the coefficients that fit these purchases {.section-start}
+
+<p class="act-kicker">Before the numbers</p>
+
+Maximum likelihood chooses $\beta$ so the CH and MM purchases in this file are as likely as possible under the curve.
+
+::: {.fragment}
+`glm` does that search. We will not derive it, and we will not invent a second criterion.
+:::
+
+::: {.fragment}
+<p class="q-prompt">Next slide: the fitted loyalty line from this file. Read the two numbers. Do not turn the slope into a change in the probability yet.</p>
+:::
+
+::: {.notes}
+Section start, before any coefficient table. Two clicks. No likelihood product, no −2.76 yet — that is the next slide. OJ only.
+:::
+
+## Example on OJ — loyalty alone
+
+:::: {.columns}
+::: {.column width="46%"}
+`glm(y ~ LoyalCH)` on this file:
+
+- Intercept ≈ **`r r2(coef(fit1)[1])`**
+- LoyalCH ≈ **`r r2(coef(fit1)[2])`**
+
+::: {.formula}
+$$
+\hat\eta = -2.76 + 6.09\,\mathrm{LoyalCH}.
+$$
+:::
+
+```{r}
+#| echo: true
+fit1 <- glm(y ~ LoyalCH, oj, family = binomial)
+round(coef(fit1), 2)
+```
+:::
+::: {.column width="54%"}
+::: {.fragment}
+```{r}
+#| fig-width: 6.2
+#| fig-height: 3.7
+#| fig-alt: "Fitted probability of CH against LoyalCH, from the one-predictor logistic regression."
+ggplot(grid_loyal, aes(LoyalCH, p_hat)) +
+  geom_line(color = weaver, linewidth = 1.25) +
+  geom_hline(yintercept = c(0, 1), linetype = "dashed", color = iron, linewidth = 0.3) +
+  scale_y_continuous(limits = c(0, 1), breaks = c(0, 0.5, 1)) +
+  labs(x = "LoyalCH", y = "Fitted P(CH)") +
+  theme_mlba(13)
+```
+:::
+:::
+::::
+
+::: {.fragment}
+<p class="q-prompt">The slope is about 6.09. Is that “+6.09 probability” when loyalty goes from 0 to 1?</p>
+:::
+
+::: {.notes}
+Claim first: −2.76 and 6.09. Then the curve.
+
+Answer: no. 6.09 is on the log-odds scale. The next slide measures a step of +0.1: the odds multiply by about 1.84, and $\Delta p$ depends on the starting loyalty.
+:::
+
+## Example on OJ — same +0.1, two changes in $p$
+
+:::: {.columns}
+::: {.column width="42%"}
+- From the fit you just saw, a **+0.1** step in `LoyalCH` multiplies the odds of CH by about **`r r2(odds_loyal_step)`**.
+- That multiplier does not depend on where you start.
+- The change in the **probability** does.
+
+::: {.fragment fragment-index=1}
+- Start at LoyalCH 0.20: about **`r r2(p_lo)`** → **`r r2(p_lo_step)`**. The chance rises by about **`r r2(dp_lo)`**.
+:::
+
+::: {.fragment fragment-index=3}
+- Start at LoyalCH 0.80: about **`r r2(p_hi)`** → **`r r2(p_hi_step)`**. The chance rises by about **`r r2(dp_hi)`**.
+:::
+:::
+::: {.column width="58%"}
+::: {.r-stack}
+::: {.fragment .fade-in-then-out fragment-index=2}
+```{r}
+#| fig-width: 6.4
+#| fig-height: 3.45
+#| fig-alt: "Logistic curve with a +0.1 loyalty step starting at 0.20. The chance rises by about 0.11."
+seg_lo <- data.frame(x = 0.20, xend = 0.30, y = p_lo, yend = p_lo_step)
+pts_lo <- data.frame(LoyalCH = c(0.20, 0.30), p_hat = c(p_lo, p_lo_step))
+ggplot(glass_curve, aes(LoyalCH, p_hat)) +
+  geom_line(color = weaver, linewidth = 1.15) +
+  geom_segment(
+    data = seg_lo,
+    aes(x = x, xend = xend, y = y, yend = yend),
+    inherit.aes = FALSE, color = red, linewidth = 1.15
+  ) +
+  geom_point(data = pts_lo, color = red, size = 3.1) +
+  geom_hline(yintercept = c(0, 1), linetype = "dashed", color = iron, linewidth = 0.3) +
+  scale_y_continuous(limits = c(0, 1), breaks = c(0, 0.5, 1)) +
+  labs(x = "LoyalCH", y = "Chance of CH", caption = "Start at 0.20. Rise about 0.11.") +
+  theme_mlba(13)
+```
+:::
+::: {.fragment .fade-in fragment-index=4}
+```{r}
+#| fig-width: 6.4
+#| fig-height: 3.45
+#| fig-alt: "The same curve with a +0.1 loyalty step starting at 0.80. The chance rises by about 0.05."
+seg_hi <- data.frame(x = 0.80, xend = 0.90, y = p_hi, yend = p_hi_step)
+pts_hi <- data.frame(LoyalCH = c(0.80, 0.90), p_hat = c(p_hi, p_hi_step))
+ggplot(glass_curve, aes(LoyalCH, p_hat)) +
+  geom_line(color = weaver, linewidth = 1.15) +
+  geom_segment(
+    data = seg_hi,
+    aes(x = x, xend = xend, y = y, yend = yend),
+    inherit.aes = FALSE, color = red, linewidth = 1.15
+  ) +
+  geom_point(data = pts_hi, color = red, size = 3.1) +
+  geom_hline(yintercept = c(0, 1), linetype = "dashed", color = iron, linewidth = 0.3) +
+  scale_y_continuous(limits = c(0, 1), breaks = c(0, 0.5, 1)) +
+  labs(x = "LoyalCH", y = "Chance of CH", caption = "Start at 0.80. Rise about 0.05.") +
+  theme_mlba(13)
+```
+:::
+:::
+:::
+::::
+
+::: {.notes}
+Claim first: about 1.84, from $e^{0.1 \times 6.09}$ on the rounded slope. Same multiplier at both starts.
+
+Then the low baseline (about 0.18 → 0.28, rise about 0.11), with its picture. Then the high baseline (about 0.89 → 0.94, rise about 0.05), and the picture swaps. Rounded coefficients −2.76 and 6.09.
+
+Do not call 1.84 a change in the probability. Do not print $e^{6.09}$.
+:::
+
+## Add the price gap, loyalty held fixed {.section-start}
+
+<p class="act-kicker">Same shopper, different shelf</p>
+
+- PriceDiff = sale price MM − sale price CH.
+- The model is now $\hat\eta = \hat\beta_0 + \hat\beta_1 \mathrm{LoyalCH} + \hat\beta_2 \mathrm{PriceDiff}$.
+- **Held fixed** means two visits with the same `LoyalCH` and a different price gap.
+- On this file: intercept ≈ **`r r2(coef(fit2)[1])`**, LoyalCH ≈ **`r r2(coef(fit2)[2])`**, PriceDiff ≈ **`r r2(coef(fit2)[3])`**.
+
+```{r}
+#| echo: true
+fit2 <- glm(y ~ LoyalCH + PriceDiff, oj, family = binomial)
+round(coef(fit2), 2)
+```
+
+<p class="caption">The PriceDiff coefficient is that comparison, on the log-odds scale. It is an association for prediction. It is not a cause.</p>
+
+::: {.notes}
+Section start. Read “held fixed” as the partial association: same loyalty, different price gap. Do not teach a confounding story, a causal diagram, or “we removed bias.” Prediction only.
+
+Measured coefficients: −3.25, 6.40, 2.86. The +$0.10 step is the next slide.
+:::
+
+## Example on OJ — ten cents on the price gap
+
+:::: {.columns}
+::: {.column width="44%"}
+- Hold `LoyalCH` fixed. Raise PriceDiff by **$0.10** (MM becomes 10 cents more expensive relative to CH).
+- The odds of CH are multiplied by about **`r r2(odds_price_step)`**.
+- At LoyalCH = 0.5, that step moves the chance from about **`r r2(p_pd0)`** to about **`r r2(p_pd1)`**.
+
+::: {.formula}
+$$
+e^{0.10 \times 2.86} \approx 1.33.
+$$
+:::
+:::
+::: {.column width="56%"}
+::: {.fragment}
+```{r}
+#| fig-width: 6.3
+#| fig-height: 3.7
+#| fig-alt: "Fitted P(CH) against PriceDiff with LoyalCH held at 0.5. A ten-cent step is marked."
+seg_pd <- data.frame(x = 0, xend = 0.1, y = p_pd0, yend = p_pd1)
+pts_pd <- data.frame(PriceDiff = c(0, 0.1), p_hat = c(p_pd0, p_pd1))
+ggplot(price_grid, aes(PriceDiff, p_hat)) +
+  geom_line(color = weaver, linewidth = 1.2) +
+  geom_segment(
+    data = seg_pd,
+    aes(x = x, xend = xend, y = y, yend = yend),
+    inherit.aes = FALSE, color = red, linewidth = 1.15
+  ) +
+  geom_point(data = pts_pd, color = red, size = 3.1) +
+  scale_y_continuous(limits = c(0, 1), breaks = c(0, 0.5, 1)) +
+  labs(
+    x = "PriceDiff (dollars)",
+    y = "Fitted P(CH)",
+    caption = "LoyalCH held at 0.5"
+  ) +
+  theme_mlba(13)
+```
+:::
+:::
+::::
+
+::: {.fragment}
+<p class="q-prompt">Holding loyalty fixed, does a larger MM–CH price gap push the chance of CH up or down?</p>
+:::
+
+::: {.notes}
+Claim first: odds × about 1.33, from $e^{0.10 \times 2.86}$ on the rounded PriceDiff coefficient. Then the curve at LoyalCH = 0.5.
+
+Up. At loyalty 0.5 the chance goes about 0.49 → 0.56. That pair is `predict` on this fit, not a new model. Do not quote a mean PriceDiff.
+:::
+
+## Score one visit by hand {.section-start}
+
+<p class="act-kicker">LoyalCH = 0.5, PriceDiff = +0.2</p>
+
+Use the rounded coefficients already on the board.
+
+::: {.formula}
+$$
+\hat\eta = -3.25 + 6.40(0.5) + 2.86(0.2) = `r r3(eta_hand)`.
+$$
+:::
+
+::: {.fragment}
+::: {.formula}
+$$
+\hat p = \frac{e^{0.522}}{1 + e^{0.522}} \approx `r r2(p_hand)`.
+$$
+:::
+:::
+
+::: {.fragment}
+```{r}
+#| echo: true
+new <- data.frame(LoyalCH = 0.5, PriceDiff = 0.2)
+round(predict(fit2, new, type = "response"), 2)
+```
+
+<p class="caption">`predict` on the same row agrees at two decimals: about 0.63.</p>
+:::
+
+::: {.notes}
+Section start. Three beats: write $\hat\eta = 0.522$, turn it into $\hat p \approx 0.63$, then show `predict` prints 0.63.
+
+Do not also print the unrounded linear predictor. The 0.522 is the arithmetic from −3.25, 6.40, and 2.86. Association for this visit, not a shelf rule.
+:::
+
+## Example on OJ — same loyalty, opposite price
+
+:::: {.columns}
+::: {.column width="42%"}
+- LoyalCH 0.5, PriceDiff **+0.2** → $\hat p$ ≈ **`r r2(new3$p_hat[1])`**
+- LoyalCH 0.5, PriceDiff **−0.2** → $\hat p$ ≈ **`r r2(new3$p_hat[2])`**
+- LoyalCH 0.9, PriceDiff **0** → $\hat p$ ≈ **`r r2(new3$p_hat[3])`**
+
+```{r}
+#| echo: true
+visits <- data.frame(
+  LoyalCH = c(0.5, 0.5, 0.9),
+  PriceDiff = c(0.2, -0.2, 0)
+)
+round(predict(fit2, visits, type = "response"), 2)
+```
+:::
+::: {.column width="58%"}
+::: {.r-stack}
+::: {.fragment .fade-in-then-out}
+```{r}
+#| fig-width: 6.4
+#| fig-height: 3.6
+#| fig-alt: "Two bars: predicted P(CH) about 0.63 and 0.35 at the same loyalty and opposite price gaps."
+ggplot(new3[1:2, ], aes(who, p_hat, fill = who)) +
+  geom_col(width = 0.62) +
+  geom_text(aes(label = sprintf("%.2f", p_hat)), vjust = -0.35,
+            fontface = "bold", color = weaver, size = 5) +
+  scale_fill_manual(values = c(weaver, iron, teal)) +
+  scale_y_continuous(limits = c(0, 1.12), breaks = c(0, 0.5, 1), expand = c(0, 0)) +
+  labs(x = NULL, y = "Predicted P(CH)") +
+  theme_mlba(12)
+```
+:::
+::: {.fragment .fade-in}
+```{r}
+#| fig-width: 6.4
+#| fig-height: 3.6
+#| fig-alt: "Three bars: predicted P(CH) about 0.63, 0.35, and 0.92."
+ggplot(new3, aes(who, p_hat, fill = who)) +
+  geom_col(width = 0.68) +
+  geom_text(aes(label = sprintf("%.2f", p_hat)), vjust = -0.35,
+            fontface = "bold", color = weaver, size = 4.6) +
+  scale_fill_manual(values = c(weaver, iron, teal)) +
+  scale_y_continuous(limits = c(0, 1.12), breaks = c(0, 0.5, 1), expand = c(0, 0)) +
+  labs(x = NULL, y = "Predicted P(CH)") +
+  theme_mlba(12)
+```
+:::
+:::
+:::
+::::
+
+::: {.fragment}
+<p class="q-prompt">In the first two rows, which lever moved — loyalty, or the price gap?</p>
+:::
+
+::: {.notes}
+Claim lists the three measured chances: 0.63, 0.35, 0.92. First picture: the opposite price gaps at loyalty 0.5. Second picture: add the high-loyalty row, about 0.92 when LoyalCH is 0.9 and the gap is 0.
+
+Answer: the first two rows hold loyalty at 0.5. The price gap moves the chance from about 0.63 to about 0.35. The third row is loyalty.
+
+Do not turn 0.63 into a yes. No cutoff.
+:::
+
+## What to remember
+
+- CH `r n_ch` / MM `r n_mm`. Mean loyalty **`r r2(loyal_means["CH"])`** vs **`r r2(loyal_means["MM"])`**.
+- A line on 0/1 ran about **`r r3(lin_min)`** to **`r r3(lin_max)`**. Bin CH rates: **0.12, 0.28, 0.53, 0.77, 0.96**.
+- Loyalty alone: **−2.76 + 6.09 LoyalCH**. A +0.1 step multiplies the odds by about **`r r2(odds_loyal_step)`**.
+- With the price gap: **−3.25 + 6.40 LoyalCH + 2.86 PriceDiff**. Ten cents multiplies the odds by about **`r r2(odds_price_step)`**.
+- LoyalCH 0.5 and PriceDiff +0.2 → about **0.63**. The opposite gap → about **0.35**. LoyalCH 0.9 and a flat gap → about **0.92**.
+
+::: {.fragment}
+<p class="q-prompt">Can we predict which OJ brand a shopper buys?</p>
+:::
+
+::: {.fragment}
+<p class="today-note">A probability for <strong>this</strong> visit, from loyalty and the price gap, between 0 and 1. An association. Not a cause.</p>
+:::
+
+::: {.notes}
+The numbers are the ones already measured. Then return the question from the bar chart.
+
+Answer in one sentence, then stop. Do not add a cutoff, a hit rate, or another dataset.
+:::
+
+## Before next class {.next-slide}
+
+<ol class="today-list">
+<li>Midterm <strong>review</strong> is the next methods meeting. The <strong>midterm</strong> is the meeting after that. Closed notes. Weeks 1–5, including logistic.</li>
+<li>Finish Homework 2 if it is still open, on the schedule.</li>
+<li>Reading already named: ISLR Chapter 4, the logistic sections.</li>
+<li>The logistic <strong>R lab</strong> is after fall break. Bring a laptop that day, once it is posted.</li>
+</ol>
+
+::: {.notes}
+Your eyes only. Slot for this deck: Wed 30 Sep 2026 discussion, continuing the Monday pair. Midterm review Mon 5 Oct. Midterm Wed 7 Oct. Fall break 11–15 Oct. Do not invent a logistic lab date. The lab is after fall break.
+
+Homework 2: the outline lock was Sun 4 Oct, 11:59 pm. The materials-site schedule lists Sun 28 Sep. Check Canvas before you say a due date aloud. Do not put either date on a slide.
+
+One deferral, this note only — do not put it on the glass: hits, misses, and decision cutoffs return with the classification-metrics week after the break. If someone asks, one sentence, then stop. No confusion matrix.
+:::
