@@ -1,0 +1,5 @@
+> **Note (2026-09-30):** Any line that deferred confusion matrix / ROC / cutoff for this discussion hour is **superseded** by REBUILD_PLAN_IMPROVED_v3. Numbers below remain the lock. Accuracy tools are **in** this hour.
+
+**LOCKED 2026-09-29 QT:** Session 05 discussion hour uses OJ whole meeting (`_project/data_pack/teaching/backups/OJ.csv`; copy to `w05_slides/` only when building); Y = Purchase CH=1 / MM=0; no confusion matrix / cutoff digression this hour (one closing notes line only); Quarto waits for Andrés go.
+
+**Measured lock (expanded 2026-09-29 late, from that csv):** n=1070; CH 653 / 61%; LoyalCH means ~0.72 vs 0.32; PriceDiff means ~0.21 vs 0.05; SDs ~0.31 / 0.27; lm range ~0.036–1.051; bins 0.12/0.28/0.53/0.77/0.96; fit1 −2.76 / 6.09; p̂(LoyalCH=0)~0.06; mean fitted p~0.61; +0.1 LoyalCH fit1 odds ×1.84 (+84%), Δp 0.28→0.42 and 0.82→0.89; fit2 −3.25 / 6.40 / 2.86; +0.1 LoyalCH ×1.90 (+90%); +$0.10 PriceDiff ×1.33 (+33%); exp(β×SD) ~7.2 vs 2.2; shoppers 0.63 / 0.35 / 0.92. Do not invent others.
