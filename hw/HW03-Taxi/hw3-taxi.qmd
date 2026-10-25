@@ -1,0 +1,614 @@
+---
+title: "Homework 3. Logistic regression: The probability that a cab booking is cancelled"
+subtitle: "70-467"
+author: "Andrés Castaño Zuluaga"
+date: last-modified
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    toc-location: right
+    embed-resources: true
+    code-fold: false
+    theme: cosmo
+    include-in-header:
+      text: |
+        <style>
+        .hw-q {
+          border-left: 6px solid #C41230;
+          background: #f8f1f2;
+          padding: 0.85rem 1rem;
+          margin: 1.25rem 0 0.35rem 0;
+        }
+        .hw-q p { margin: 0; }
+        .hw-q strong { color: #C41230; }
+        </style>
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+Please read the case first, including the codebook.
+
+Submit on Canvas by Sunday, 1 November 2026, 11:59 pm:
+
+- this notebook (knitted), with the code you add and your written answers,
+- at most six slides, and
+- a video of at most five minutes.
+
+The last section is the video. The notebook, the slides, and the video must use the same model and the same numbers.
+
+Where you see a question in a box, write the answer under **WRITE YOUR ANSWER BELOW** directly under that box. Where you see **WRITE YOUR CODE BELOW**, add code in that chunk.
+
+```{r}
+#| label: setup
+options(scipen = 999)
+library(ggplot2)
+
+theme_hw <- function() {
+  theme_minimal(base_size = 13) +
+    theme(
+      panel.grid.minor = element_blank(),
+      plot.title = element_text(face = "bold", size = 14)
+    )
+}
+
+# Share cancelled, and the number of bookings, in each group.
+# y is the 0/1 outcome. g says which group each booking is in.
+rate_by <- function(y, g) {
+  data.frame(
+    share_cancelled = tapply(y, g, mean),
+    bookings = as.numeric(table(g))
+  )
+}
+```
+
+# The dataset
+
+```{r}
+#| label: load
+# The csv in the data folder next to this file.
+# stringsAsFactors = FALSE keeps ids and dates as they are stored.
+bookings <- read.csv("data/taxi_cancellations.csv", stringsAsFactors = FALSE)
+nrow(bookings)
+names(bookings)
+```
+
+```{r}
+#| label: outcome
+# Number of cancelled bookings, and the share cancelled, on all 10,000 bookings.
+sum(bookings$Car_Cancellation)
+mean(bookings$Car_Cancellation)
+```
+
+`Car_Cancellation` is 1 if the company cancelled the booking because no car was available, and 0 if it did not. About 7 in 100 bookings were cancelled. Keep that share in mind. You will set every probability below next to it.
+
+The company knows the pickup time and the time the booking was made as soon as the booking comes in. The chunk below turns those two times into hours of notice. It also keeps the hour and the month of the pickup.
+
+```{r}
+#| label: times
+# from_date is the pickup. booking_created is when the booking was made.
+# Both are month/day/two-digit year, then hour:minute.
+# The zone is fixed so R does not shift the clock hour.
+pickup <- as.POSIXct(bookings$from_date, format = "%m/%d/%y %H:%M", tz = "UTC")
+created <- as.POSIXct(bookings$booking_created, format = "%m/%d/%y %H:%M", tz = "UTC")
+bookings$hours_raw <- as.numeric(difftime(pickup, created, units = "hours"))
+bookings$hour <- as.integer(format(pickup, "%H"))
+bookings$month <- as.integer(format(pickup, "%m"))
+summary(bookings$hours_raw)
+# Bookings made at or after their own pickup time.
+sum(bookings$hours_raw <= 0)
+sum(bookings$Car_Cancellation[bookings$hours_raw <= 0])
+```
+
+A few bookings were made at or after their own pickup time, and none of them was cancelled. They have no hours of notice, so the next chunk drops them.
+
+The four variables in the model are known when the booking comes in.
+
+- `channel`: phone, online (the website), or mobile (the mobile site). Phone is the baseline.
+- `trip`: point to point, hourly rental, or long distance. Point to point is the baseline.
+- `evening`: 1 if the pickup is between 17:00 and 20:59, and 0 otherwise.
+- `hours_ahead`: hours between the booking and the pickup, counted up to 24. A booking made three days ahead counts as 24.
+
+```{r}
+#| label: build
+# Drop bookings made at or after their own pickup time.
+d <- bookings[bookings$hours_raw > 0, ]
+d$cancel <- d$Car_Cancellation
+# If both online_booking and mobile_site_booking are 0, the booking came by phone.
+d$channel <- factor(
+  ifelse(d$online_booking == 1, "online",
+         ifelse(d$mobile_site_booking == 1, "mobile", "phone")),
+  levels = c("phone", "online", "mobile")
+)
+# travel_type_id: 1 = long distance, 2 = point to point, 3 = hourly rental.
+d$trip <- factor(
+  c("long distance", "point to point", "hourly rental")[d$travel_type_id],
+  levels = c("point to point", "hourly rental", "long distance")
+)
+d$evening <- as.integer(d$hour >= 17 & d$hour <= 20)
+# Count hours of notice up to 24. A longer lead is set to 24.
+# Change the 24 if you defend another rule, and say what changed in the estimates.
+d$hours_ahead <- pmin(d$hours_raw, 24)
+nrow(d)
+mean(d$cancel)
+# Share of these bookings made within 24 hours. For the rest, hours_ahead is 24.
+mean(d$hours_raw <= 24)
+```
+
+From here on, the share cancelled is the one printed above, after those few bookings are dropped. Set the later numbers next to it.
+
+```{r}
+#| label: rates
+# Share cancelled, and the number of bookings, in each group.
+rate_by(d$cancel, d$channel)
+rate_by(d$cancel, d$trip)
+rate_by(d$cancel, d$evening)
+```
+
+The share cancelled changes with the hour of the pickup. The red line is the share cancelled across all the bookings in `d`.
+
+```{r}
+#| label: by-hour
+#| fig-width: 7.4
+#| fig-height: 4.2
+by_hour <- data.frame(
+  hour = as.integer(names(tapply(d$cancel, d$hour, mean))),
+  share = as.numeric(tapply(d$cancel, d$hour, mean))
+)
+ggplot(by_hour, aes(hour, share)) +
+  geom_col(fill = "#182C4B") +
+  geom_hline(yintercept = mean(d$cancel), color = "#C41230", linewidth = 1) +
+  labs(
+    x = "Pickup hour",
+    y = "Share cancelled",
+    title = "Cancellations by pickup hour"
+  ) +
+  theme_hw()
+```
+
+The first table below is the share cancelled by channel and by hours of notice. The second table counts the bookings in each cell. Mobile has far fewer bookings than phone or the website, so read each share next to its count.
+
+```{r}
+#| label: by-notice
+d$notice <- cut(
+  d$hours_raw,
+  breaks = c(0, 2, 6, 12, 24, Inf),
+  labels = c("0 to 2", "2 to 6", "6 to 12", "12 to 24", "over 24")
+)
+round(tapply(d$cancel, list(d$channel, d$notice), mean), 3)
+table(d$channel, d$notice)
+```
+
+```{r}
+#| label: notice-plot
+#| fig-width: 7.4
+#| fig-height: 4.2
+# One bar per channel inside each bin of hours. The height is the share cancelled.
+notice_mat <- tapply(d$cancel, list(d$channel, d$notice), mean)
+notice_df <- data.frame(
+  channel = rep(rownames(notice_mat), times = ncol(notice_mat)),
+  notice = rep(colnames(notice_mat), each = nrow(notice_mat)),
+  share = as.numeric(notice_mat)
+)
+notice_df$channel <- factor(notice_df$channel, levels = c("phone", "online", "mobile"))
+notice_df$notice <- factor(notice_df$notice, levels = levels(d$notice))
+ggplot(notice_df, aes(notice, share, fill = channel)) +
+  geom_col(position = "dodge", width = 0.7) +
+  scale_fill_manual(values = c(phone = "#182C4B", online = "#C41230", mobile = "#6D6E71")) +
+  labs(
+    x = "Hours between the booking and the pickup",
+    y = "Share cancelled",
+    fill = NULL,
+    title = "Cancellations by channel and notice"
+  ) +
+  theme_hw()
+```
+
+In this picture, compare the channels at the same hours of notice. The model below also holds the trip and the evening fixed.
+
+<div class="hw-q">
+
+**Question 1.** Which variables will you leave out, and why? The models below use four variables: `channel`, `trip`, `evening`, and `hours_ahead`. The rest of the dataset stays out, including `user_id`, the area and city codes, and the map coordinates. If you would keep one of them, build it in the chunk below, add it to all three formulas, and say why.
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+```{r}
+#| label: keep
+# WRITE YOUR CODE BELOW if you keep a variable the starter leaves out.
+# If you leave those variables out, leave this chunk empty.
+```
+
+# The linear probability model
+
+Least squares of a 0/1 outcome is the linear probability model. Each coefficient is a change in the probability. Nothing keeps the fitted value between 0 and 1.
+
+```{r}
+#| label: lpm
+# lpm is the linear probability model: least squares of the 0/1 outcome.
+# Same four variables as the logistic regression below.
+lpm <- lm(cancel ~ channel + trip + evening + hours_ahead, data = d)
+round(coef(lpm), 4)
+round(range(fitted(lpm)), 4)
+sum(fitted(lpm) < 0)
+sum(fitted(lpm) > 1)
+# Which bookings have a fitted value below 0?
+table(d$channel[fitted(lpm) < 0])
+table(d$trip[fitted(lpm) < 0])
+table(d$evening[fitted(lpm) < 0])
+round(range(d$hours_ahead[fitted(lpm) < 0]), 1)
+```
+
+<div class="hw-q">
+
+**Question 2.** Suppose the desk reads the values from the linear probability model as probabilities of cancellation. How many bookings get a value below 0, and why is that a problem?
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+# Logistic regression
+
+Logistic regression puts a line on the log-odds of cancellation. That line is the score. Write $p$ for the probability that the booking is cancelled:
+
+$$\log\left(\frac{p}{1-p}\right) = \text{score}.$$
+
+The probability is
+
+$$p = \frac{e^{\text{score}}}{1 + e^{\text{score}}},$$
+
+so it stays between 0 and 1. The model below is estimated on every booking in `d`.
+
+A coefficient is the change in the log-odds for a one-unit change in the predictor, holding the other variables fixed. The odds multiplier is e to the coefficient. It is the same for every booking. However, the change in the probability is not.
+
+```{r}
+#| label: logit
+# family = binomial estimates the log-odds of cancellation.
+# phone is the baseline for channel. point to point is the baseline for trip.
+fit <- glm(cancel ~ channel + trip + evening + hours_ahead, data = d, family = binomial)
+b <- coef(fit)
+round(b, 4)
+# Odds multiplier for a one-unit step. The intercept is not a multiplier, so it is dropped here.
+round(exp(b[-1]), 3)
+# Odds multiplier for 6 more hours of notice.
+round(exp(6 * b["hours_ahead"]), 3)
+# Odds and probability at the intercept.
+odds0 <- unname(exp(b["(Intercept)"]))
+c(odds = odds0, probability = odds0 / (1 + odds0))
+```
+
+<div class="hw-q">
+
+**Question 3.** What does the coefficient on `channelonline` say about a website booking, compared with the same booking made by phone? Read it as a change in the log-odds and as an odds multiplier, and say which way the probability moves.
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+<div class="hw-q">
+
+**Question 4.** What do 6 more hours of notice do to the odds of cancellation?
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+<div class="hw-q">
+
+**Question 5.** Which booking does the intercept describe, and what is its probability of cancellation?
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+# Two bookings
+
+Booking A came by phone, for a point to point trip, with a pickup that is not in the evening, 12 hours ahead. Booking B came on the website, for a point to point trip, with an evening pickup, 2 hours ahead.
+
+```{r}
+#| label: two-bookings
+# predict(..., type = "response") returns the probability of cancellation.
+# If you added a variable in Question 1, give A and B a value for it here.
+two <- data.frame(
+  channel = factor(c("phone", "online"), levels = levels(d$channel)),
+  trip = factor("point to point", levels = levels(d$trip)),
+  evening = c(0L, 1L),
+  hours_ahead = c(12, 2),
+  row.names = c("A", "B")
+)
+two$p <- as.numeric(predict(fit, two, type = "response"))
+data.frame(
+  channel = two$channel,
+  evening = two$evening,
+  hours_ahead = two$hours_ahead,
+  probability = round(two$p, 4),
+  row.names = rownames(two)
+)
+```
+
+<div class="hw-q">
+
+**Question 6.** What is the probability of cancellation for booking A and for booking B? Set each one next to the share cancelled.
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+The marginal effect of one more hour of notice is the slope of the probability curve for that one booking. Here $p$ is the probability of cancellation for that booking, the number Question 6 asks for. It is the logistic probability at the booking's own score:
+
+$$p = \frac{e^{\text{score}}}{1 + e^{\text{score}}}.$$
+
+Booking A and booking B do not share a score. The channel, the evening, and the hours of notice differ, so each booking has its own $p$. Write $b$ for the coefficient on `hours_ahead`. The marginal effect at that booking is
+
+$$\text{marginal effect of one more hour} = b \times p \times (1 - p).$$
+
+The coefficient $b$ is the same for every booking. The factor $p(1 - p)$ is not, so the change in the probability depends on the booking. The chunk below does booking A. It also computes A's probability again after 6 more hours.
+
+```{r}
+#| label: me-a
+b_hours <- coef(fit)["hours_ahead"]
+p_a <- two["A", "p"]
+me_a <- b_hours * p_a * (1 - p_a)
+# per_6_hours_pp is the change in the probability, in percentage points, for 6 more hours.
+c(per_hour = unname(me_a), per_6_hours_pp = unname(100 * 6 * me_a))
+a6 <- two["A", ]
+a6$hours_ahead <- a6$hours_ahead + 6
+c(p_now = unname(p_a), p_after_6_hours = as.numeric(predict(fit, a6, type = "response")))
+```
+
+<div class="hw-q">
+
+**Question 7.** Six more hours of notice multiply the odds of cancellation by the same number for booking A and booking B. Why do they not change the two probabilities by the same number of percentage points? Use the marginal effect for each booking.
+
+</div>
+
+```{r}
+#| label: me-b
+# WRITE YOUR CODE BELOW.
+# Marginal effect of hours_ahead for booking B, in percentage points per 6 hours.
+# Booking A's calculation is in the chunk above. Use two["B", "p"].
+```
+
+**WRITE YOUR ANSWER BELOW**
+
+# Average marginal effects
+
+The marginal effect above is for one booking. The average marginal effect is that same calculation at every booking's own probability, then averaged. Write $p_i$ for booking $i$'s probability of cancellation, from that booking's own score, and write $n$ for the number of bookings in `d`. With $b$ the coefficient on `hours_ahead`,
+
+$$\text{AME of one more hour} = \frac{1}{n}\sum_{i=1}^{n} b \times p_i \times (1 - p_i).$$
+
+It is one number for every booking at once. Question 8 asks for 6 more hours of notice, in percentage points. That is $100 \times 6$ times the average above.
+
+```{r}
+#| label: ame-hours
+# p is the probability of cancellation for each booking in d.
+p <- as.numeric(predict(fit, type = "response"))
+me_hours <- coef(fit)["hours_ahead"] * p * (1 - p)
+c(ame_per_hour = mean(me_hours), ame_per_6_hours_pp = 100 * 6 * mean(me_hours))
+```
+
+Each booking has its own marginal effect. The red line is their average.
+
+```{r}
+#| label: me-hist
+#| fig-width: 7.4
+#| fig-height: 4.2
+# binwidth is only for the picture.
+me_pp <- data.frame(pp = 100 * 6 * me_hours)
+ggplot(me_pp, aes(pp)) +
+  geom_histogram(binwidth = 0.25, fill = "#182C4B", color = "white") +
+  geom_vline(xintercept = mean(me_pp$pp), color = "#C41230", linewidth = 1) +
+  labs(
+    x = "Change in the probability for 6 more hours of notice (percentage points)",
+    y = "Bookings",
+    title = "Marginal effect of 6 more hours, one per booking"
+  ) +
+  theme_hw()
+```
+
+For website against phone, the step is a switch from one channel to the other, not another hour of notice. For each booking, compute the probability twice, once as a website booking and once by phone, with the trip, the evening, and the hours of notice held fixed. Question 8 asks for the average of those differences, in percentage points:
+
+$$\frac{100}{n}\sum_{i=1}^{n}\left(p_i^{\text{website}} - p_i^{\text{phone}}\right).$$
+
+<div class="hw-q">
+
+**Question 8.** What is the average marginal effect of 6 more hours of notice? Also give the average change in the probability when the same booking is made on the website instead of by phone. Put both in percentage points, next to the share cancelled.
+
+</div>
+
+```{r}
+#| label: ame-online
+# WRITE YOUR CODE BELOW.
+# Copy d twice. Set channel to "online" in one copy and to "phone" in the other.
+# Keep levels = levels(d$channel), or predict() will not line up with the model.
+# Predict both with type = "response". Average the difference.
+```
+
+**WRITE YOUR ANSWER BELOW**
+
+<div class="hw-q">
+
+**Question 9.** A manager reads your average marginal effect for 6 more hours of notice and says, "Six more hours of notice lower the probability of cancellation by that much for every booking." When would you report the marginal effect for one booking, and when the average marginal effect? Use booking B to answer the manager.
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+# Cancellations during 2013
+
+The model above uses every month of 2013 together. It has no month variable. The solid line is the share cancelled. The dashed line is the model's average probability that month. December has very few bookings.
+
+```{r}
+#| label: by-month
+#| fig-width: 7.4
+#| fig-height: 4.2
+by_month <- data.frame(
+  month = as.integer(names(tapply(d$cancel, d$month, mean))),
+  share = as.numeric(tapply(d$cancel, d$month, mean)),
+  predicted = as.numeric(tapply(p, d$month, mean)),
+  bookings = as.numeric(table(d$month))
+)
+by_month
+ggplot(by_month, aes(month, share)) +
+  geom_line(color = "#182C4B", linewidth = 1) +
+  geom_point(color = "#182C4B", size = 2) +
+  geom_line(aes(y = predicted), color = "#C41230", linetype = "dashed", linewidth = 1) +
+  scale_x_continuous(breaks = 1:12) +
+  labs(
+    x = "Pickup month, 2013",
+    y = "Share cancelled",
+    title = "Share cancelled (solid) and the model's average probability (dashed)"
+  ) +
+  theme_hw()
+```
+
+<div class="hw-q">
+
+**Question 10.** Suppose the desk uses these probabilities on new bookings in the month after this dataset ends. What would you tell the Head of Operations?
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+# Assessing the classification accuracy
+
+This part uses the second half of the logistic regression class: the cut, the four cells, the ROC curve, and the lift. It asks how well the model sorts bookings it was not estimated on. Train the same model on 70% of the bookings. Use the other 30% only to test it.
+
+```{r}
+#| label: split
+# Seed 46704 so the split is the same each time you knit.
+set.seed(46704)
+test_id <- sample(nrow(d), floor(0.30 * nrow(d)))
+train <- d[-test_id, ]
+test  <- d[test_id, ]
+fit_train <- glm(cancel ~ channel + trip + evening + hours_ahead, data = train, family = binomial)
+p_test <- predict(fit_train, test, type = "response")
+c(train = nrow(train), test = nrow(test), test_cancelled = sum(test$cancel))
+range(p_test)
+```
+
+```{r}
+#| label: cut-half
+# Call a booking "cancel" when its probability is above 0.5.
+call <- p_test > 0.5
+table(call = call, cancelled = test$cancel)
+# Share of test bookings called correctly.
+mean(call == (test$cancel == 1))
+# Share called correctly if we call every booking "not cancelled".
+mean(test$cancel == 0)
+```
+
+<div class="hw-q">
+
+**Question 11.** With a cut of 0.5, how many test bookings does the model call a cancellation? What share of the test bookings does it call correctly, and what share would you call correctly by calling every booking "not cancelled"? What does that tell you about the share called correctly as a way to judge this model?
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+The cut does not have to be 0.5. Each cut gives a share of the cancellations caught and a share of the bookings that went fine but were flagged anyway. The ROC curve draws those two shares for every cut.
+
+```{r}
+#| label: roc
+#| fig-width: 5.6
+#| fig-height: 5
+cuts <- sort(unique(c(0, p_test, 1)))
+roc <- data.frame(
+  flagged_fine = sapply(cuts, function(k) mean(p_test[test$cancel == 0] >= k)),
+  caught = sapply(cuts, function(k) mean(p_test[test$cancel == 1] >= k))
+)
+ggplot(roc, aes(flagged_fine, caught)) +
+  geom_path(color = "#182C4B", linewidth = 1) +
+  geom_abline(slope = 1, intercept = 0, color = "#6D6E71", linetype = "dashed") +
+  coord_equal() +
+  labs(x = "Share of bookings that went fine, flagged", y = "Share of cancellations caught",
+       title = "ROC curve on the test bookings") +
+  theme_hw()
+# Area under the curve: the probability that a cancelled booking gets a higher
+# probability than a booking that went fine, both picked at random.
+r <- rank(p_test)
+n1 <- sum(test$cancel == 1)
+n0 <- sum(test$cancel == 0)
+auc <- (sum(r[test$cancel == 1]) - n1 * (n1 + 1) / 2) / (n1 * n0)
+auc
+```
+
+<div class="hw-q">
+
+**Question 12.** What is the area under the curve on the test bookings? Say in one sentence what that number means for a cancelled booking and a booking that went fine.
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+The desk cannot phone every driver. Sort the test bookings from the highest probability to the lowest, and suppose the desk checks the top 5%, 10%, 20%, 30%, or 50%.
+
+```{r}
+#| label: depth
+ord <- order(p_test, decreasing = TRUE)
+y_sorted <- test$cancel[ord]
+p_sorted <- p_test[ord]
+depth <- sapply(c(0.05, 0.10, 0.20, 0.30, 0.50), function(s) {
+  k <- round(s * length(y_sorted))
+  c(share_checked = s,
+    bookings_checked = k,
+    probability_cut = p_sorted[k],
+    cancelled_among_checked = sum(y_sorted[1:k]),
+    share_cancelled_among_checked = mean(y_sorted[1:k]),
+    share_of_all_cancellations_reached = sum(y_sorted[1:k]) / sum(y_sorted))
+})
+round(t(depth), 3)
+```
+
+The curve is the share of all test cancellations the desk reaches as it checks more bookings, from the highest probability down. The gray line is checking bookings at random.
+
+```{r}
+#| label: gains
+#| fig-width: 7
+#| fig-height: 4.4
+gains <- data.frame(
+  share_checked = seq_along(y_sorted) / length(y_sorted),
+  share_reached = cumsum(y_sorted) / sum(y_sorted)
+)
+ggplot(gains, aes(share_checked, share_reached)) +
+  geom_line(color = "#182C4B", linewidth = 1) +
+  geom_abline(slope = 1, intercept = 0, color = "#6D6E71", linetype = "dashed") +
+  labs(x = "Share of test bookings checked", y = "Share of test cancellations reached",
+       title = "Checking the bookings with the highest probability first") +
+  theme_hw()
+```
+
+<div class="hw-q">
+
+**Question 13.** How many bookings would you have the desk check, and what probability cut is that? What share of the cancellations does that reach, and how many of the bookings checked would have gone fine? A missed cancellation leaves a customer stranded. A check that was not needed costs a phone call. Say why you chose that number.
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+# The video
+
+Please record a video of at most five minutes, with at most six slides. The camera must be on. I need to see you delivering. Please refrain from reading the slides. That is a zero on the slides and the video. AI can assist you in preparing, but it should not be used to deliver the video. If you use AI to make the delivery for you, such as reading from a script, you will receive a zero for the video.
+
+**About AI.** AI is allowed on this homework with caution, as described in the syllabus. Use it to understand the methods and to fix errors in your code, and say at the end of the notebook how you used it. The answers and the recommendation have to be yours, in your own words. If the work reads as if AI wrote the answers, I will do what I said at the start of the semester: I will ask you to come to my office and explain the whole homework to me. Depending on how that conversation goes, the grade on this homework can go as low as 0 and you could be reported for an academic integrity violation.
+
+<div class="hw-q">
+
+**Question 14.** Imagine that you are recording a presentation of your analysis for the Head of Operations. The Head of Operations may consider your analysis when deciding which bookings the desk should check before pickup, what the desk should watch for when a new booking comes in, and how much higher the probability of cancellation is for those bookings. Use the answers you have already written.
+
+</div>
+
+Before you record, answer these for yourself. Then use what you decided in the presentation.
+
+1. What decision will this person make with your probabilities?
+2. What does the Head of Operations need to hear in order to use them, and what can stay in the notebook?
+3. Which variables does the model use? Why did the others stay out?
+4. How will you show the size of each difference in the probability, in percentage points, so the Head of Operations can tell whether to count on it? What will you set that difference next to?
+5. When the marginal effect for one booking and the average marginal effect differ, which one are you using, and why?
+6. How many bookings would you have the desk check, and what share of the cancellations would that reach?
+7. Where could this person misuse your probabilities? The share cancelled was not the same in every month of 2013. What does that mean for using them in a later month?
+8. Which graph carries that case? What does its title say, as a share cancelled or in percentage points? If you show another graph, can you say in a sentence or two how it bears on the choice?
+9. How will you order the presentation so the decision is clear before the methods?
