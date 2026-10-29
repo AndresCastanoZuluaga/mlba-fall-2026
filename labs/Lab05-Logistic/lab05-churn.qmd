@@ -1,0 +1,1099 @@
+---
+title: "Lab 5: Predicting telecom churn"
+subtitle: "70-467 · Wednesday 28 October"
+author: "Andrés Castaño Zuluaga"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    toc-location: right
+    body-classes: "mlba-page"
+    code-fold: false
+    code-tools: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+<!--
+Student starter for the hour. Code is filled on purpose. Run each chunk
+and read the comments. We will talk through only some of the Question
+and Discuss prompts in the room. Coefficients are read on the training customers. You choose one
+threshold from the training threshold table, without looking at the
+test customers. Then you report that threshold's four counts on the
+test customers.
+-->
+
+# Introduction to the Business Problem
+
+A telecom company sells phone and internet plans on monthly bills. Some
+customers leave each month. In the industry this is called churn. The
+retention department can contact a limited number of customers with an offer,
+for example a discount for staying. The department wants to know which
+customers to contact first.
+
+The dataset has 7,032 customers and 7 variables. The outcome is `Churn`:
+1 if the customer left, 0 if the customer stayed. For each customer we
+also know how many months they have been with the company (`tenure`),
+the monthly bill in dollars (`MonthlyCharges`), the contract type
+(`Contract`), and whether the customer is a senior citizen
+(`SeniorCitizen`). Two more variables, `InternetService` and
+`PaymentMethod`, are used only in the after-class questions.
+
+The question for the hour is the one from class: how do we turn what we
+know about a customer into a probability of churn, how do we read that
+model, and how accurate are its predictions on customers it has not
+seen?
+
+We will use logistic regression. First we read the coefficients three
+ways: as a change in the log-odds, as a multiplier of the odds, and as
+a change in the probability. Then we spend most of the hour on
+accuracy. On the training customers we read the confusion matrix, the
+rates, two thresholds, and a table of thresholds, and we choose one
+threshold from that table. Only then do we open the test customers:
+the four counts for the threshold we chose, the same two thresholds
+again, the receiver operating characteristic (ROC) curve, the area
+under that curve (AUC), and lift.
+
+Keep the case PDF and the codebook open while you run code. `tenure` is
+in months. `MonthlyCharges` is in dollars. A coefficient is only
+readable if you know the unit.
+
+**Before you run anything.** The retention department can contact only some
+customers. A model gives every customer a probability of churn. What
+does the department still have to decide before anyone gets a phone call?
+Talk this through with the person next to you. We will come back to it
+when we choose the threshold.
+
+# Roadmap
+
+1. **Load the data and code the outcome.** Churn is already 0 and 1.
+   Confirm it, and print how common churn is.
+2. **Look at churn before any model.** Churn by contract and by tenure.
+3. **Hold out 30 percent of the customers.** A stratified split, seed
+   467, before the first model.
+4. **Estimate the logistic regression on the training customers.**
+5. **Read the coefficients three ways.** Log-odds, odds, and
+   probability, with two customers we can name.
+6. **Marginal effects.** For one customer, then the average over all
+   training customers.
+7. **Which variables matter most?** One standard deviation of each, and
+   what happens when a variable is dropped. Skip the second chunk if
+   the hour is short.
+8. **Score the training customers.** One probability per customer.
+   The test customers stay closed.
+9. **From a probability to a predicted churner.** The threshold, on
+   the training customers.
+10. **The confusion matrix at 0.50.** Training customers.
+11. **Four rates.** Sensitivity, specificity, precision, and the
+    false-positive rate.
+12. **A lower threshold: 0.30, and the training threshold table.**
+    This is the table you choose from.
+13. **Commit to one threshold.** From that table only. No test counts
+    yet.
+14. **Report it on the test customers.** Your four test counts on the
+    board, and 0.50 and 0.30 on the test customers for comparison.
+15. **Every threshold at once.** The ROC curve and the area under it
+    (AUC), test against training, once.
+16. **Who gets the offer first?** Lift and the gains chart, on the
+    test customers.
+17. **After class.** The straight-line model, internet service and the
+    monthly bill, payment method, a threshold from example costs, a
+    second seed, and a model with the bill only.
+
+# 1. Load the data and code the outcome
+
+```{r}
+#| label: setup
+# rsample: initial_split() makes the training and test sets.
+# marginaleffects: slopes(), avg_slopes(), and avg_comparisons() turn
+#   coefficients into changes in the probability.
+# ggplot2 and scales: plots.
+# This chunk stops if a package is missing. It does not install anything.
+needed <- c("rsample", "marginaleffects", "ggplot2", "scales")
+missing <- needed[!vapply(needed, requireNamespace, logical(1), quietly = TRUE)]
+if (length(missing) > 0) {
+  stop(
+    "Install the missing packages in the Console, then render again:\n",
+    "install.packages(c(",
+    paste0('"', missing, '"', collapse = ", "), "))"
+  )
+}
+
+library(rsample)
+library(marginaleffects)
+library(ggplot2)
+library(scales)
+
+options(scipen = 999)
+```
+
+```{r}
+#| label: load-data
+churn <- read.csv("data/churn.csv")
+
+# Contract and SeniorCitizen become factors so the dummy coding is
+# explicit. Month-to-month is the first level, so it is the reference:
+# the One year and Two year coefficients compare with month-to-month
+# customers. SeniorCitizen is 0/1 in the csv. As a factor, R reports
+# the senior coefficient as SeniorCitizenYes.
+churn$Contract <- factor(churn$Contract,
+                         levels = c("Month-to-month", "One year", "Two year"))
+churn$SeniorCitizen <- factor(churn$SeniorCitizen, levels = c(0, 1),
+                              labels = c("No", "Yes"))
+# Internet service and payment method are for the after-class questions.
+# Code them now, before the split, so training and test use the same
+# levels. Do not put them in the model during the hour.
+churn$InternetService <- factor(churn$InternetService)
+churn$PaymentMethod <- factor(churn$PaymentMethod)
+
+str(churn)
+class_vars <- c("Churn", "tenure", "MonthlyCharges", "Contract", "SeniorCitizen")
+summary(churn[class_vars])
+sum(is.na(churn))
+
+# The outcome must be 0/1 with the event we care about coded 1.
+# Here the event is churn.
+table(churn$Churn)
+mean(churn$Churn)
+
+# Question: How many customers churned, and what share is that?
+#
+# Interpret: glm() models the probability that the outcome is 1. Since
+# churn is 1, every probability in this lab is a probability of churn.
+#
+# Discuss: Suppose a manager says "we predict that nobody churns." How
+# often would that prediction be correct in this dataset? Keep that
+# number. It is the benchmark for accuracy later.
+```
+
+# 2. Look at churn before any model
+
+```{r}
+#| label: churn-by-group
+# Share of customers who churned, by contract type and by senior status.
+tapply(churn$Churn, churn$Contract, mean)
+table(churn$Contract)
+tapply(churn$Churn, churn$SeniorCitizen, mean)
+
+# Tenure in one-year groups.
+churn$tenure_group <- cut(churn$tenure, breaks = c(0, 12, 24, 36, 48, 60, 72),
+                          labels = c("1-12", "13-24", "25-36",
+                                     "37-48", "49-60", "61-72"))
+tenure_share <- data.frame(
+  group = levels(churn$tenure_group),
+  share = as.numeric(tapply(churn$Churn, churn$tenure_group, mean))
+)
+tenure_share
+
+# Question: Which contract type churns most? By how many percentage
+# points does it differ from a two-year contract?
+#
+# Discuss: These are shares inside groups. A new customer arrives with
+# a tenure, a bill, a contract, and senior-citizen status all at once. Why do we
+# need a model, and not only these tables?
+```
+
+```{r}
+#| label: tenure-plot
+#| fig-width: 8
+#| fig-height: 3.8
+ggplot(tenure_share, aes(x = group, y = share)) +
+  geom_col(fill = "#156082", width = 0.7) +
+  geom_text(aes(label = percent(share, accuracy = 1)), vjust = -0.4, size = 3.8) +
+  scale_y_continuous(labels = percent, limits = c(0, 0.6)) +
+  labs(
+    x = "Tenure (months)",
+    y = "Share who churned",
+    title = paste("Churn by tenure group, all",
+                  format(nrow(churn), big.mark = ","), "customers")
+  ) +
+  theme_minimal()
+
+# Interpret: The share falls as tenure grows, and it does not fall by
+# the same amount in each step. A straight line in tenure would not
+# follow these bars. The logistic curve can bend.
+```
+
+# 3. Hold out 30 percent of the customers
+
+```{r}
+#| label: split
+# Stratified 70/30 split. strata = Churn keeps the churn share almost
+# the same in the training and test sets.
+# Why before the first model? If we read the test customers while we
+# build the model or choose a threshold, the test is no longer a test.
+set.seed(467)
+churn_split <- initial_split(churn, prop = 0.7, strata = Churn)
+train <- training(churn_split)
+test <- testing(churn_split)
+
+nrow(train)
+nrow(test)
+mean(train$Churn)
+mean(test$Churn)
+
+# Question: Why do the two churn shares match so closely? What could go
+# wrong with a plain random split if churn were rare, say 3 percent?
+#
+# From here on: coefficients are read on `train`. The threshold is
+# chosen from the training probabilities. The four counts you report
+# are computed on `test`, after that choice.
+```
+
+# 4. Estimate the logistic regression on the training customers
+
+The model gives a score for each customer. The score is a line in the
+variables. The logistic curve turns the score into a probability
+between 0 and 1:
+
+$$
+\text{score} = b_0 + b_1\,\text{tenure} + b_2\,\text{MonthlyCharges}
++ b_3\,\text{OneYear} + b_4\,\text{TwoYear} + b_5\,\text{Senior},
+\qquad
+p = \frac{e^{\text{score}}}{1 + e^{\text{score}}}.
+$$
+
+The score is the log-odds of churn: $\log\big(p / (1 - p)\big)$.
+`OneYear`, `TwoYear`, and `Senior` are 0/1 indicators. A month-to-month
+customer has `OneYear = 0` and `TwoYear = 0`.
+
+```{r}
+#| label: glm
+churn_model <- glm(Churn ~ tenure + MonthlyCharges + Contract + SeniorCitizen,
+                   data = train, family = binomial)
+summary(churn_model)
+round(coef(churn_model), 4)
+
+# Question: Read only the signs. Which variables go with a higher
+# probability of churn, and which with a lower one?
+#
+# Question: The intercept is the score for a customer with tenure 0, a
+# $0 bill, a month-to-month contract, and not a senior. Does that
+# customer exist in this dataset? Check the minimum of tenure and of
+# MonthlyCharges in the summary above.
+#
+# Interpret: ContractOne year and ContractTwo year are each compared
+# with month-to-month, the reference level. They are not compared with
+# each other.
+```
+
+# 5. Read the coefficients three ways
+
+Each coefficient has three readings. In log-odds it adds a fixed amount
+to the score. In odds it multiplies the odds by a fixed factor. In
+probability the change depends on where the customer starts.
+
+Use a step a customer can actually take. One extra month of tenure, or
+one extra dollar on the bill, is too small to talk about. We use 12
+months and $10.
+
+```{r}
+#| label: odds-steps
+b <- coef(churn_model)
+
+# Log-odds change for a realistic step.
+c(tenure_12_months = 12 * b[["tenure"]],
+  charges_10_dollars = 10 * b[["MonthlyCharges"]])
+
+# Odds multiplier: e to that change. Below 1 means lower odds of churn.
+round(c(tenure_12_months = exp(12 * b[["tenure"]]),
+        charges_10_dollars = exp(10 * b[["MonthlyCharges"]]),
+        one_year_vs_month = exp(b[["ContractOne year"]]),
+        two_year_vs_month = exp(b[["ContractTwo year"]]),
+        senior_vs_not = exp(b[["SeniorCitizenYes"]])), 3)
+
+# Question: Write one sentence for tenure in odds: "Holding the bill,
+# the contract, and senior status fixed, 12 more months of tenure
+# multiplies the odds of churn by ___." Then say it as a percent change
+# in the odds.
+#
+# Discuss: An odds multiplier of 0.5 and a probability that falls by
+# half are not the same thing. Why not?
+```
+
+Now two customers we can name. Both pay $80 a month and are not senior
+citizens.
+
+- **Customer A:** 6 months of tenure, month-to-month contract.
+- **Customer B:** 36 months of tenure, one-year contract.
+
+```{r}
+#| label: two-customers
+customers <- data.frame(
+  customer = c("A", "B"),
+  tenure = c(6, 36),
+  MonthlyCharges = c(80, 80),
+  Contract = factor(c("Month-to-month", "One year"), levels = levels(churn$Contract)),
+  SeniorCitizen = factor(c("No", "No"), levels = c("No", "Yes"))
+)
+
+# Score by hand from the coefficients. A is month-to-month, so no
+# contract term. B adds the One year coefficient.
+score_A <- b[["(Intercept)"]] + b[["tenure"]] * 6 + b[["MonthlyCharges"]] * 80
+score_B <- b[["(Intercept)"]] + b[["tenure"]] * 36 + b[["MonthlyCharges"]] * 80 +
+  b[["ContractOne year"]]
+p_hand <- exp(c(score_A, score_B)) / (1 + exp(c(score_A, score_B)))
+
+# The same probabilities from predict(). type = "response" returns the
+# probability. Without it, predict() returns the score.
+p_now <- predict(churn_model, customers, type = "response")
+round(data.frame(score = c(score_A, score_B), p_hand, p_predict = p_now), 4)
+
+# Question: What is each customer's probability of churn? Do the hand
+# calculation and predict() agree?
+```
+
+```{r}
+#| label: same-step-two-customers
+# Give both customers 12 more months of tenure. Then, separately, $10
+# more on the bill. Everything else stays the same.
+plus_12 <- customers
+plus_12$tenure <- plus_12$tenure + 12
+plus_10 <- customers
+plus_10$MonthlyCharges <- plus_10$MonthlyCharges + 10
+
+p_12 <- predict(churn_model, plus_12, type = "response")
+p_10 <- predict(churn_model, plus_10, type = "response")
+odds <- function(p) p / (1 - p)
+
+data.frame(
+  customer = customers$customer,
+  p_now = round(p_now, 3),
+  p_12_more_months = round(p_12, 3),
+  change_pp = round(100 * (p_12 - p_now), 1),
+  odds_ratio = round(odds(p_12) / odds(p_now), 3),
+  p_10_more_dollars = round(p_10, 3),
+  change_pp_bill = round(100 * (p_10 - p_now), 1)
+)
+
+# Interpret: change_pp is in percentage points. Going from 0.40 to
+# 0.30 is 10 percentage points, and it is a 25 percent drop. Say
+# "percentage points" when you mean the first.
+#
+# Question: The odds ratio is the same for A and B. The change in
+# percentage points is not. Which customer moves more, and why?
+```
+
+```{r}
+#| label: contract-before-after
+# A category is read as a before-and-after difference. Keep customer A
+# the same, and change only the contract.
+a_contracts <- customers[c(1, 1, 1), ]
+a_contracts$Contract <- factor(c("Month-to-month", "One year", "Two year"),
+                               levels = levels(churn$Contract))
+data.frame(contract = a_contracts$Contract,
+           p_churn = round(predict(churn_model, a_contracts, type = "response"), 3))
+
+# Question: By how many percentage points does customer A's probability
+# fall if A were on a one-year contract instead of month-to-month? On a
+# two-year contract?
+#
+# Interpret: This compares customers who have different contracts. It
+# does not say that switching A to a two-year contract would cause that
+# drop. Customers who sign two-year contracts may differ in ways the
+# model does not see.
+```
+
+# 6. Marginal effects: for one customer, then the average
+
+The marginal effect of a numeric variable is how fast the probability
+moves when that variable moves, at a given customer:
+
+$$
+\text{marginal effect of } x_j = b_j \times p \times (1 - p).
+$$
+
+It uses that customer's $p$, so it is different for every customer.
+The average marginal effect (AME) is the average of the marginal
+effects of all training customers, each at its own $p$.
+
+```{r}
+#| label: me-one-customer
+# By hand: coefficient times p(1 - p), for customers A and B.
+p_A <- p_now[[1]]
+p_B <- p_now[[2]]
+c(tenure_A = b[["tenure"]] * p_A * (1 - p_A),
+  tenure_B = b[["tenure"]] * p_B * (1 - p_B))
+
+# The same numbers from marginaleffects. slopes() returns the marginal
+# effect at each customer in newdata. We print the customer, the
+# variable, the estimate, and the standard error.
+me_customers <- slopes(churn_model, newdata = customers,
+                       variables = c("tenure", "MonthlyCharges"))
+as.data.frame(me_customers)[, c("customer", "term", "estimate", "std.error")]
+
+# Interpret: The estimate is the change for one extra month of tenure,
+# or one extra dollar of bill, at that customer's current probability.
+#
+# Question: For customer A, how many percentage points does one more
+# month of tenure change the probability of churn? Is that close to
+# one-twelfth of the 12-month change you computed above? Why is it not
+# exactly one-twelfth?
+```
+
+```{r}
+#| label: ame
+# Average marginal effect, by hand: one marginal effect per training
+# customer, then the average.
+p_train <- predict(churn_model, type = "response")
+c(tenure = mean(b[["tenure"]] * p_train * (1 - p_train)),
+  MonthlyCharges = mean(b[["MonthlyCharges"]] * p_train * (1 - p_train)))
+
+# The same averages from marginaleffects. In the printed tables, S is
+# another way to show the p-value. We do not use it today.
+avg_slopes(churn_model, variables = c("tenure", "MonthlyCharges"))
+
+# The average change for the realistic steps: 12 months and $10.
+avg_comparisons(churn_model, variables = list(tenure = 12, MonthlyCharges = 10))
+
+# For the categories, avg_comparisons() changes each training customer
+# from the reference level to the other level, and averages the
+# before-and-after difference.
+avg_comparisons(churn_model, variables = c("Contract", "SeniorCitizen"))
+
+# Question: Report the average effect of 12 more months of tenure in
+# percentage points. Is it larger or smaller than customer A's change?
+# Than customer B's?
+#
+# Discuss: For a category, why do we compute the probability before and
+# after, instead of multiplying the coefficient by p(1 - p)? Try it for
+# customer A and the two-year contract, and compare with the
+# contract-before-after chunk.
+#
+# Discuss: One number is the change for customer A. The other is the
+# average over the training customers. Which one answers a question
+# about customer A, and which one answers a question about every
+# customer?
+```
+
+# 7. Which variables matter most?
+
+Coefficients are per unit, and the units differ: months, dollars, and
+categories. A larger coefficient does not mean a more important
+variable. A very small p-value does not mean that either. It means an
+estimate this far from zero would be rare if the coefficient were zero.
+For the two numeric variables,
+multiply each coefficient by its standard deviation. That is the change
+in the log-odds for a typical difference between customers.
+
+```{r}
+#| label: importance-sd
+sds <- c(tenure = sd(train$tenure), MonthlyCharges = sd(train$MonthlyCharges))
+b_num <- b[c("tenure", "MonthlyCharges")]
+std <- b_num * sds
+round(rbind(coefficient = b_num, sd = sds, log_odds_per_sd = std,
+            odds_per_sd = exp(std)), 3)
+
+# Question: In odds, which moves churn more: one standard deviation of
+# tenure or one standard deviation of the monthly bill? How do you
+# compare a multiplier below 1 with one above 1? (Hint: 1 / multiplier.)
+```
+
+```{r}
+#| label: importance-drop1
+# Skip this chunk if the hour is short.
+# drop1() estimates the model again without each variable and reports
+# the deviance. Deviance measures how far the probabilities are from
+# the outcomes. Lower is better. A large increase means the model
+# needs that variable. This works for Contract
+# too, which has no single standard deviation.
+drop1(churn_model, test = "LRT")
+
+# Question: Which variable's removal hurts the model most? Which
+# hurts it least? Do all four stay?
+```
+
+# 8. Score the training customers
+
+The test customers stay closed until the threshold is chosen. Every
+number in the next sections is a training customer. The model was
+estimated on these same customers, so the counts here are for choosing,
+not for the board.
+
+```{r}
+#| label: score-train
+train$p_churn <- predict(churn_model, type = "response")
+summary(train$p_churn)
+
+# Sort the training customers from the highest probability to the lowest.
+ranked <- train[order(train$p_churn, decreasing = TRUE),
+                c("tenure", "MonthlyCharges", "Contract", "SeniorCitizen",
+                  "p_churn", "Churn")]
+head(ranked, 5)
+tail(ranked, 5)
+
+# Question: What do the five customers at the top of the list have in
+# common? And the five at the bottom? Look at tenure, the bill, the
+# contract, and whether they actually churned.
+```
+
+# 9. From a probability to a predicted churner: the threshold
+
+A probability is not yet a decision. The retention department needs a list.
+We choose a threshold (some books say cutoff) and predict churn when
+the probability is above it.
+
+We look at two thresholds on the training customers. The usual default
+is 0.50. The second is 0.30. Compare the mistakes each one makes.
+You will choose one threshold from the training table. The test
+customers stay closed until that choice is made.
+
+```{r}
+#| label: threshold-hist
+#| fig-width: 8
+#| fig-height: 4.6
+train$outcome <- factor(ifelse(train$Churn == 1, "Churned", "Stayed"),
+                        levels = c("Churned", "Stayed"))
+ggplot(train, aes(x = p_churn)) +
+  geom_histogram(binwidth = 0.025, boundary = 0, fill = "#156082", color = "white") +
+  geom_vline(xintercept = 0.50, color = "#C41230", linewidth = 1) +
+  geom_vline(xintercept = 0.30, color = "#e97132", linewidth = 1, linetype = "dashed") +
+  facet_wrap(~ outcome, ncol = 1, scales = "free_y") +
+  scale_x_continuous(breaks = seq(0, 1, 0.1), limits = c(0, 1)) +
+  labs(
+    x = "Predicted probability of churn (training customers)",
+    y = "Customers",
+    title = "Training customers by what they actually did",
+    subtitle = "Red line: threshold 0.50. Orange dashed line: threshold 0.30. Right of a line = predicted to churn."
+  ) +
+  theme_minimal()
+
+c(above_0.50 = sum(train$p_churn > 0.50), above_0.30 = sum(train$p_churn > 0.30))
+
+# Question: The red line is the 0.50 threshold. Do the two panels sit
+# on opposite sides of it, or do they overlap?
+#
+# Interpret: Where the panels overlap, every threshold makes mistakes.
+# A churner left of the line is predicted to stay. A customer who
+# stayed and sits right of the line is predicted to churn.
+```
+
+# 10. The confusion matrix at 0.50
+
+These counts are the training customers. They show how the table works.
+They are not the counts that go on the board.
+
+The positive class is the one we want to find: here, churn. The
+prediction runs down the left side of the table; what the customer
+actually did runs across the top.
+
+|   | Actually churned | Actually stayed |
+|---|---|---|
+| **Predicted churn** | True positive (TP) | False positive (FP), Type I error |
+| **Predicted stay** | False negative (FN), Type II error | True negative (TN) |
+
+A false positive is a customer we contact who would have stayed anyway.
+A false negative is a churner we miss.
+
+```{r}
+#| label: confusion-050
+predicted <- factor(ifelse(train$p_churn > 0.50, "Churn", "Stay"),
+                    levels = c("Churn", "Stay"))
+actual <- factor(ifelse(train$Churn == 1, "Churn", "Stay"),
+                 levels = c("Churn", "Stay"))
+cm_050 <- table(predicted, actual)
+cm_050
+
+# Accuracy: the share of all training customers predicted correctly.
+accuracy_050 <- sum(diag(cm_050)) / sum(cm_050)
+# Benchmark: predict that nobody churns.
+nobody <- mean(train$Churn == 0)
+round(c(model_0.50 = accuracy_050, predict_nobody_churns = nobody), 3)
+
+# Question: Read the four training counts. How many training customers
+# would the department contact at 0.50? How many of them churned? How
+# many churners are missed?
+#
+# Question: How many percentage points does the model add over
+# "nobody churns"? How many churners does "nobody churns" find?
+#
+# Discuss: Accuracy treats a missed churner and an unneeded call as
+# the same mistake. Are they the same for this company?
+```
+
+# 11. Four rates
+
+Each rate divides by a different group. Before you read a rate, ask: a
+share of which customers?
+
+- **Sensitivity** (also called recall): of the customers who churned,
+  the share we flagged. TP / (TP + FN).
+- **Specificity**: of the customers who stayed, the share we did not
+  flag. TN / (TN + FP).
+- **Precision**: of the customers we flagged, the share who churned.
+  TP / (TP + FP).
+- **False-positive rate**: of the customers who stayed, the share we
+  flagged. FP / (FP + TN), which is 1 − specificity.
+
+```{r}
+#| label: rates
+# Counts and rates for any threshold, on the training customers.
+# This is the table the threshold is chosen from.
+counts <- function(threshold) {
+  flag <- train$p_churn > threshold
+  c(TP = sum(flag & train$Churn == 1), FP = sum(flag & train$Churn == 0),
+    FN = sum(!flag & train$Churn == 1), TN = sum(!flag & train$Churn == 0))
+}
+rates <- function(threshold) {
+  k <- counts(threshold)
+  c(accuracy = unname((k["TP"] + k["TN"]) / sum(k)),
+    sensitivity = unname(k["TP"] / (k["TP"] + k["FN"])),
+    specificity = unname(k["TN"] / (k["TN"] + k["FP"])),
+    precision = unname(k["TP"] / (k["TP"] + k["FP"])),
+    false_positive_rate = unname(k["FP"] / (k["FP"] + k["TN"])))
+}
+counts(0.50)
+round(rates(0.50), 3)
+
+# Question: At 0.50, what share of churners does the list catch? Say
+# it in a sentence a manager would understand.
+#
+# Question: Precision and sensitivity both have TP on top. What is
+# different about the bottom of each fraction?
+#
+# Discuss: Recall asks how many churners we found. Precision asks how
+# many of the customers we flagged really churned. If the department
+# can make only a few calls, which one matters more?
+```
+
+# 12. A lower threshold: 0.30
+
+```{r}
+#| label: threshold-030
+rbind(threshold_0.50 = counts(0.50), threshold_0.30 = counts(0.30))
+round(rbind(threshold_0.50 = rates(0.50), threshold_0.30 = rates(0.30)), 3)
+
+# Question: On the training customers, moving from 0.50 to 0.30, how
+# many more churners does the list catch? How many more customers who
+# would have stayed does it contact?
+#
+# Question: Compare accuracy at 0.30 with accuracy at 0.50. Does a
+# lower accuracy make 0.30 the worse threshold for the retention
+# department?
+```
+
+```{r}
+#| label: threshold-table
+# The list at several thresholds, so you can see it move.
+threshold_table <- do.call(rbind, lapply(seq(0.1, 0.8, by = 0.1), function(k) {
+  cc <- counts(k)
+  data.frame(threshold = k, contacted = cc[["TP"]] + cc[["FP"]],
+             TP = cc[["TP"]], FP = cc[["FP"]], FN = cc[["FN"]], TN = cc[["TN"]],
+             t(round(rates(k), 3)))
+}))
+threshold_table
+
+# Interpret: Read the contacted numbers from 0.10 down to 0.80. Every
+# time the threshold moves, the list changes.
+#
+# Question: Look at threshold 0.80. Why is the list so short? What is
+# the highest predicted probability among the training customers?
+```
+
+**Before you commit.** The table above is the training customers. Talk
+with the person next to you. Which mistake is worse for this company:
+calling a customer who would have stayed, or missing a churner? How
+many customers can a retention department realistically contact? No
+dollar figures. Do not open the test customers to make this choice.
+
+In class, the lowest-cost threshold was $c_{FP} / (c_{FP} + c_{FN})$:
+the cost of a false positive over the sum of the two costs. You only
+need the ratio. If a missed churner costs about twice as much as an
+unneeded call, the rule gives $1 / (1 + 2) = 0.33$. Three times as
+much gives $1 / (1 + 3) = 0.25$.
+
+# 13. Commit to one threshold
+
+Choose a threshold from the training table. A row in the table is fine.
+A value between two rows is fine if you can defend it.
+
+Write it in the next chunk, then run it. The counts it prints are the
+training counts: the trade-off you are choosing. They do not go on the
+board. The four board counts are the test counts, in the chunk after
+this one.
+
+The line below is a starting point so the document renders. Replace it
+with the threshold you chose.
+
+```{r}
+#| label: commit
+# Starting point only, so the chunk runs. Replace this line.
+# counts() uses the training customers.
+my_threshold <- 0.50
+
+my_counts <- counts(my_threshold)
+my_threshold
+my_counts
+c(contacted = my_counts[["TP"]] + my_counts[["FP"]],
+  churners_caught = my_counts[["TP"]],
+  churners_missed = my_counts[["FN"]],
+  calls_to_customers_who_stayed = my_counts[["FP"]])
+round(rates(my_threshold), 3)
+
+# Discuss: Picking the training row with the highest accuracy treats a
+# missed churner and an unneeded call as the same mistake. Opening the
+# test customers to pick the threshold would mean the test set is no
+# longer a test. What are you using to choose instead?
+#
+# Interpret: The threshold is a choice about the two mistakes. The model
+# ranks customers. It does not decide how many to call.
+```
+
+# 14. Report the threshold on the test customers
+
+The threshold is chosen. Open the test customers once. On the board,
+write your threshold, its four test counts (TP, FP, FN, TN), and one
+or two sentences on why. No dollar figures.
+
+The same chunk prints 0.50 and 0.30 on the test customers, so the two
+reference thresholds can be compared on customers the choice did not
+use.
+
+```{r}
+#| label: report-test
+# The threshold is already chosen. Do not change my_threshold
+# after reading these test counts.
+test$p_churn <- predict(churn_model, test, type = "response")
+
+test_counts <- function(threshold) {
+  flag <- test$p_churn > threshold
+  c(TP = sum(flag & test$Churn == 1), FP = sum(flag & test$Churn == 0),
+    FN = sum(!flag & test$Churn == 1), TN = sum(!flag & test$Churn == 0))
+}
+test_rates <- function(threshold) {
+  k <- test_counts(threshold)
+  c(accuracy = unname((k["TP"] + k["TN"]) / sum(k)),
+    sensitivity = unname(k["TP"] / (k["TP"] + k["FN"])),
+    specificity = unname(k["TN"] / (k["TN"] + k["FP"])),
+    precision = unname(k["TP"] / (k["TP"] + k["FP"])),
+    false_positive_rate = unname(k["FP"] / (k["FP"] + k["TN"])))
+}
+
+my_test <- test_counts(my_threshold)
+my_threshold
+my_test
+c(contacted = my_test[["TP"]] + my_test[["FP"]],
+  churners_caught = my_test[["TP"]],
+  churners_missed = my_test[["FN"]],
+  calls_to_customers_who_stayed = my_test[["FP"]])
+
+rbind(chosen = test_counts(my_threshold),
+      threshold_0.50 = test_counts(0.50),
+      threshold_0.30 = test_counts(0.30))
+round(rbind(chosen = test_rates(my_threshold),
+            threshold_0.50 = test_rates(0.50),
+            threshold_0.30 = test_rates(0.30),
+            nobody = c(accuracy = mean(test$Churn == 0),
+                       sensitivity = 0, specificity = 1,
+                       precision = NA, false_positive_rate = 0)), 3)
+
+# Question: Read your four test counts. How many test customers would
+# the department contact? How many of them churned? How many churners
+# are missed?
+#
+# Question: At your threshold, how does test accuracy compare with
+# "nobody churns" on the test customers? How many churners does
+# "nobody churns" find?
+```
+
+# 15. Every threshold at once: the ROC curve and the area under it
+
+The receiver operating characteristic (ROC) curve plots, for every
+threshold, the false-positive rate on the horizontal axis and the
+sensitivity (true-positive rate) on the vertical axis. Each threshold
+is one point.
+
+The area under the curve (AUC) has two readings, as in class.
+
+- **How high the curve is.** The AUC is the average share of churners
+  found, over all false-positive rates. A higher curve finds more
+  churners at every level of false alarms.
+- **Pairs.** Pick one customer who churned and one who stayed, at
+  random. The AUC is the probability that the model gives the churner
+  the higher probability of churn. 0.5 is a coin toss. 1 is perfect.
+
+```{r}
+#| label: roc
+#| fig-width: 6.5
+#| fig-height: 6
+# One point per threshold, as in class: 101 thresholds from 0 to 1.
+thresholds <- seq(0, 1, by = 0.01)
+# fpr: share of the customers who stayed that are flagged.
+# tpr: share of the churners that are flagged.
+roc_test <- data.frame(
+  fpr = sapply(thresholds, function(k) mean(test$p_churn[test$Churn == 0] > k)),
+  tpr = sapply(thresholds, function(k) mean(test$p_churn[test$Churn == 1] > k))
+)
+
+# The AUC as pairs, the function from class.
+auc_of <- function(p, y) {                               # pairs ranked right
+  ch <- p[y == 1]; st <- p[y == 0]                       # churners and stayers
+  mean(outer(ch, st, ">") + 0.5 * outer(ch, st, "=="))   # ties count half
+}
+auc_test <- auc_of(test$p_churn, test$Churn)
+# In practice, yardstick::roc_auc() gives the same AUC in one line.
+
+two_points <- data.frame(
+  fpr = c(test_rates(0.50)[["false_positive_rate"]],
+          test_rates(0.30)[["false_positive_rate"]]),
+  tpr = c(test_rates(0.50)[["sensitivity"]],
+          test_rates(0.30)[["sensitivity"]]),
+  label = c("threshold 0.50", "threshold 0.30")
+)
+
+your_point <- data.frame(
+  fpr = test_rates(my_threshold)[["false_positive_rate"]],
+  tpr = test_rates(my_threshold)[["sensitivity"]],
+  label = paste("your threshold,", my_threshold)
+)
+
+ggplot(roc_test, aes(x = fpr, y = tpr)) +
+  geom_path(color = "#156082", linewidth = 1.1) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "grey50") +
+  geom_point(data = two_points, aes(x = fpr, y = tpr), color = "#C41230", size = 3) +
+  geom_text(data = two_points, aes(x = fpr, y = tpr, label = label),
+            hjust = -0.15, vjust = 1.3, color = "#C41230") +
+  geom_point(data = your_point, aes(x = fpr, y = tpr),
+             color = "#e97132", size = 4, shape = 17) +
+  geom_text(data = your_point, aes(x = fpr, y = tpr, label = label),
+            hjust = -0.15, vjust = 2.9, color = "#e97132") +
+  coord_equal() +
+  labs(
+    x = "False-positive rate (1 - specificity)",
+    y = "Sensitivity (true-positive rate)",
+    title = "ROC curve, test customers",
+    subtitle = paste0("AUC: ", round(auc_test, 3),
+                      ". Dashed line: random guessing. Triangle: your threshold.")
+  ) +
+  theme_minimal()
+
+round(c(AUC = auc_test, gini = 2 * auc_test - 1), 3)
+
+# Question: Moving from 0.50 to 0.30, which way does the point move on
+# the curve? Why do both rates rise?
+#
+# Question: Say the area under the curve in one sentence about a
+# churner and a customer who stayed.
+#
+# Interpret: The Gini coefficient here is 2 times the area, minus 1.
+# Random guessing is 0 and a perfect ranking is 1. This is not the
+# Gini measure of income inequality. Some industries report this
+# Gini instead of the area.
+```
+
+```{r}
+#| label: auc-train-vs-test
+# Once. The training probabilities were used to choose the threshold.
+# This is the one comparison with the test area.
+auc_train <- auc_of(train$p_churn, train$Churn)
+round(c(training = auc_train, test = auc_test), 3)
+
+# Question: Is the test area much lower than the training area? What
+# does that say about overfitting with four variables?
+#
+# Discuss: The area does not choose a threshold. What is it useful for?
+```
+
+# 16. Who gets the offer first? Lift and the gains chart
+
+The threshold is already chosen. This chart does not pick a new one.
+The department may have budget for only part of the list. Sort the test
+customers by probability of churn, highest first, and contact from the
+top. Lift in the top 10 percent is the churn share in that slice
+divided by the churn share among all test customers.
+
+```{r}
+#| label: lift
+o <- order(test$p_churn, decreasing = TRUE)
+churned_sorted <- test$Churn[o]
+n_top <- round(0.10 * nrow(test))
+
+round(c(customers_in_top_10 = n_top,
+        churners_in_top_10 = sum(churned_sorted[1:n_top]),
+        share_top_10 = mean(churned_sorted[1:n_top]),
+        share_all = mean(churned_sorted),
+        lift_top_10 = mean(churned_sorted[1:n_top]) / mean(churned_sorted),
+        share_of_churners_reached = sum(churned_sorted[1:n_top]) / sum(churned_sorted)), 3)
+
+# Question: If the department contacted the same number of customers at
+# random, about how many churners would it reach? How many does the
+# model's top 10 percent reach?
+#
+# Discuss: Suppose the offer works best on customers who have not
+# made up their mind yet. Would you call the top of this list first,
+# or further down? What would you need to know?
+```
+
+```{r}
+#| label: gains
+#| fig-width: 7
+#| fig-height: 5
+gains <- data.frame(
+  share_contacted = c(0, seq_along(churned_sorted) / length(churned_sorted)),
+  share_churners = c(0, cumsum(churned_sorted) / sum(churned_sorted))
+)
+ggplot(gains, aes(x = share_contacted, y = share_churners)) +
+  geom_line(color = "#156082", linewidth = 1.1) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "grey50") +
+  geom_vline(xintercept = c(0.1, 0.3), color = "#e97132", linetype = "dotted") +
+  scale_x_continuous(labels = percent) +
+  scale_y_continuous(labels = percent) +
+  labs(
+    x = "Share of test customers contacted, highest probability first",
+    y = "Share of test churners reached",
+    title = "Gains chart, test customers",
+    subtitle = "Dashed line: contacting customers at random. Dotted lines: top 10% and top 30%."
+  ) +
+  theme_minimal()
+
+n_30 <- round(0.30 * length(churned_sorted))
+round(c(top_30_customers = n_30,
+        share_of_churners_reached =
+          sum(churned_sorted[seq_len(n_30)]) / sum(churned_sorted)), 3)
+
+# Question: Contacting 30 percent of the test customers at random would
+# reach about 30 percent of the churners, on average. What share does
+# the top 30 percent of this list reach, and how does it compare?
+#
+# Discuss: Lift looks only at the top of the list. The confusion matrix
+# looks at one threshold. The ROC curve looks at all thresholds. Which
+# one helps a department with a fixed number of calls?
+```
+
+# 17. After class: extra questions
+
+Work these on your own after the hour. Do not change the threshold you
+wrote on the board.
+
+1. **The straight line.** Estimate the same four variables with least
+   squares (`lm`) instead of logistic regression. How many training
+   customers get a predicted value below 0? Why is that a problem for a
+   probability?
+
+2. **Internet service and the monthly bill.** Add `InternetService` to
+   the class model. What happens to the `MonthlyCharges` coefficient
+   and its $p$-value? Look at the average bill for each internet type.
+   Explain in two sentences why the bill coefficient changes, and
+   whether the test area under the curve moves much.
+
+3. **Payment method.** Add `PaymentMethod` as well. Which payment
+   method has the highest churn share? Does the test area move?
+
+4. **A threshold from example costs.** The dataset has no costs. The
+   numbers in the chunk below are an **example** only. Suppose an offer
+   costs \$50 per customer contacted, a churner who stays is worth \$300,
+   and half of the contacted churners accept and stay. Contact a
+   customer when the expected gain is larger than the cost:
+   $p \times 0.5 \times 300 > 50$. What threshold does that give? Using
+   the training customers, which threshold earns the most under these
+   example costs? On the test customers, what does that chosen
+   threshold earn, and what do 0.50 and 0.30 earn? Do not search the
+   test customers for a better threshold. Change the example numbers
+   and see how the training choice moves.
+
+5. **A second seed.** Change `set.seed(467)` to another number, run the
+   split and the model again, and compare the test area under the
+   curve. What moved?
+
+6. **Which model gives the better curve?** In class we compared our
+   model with a model that used PriceDiff only. Do the same here with
+   a model that uses the monthly bill only. At a false-positive rate of
+   0.20, what share of churners does each model find? Which model has
+   the larger AUC?
+
+```{r}
+#| label: after-class-lpm
+lpm <- lm(Churn ~ tenure + MonthlyCharges + Contract + SeniorCitizen, data = train)
+sum(fitted(lpm) < 0)
+range(fitted(lpm))
+```
+
+```{r}
+#| label: after-class-internet
+tapply(churn$MonthlyCharges, churn$InternetService, mean)
+tapply(churn$Churn, churn$InternetService, mean)
+
+model_internet <- glm(Churn ~ tenure + MonthlyCharges + Contract + SeniorCitizen +
+                        InternetService, data = train, family = binomial)
+summary(model_internet)$coefficients[c("MonthlyCharges"), ]
+summary(churn_model)$coefficients[c("MonthlyCharges"), ]
+
+test$p_internet <- predict(model_internet, test, type = "response")
+round(c(class_model = auc_test,
+        with_internet = auc_of(test$p_internet, test$Churn)), 3)
+```
+
+```{r}
+#| label: after-class-payment
+tapply(churn$Churn, churn$PaymentMethod, mean)
+
+model_payment <- glm(Churn ~ tenure + MonthlyCharges + Contract + SeniorCitizen +
+                       InternetService + PaymentMethod, data = train, family = binomial)
+test$p_payment <- predict(model_payment, test, type = "response")
+round(c(class_model = auc_test,
+        with_internet_and_payment = auc_of(test$p_payment, test$Churn)), 3)
+```
+
+```{r}
+#| label: after-class-costs
+#| fig-width: 7
+#| fig-height: 4
+# EXAMPLE numbers. They are not in the dataset. Change them.
+offer_cost <- 50      # dollars per customer contacted
+value_kept <- 300     # dollars, value of a churner who stays
+accept_share <- 0.5   # share of contacted churners who accept and stay
+
+break_even <- offer_cost / (accept_share * value_kept)
+break_even
+
+profit_on <- function(count_fn, threshold) {
+  k <- count_fn(threshold)
+  k[["TP"]] * accept_share * value_kept - (k[["TP"]] + k[["FP"]]) * offer_cost
+}
+grid <- seq(0.05, 0.80, by = 0.01)
+profit_grid <- data.frame(
+  threshold = grid,
+  profit = sapply(grid, function(k) profit_on(counts, k))
+)
+chosen_cost <- profit_grid$threshold[which.max(profit_grid$profit)]
+chosen_cost
+c(test_at_chosen = profit_on(test_counts, chosen_cost),
+  test_at_0.50 = profit_on(test_counts, 0.50),
+  test_at_0.30 = profit_on(test_counts, 0.30))
+
+ggplot(profit_grid, aes(threshold, profit)) +
+  geom_line(color = "#156082", linewidth = 1) +
+  geom_vline(xintercept = break_even, color = "#e97132", linetype = "dashed") +
+  geom_vline(xintercept = chosen_cost, color = "#C41230", linewidth = 0.8) +
+  scale_y_continuous(labels = label_dollar()) +
+  labs(x = "Threshold", y = "Profit on training customers (EXAMPLE costs)",
+       title = "Example profit by threshold, training customers",
+       subtitle = "Dashed line: break-even probability. Red line: threshold chosen on the training customers.") +
+  theme_minimal()
+```
+
+```{r}
+#| label: after-class-bill-only
+#| fig-width: 6.5
+#| fig-height: 6
+bill_only <- glm(Churn ~ MonthlyCharges, data = train, family = binomial)
+test$p_bill <- predict(bill_only, test, type = "response")
+roc_bill <- data.frame(
+  fpr = sapply(thresholds, function(k) mean(test$p_bill[test$Churn == 0] > k)),
+  tpr = sapply(thresholds, function(k) mean(test$p_bill[test$Churn == 1] > k))
+)
+round(c(class_model = auc_test, bill_only = auc_of(test$p_bill, test$Churn)), 3)
+
+ggplot() +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "grey50") +
+  geom_path(data = roc_test, aes(fpr, tpr), color = "#156082", linewidth = 1.1) +
+  geom_path(data = roc_bill, aes(fpr, tpr), color = "grey40", linewidth = 1.1) +
+  geom_vline(xintercept = 0.20, color = "#C41230", linetype = "dashed") +
+  coord_equal() +
+  labs(x = "False-positive rate", y = "True-positive rate",
+       title = "Test customers: class model (blue) and bill only (grey)") +
+  theme_minimal()
+```
