@@ -1,0 +1,624 @@
+---
+title: "Homework 4. Trees, forests and boosting: Naming bumps on steel plates"
+subtitle: "70-467"
+author: "Andrés Castaño Zuluaga"
+date: 2026-11-10
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    toc-location: right
+    embed-resources: true
+    code-fold: false
+    theme: cosmo
+    include-in-header:
+      text: |
+        <style>
+        .hw-q {
+          border-left: 6px solid #C41230;
+          background: #f8f1f2;
+          padding: 0.85rem 1rem;
+          margin: 1.25rem 0 0.35rem 0;
+        }
+        .hw-q p { margin: 0; }
+        .hw-q strong { color: #C41230; }
+        </style>
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+Please read the case first, including the codebook. This is individual work in R.
+
+Data: Steel Plates Faults, UCI Machine Learning Repository, dataset 198, by Buscema, Terzi and Tastle, 2010, doi:10.24432/C5J88N, licensed CC BY 4.0.
+
+Released Tuesday, 10 November 2026. Submit on Canvas by Sunday, 22 November 2026, 11:59 pm Qatar time:
+
+- this notebook (knitted), with the code you add and your written answers,
+- at most six slides, and
+- a video of at most five minutes.
+
+The last section is the video. The notebook, the slides, and the video must use the same model and the same numbers.
+
+Where you see a question in a box, write the answer under **WRITE YOUR ANSWER BELOW** directly under that box. Where you see **WRITE YOUR CODE BELOW**, add code in that chunk. The notebook knits with those chunks empty, but an empty chunk earns no points. Keep seed 467, the split, and the 0.50 threshold. Record your choice of model before you run the test section, and do not change it after you see the test results. Lab 6 next week will help with the code in this notebook.
+
+```{r}
+#| label: setup
+needed <- c("rsample", "rpart", "rpart.plot", "ranger", "xgboost", "yardstick")
+missing <- needed[!vapply(needed, requireNamespace, logical(1), quietly = TRUE)]
+if (length(missing)) stop("Install these packages in the Console: ",
+                          paste(missing, collapse = ", "))
+if (packageVersion("xgboost") < "3.0.0") stop("Update xgboost to version 3 or later.")
+library(rsample)
+library(rpart)
+library(rpart.plot)
+library(ranger)
+library(xgboost)
+library(yardstick)
+options(scipen = 999, width = 80)
+
+# Number of splits in a tree.
+n_splits <- function(tree) sum(tree$frame$var != "<leaf>")
+# Area under the ROC curve, with Yes (a bump) as the event.
+auc <- function(y, p) roc_auc_vec(y, p, event_level = "second")
+# The four counts at the 0.50 threshold. TP: bumps named bumps.
+# FP: other faults named bumps. FN: bumps missed. TN: other faults left as No.
+four <- function(y, p) {
+  yes <- y == "Yes"
+  c(TP = sum(p >= .5 & yes), FP = sum(p >= .5 & !yes),
+    FN = sum(p < .5 & yes), TN = sum(p < .5 & !yes))
+}
+score <- function(y, p) c(AUC = auc(y, p),
+  accuracy = mean((p >= .5) == (y == "Yes")), four(y, p))
+```
+
+# The faults and the predictors
+
+The csv must be the one on Canvas. The first lines stop the notebook if it was changed, for example by saving it from Excel.
+
+```{r}
+#| label: read-data
+csv <- "data/steel_plates_faults.csv"
+if (unname(tools::md5sum(csv)) != "97e60f2112e3f8a59ea24963174a6ea8")
+  stop("This csv differs from the one on Canvas. Download it again.")
+raw <- read.csv(csv)
+labels <- c("Pastry", "Z_Scratch", "K_Scatch", "Stains", "Dirtiness", "Bumps",
+            "Other_Faults")
+stopifnot(nrow(raw) == 1941, ncol(raw) == 34, !anyNA(raw))
+dim(raw)
+colSums(raw[labels])
+table(rowSums(raw[labels]))
+c(missing_cells = sum(is.na(raw)), duplicate_observations = sum(duplicated(raw)))
+# Consecutive runs of the same label, in the order the csv supplies them.
+fault_order <- labels[apply(raw[labels], 1, which.max)]
+r <- rle(fault_order)
+data.frame(label = r$values, faults = r$lengths)
+all(raw$TypeOfSteel_A300 + raw$TypeOfSteel_A400 == 1)
+print(cor(raw$Y_Minimum, raw$Y_Maximum), digits = 12)
+```
+
+<div class="hw-q">
+
+**Question 1.** The models below leave out the seven inspector flags and `TypeOfSteel_A400`. Why must each of them stay out of a model that names bumps after the surface measurements are recorded? Use the flag totals and the steel-type check above.
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+The next chunk defines the outcome `y`. Yes means the inspector labelled the fault a bump. No means the inspector gave it one of the other six labels. No does not mean a plate without faults. Every model uses the list `predictors` set in the chunk.
+
+Two more variables are made here, and neither is a predictor. `row_id` numbers the faults in the order the csv supplies them, so the split can be checked. `setting` is the plate setting from the case, not a plate or batch ID, and it is used only to group faults in the check on unseen settings.
+
+```{r}
+#| label: prepare
+plate_vars <- c("Length_of_Conveyer", "Steel_Plate_Thickness", "TypeOfSteel_A300")
+predictors_all <- setdiff(names(raw), c(labels, "TypeOfSteel_A400"))
+# If you remove plate variables in Question 10, change only this line,
+# then rerun from here through the commit chunk before using the test.
+predictors <- predictors_all
+stopifnot(all(rowSums(raw[labels]) == 1), length(predictors_all) == 26,
+          !any(c(labels, "TypeOfSteel_A400") %in% predictors))
+d <- data.frame(
+  y = factor(ifelse(raw$Bumps == 1, "Yes", "No"), levels = c("No", "Yes")),
+  raw[predictors_all],
+  setting = interaction(raw$Length_of_Conveyer, raw$Steel_Plate_Thickness,
+                        raw$TypeOfSteel_A300, drop = TRUE, sep = "/"),
+  row_id = seq_len(nrow(raw)))
+stopifnot(!any(c("setting", "row_id") %in% predictors))
+length(predictors)
+table(d$y)
+mean(d$y == "Yes")
+length(unique(d$setting))
+```
+
+# Keep comparison and test faults separate
+
+Training faults are 70% of the dataset and test faults are the other 30%. Inside training, 80% are analysis faults and 20% are validation faults. Both splits keep the share of bumps about the same in each part. Every model is grown and tuned on the analysis faults and compared on the validation faults. Only the model you choose is estimated again on all training faults, and it predicts the test faults once. The random split draws faults, not settings, so the same setting can appear in training and in test.
+
+```{r}
+#| label: split
+set.seed(467)
+outer <- initial_split(d, prop = .70, strata = y)
+train <- training(outer)
+test <- testing(outer)
+set.seed(467)
+inner <- initial_split(train, prop = .80, strata = y)
+analysis <- training(inner)
+validation <- testing(inner)
+# Each fault is in exactly one part. These sizes are the same on every computer.
+stopifnot(nrow(train) == 1358, nrow(test) == 583,
+          nrow(analysis) == 1085, nrow(validation) == 273,
+          !any(test$row_id %in% train$row_id),
+          !any(validation$row_id %in% analysis$row_id),
+          setequal(c(train$row_id, test$row_id), d$row_id),
+          setequal(c(analysis$row_id, validation$row_id), train$row_id))
+sapply(list(analysis = analysis, validation = validation, test = test), nrow)
+# Bumps in analysis and validation, the share of No in analysis, and test faults whose setting is also in training.
+sapply(list(analysis = analysis, validation = validation),
+       function(z) sum(z$y == "Yes"))
+mean(analysis$y == "No")
+sum(test$setting %in% train$setting)
+```
+
+```{r}
+#| label: explore
+#| fig-width: 9
+#| fig-height: 4.3
+# Share of bumps by steel type and by thickness, analysis faults only.
+rate_by <- function(g) data.frame(group = names(tapply(analysis$y == "Yes", g, mean)),
+  share_bumps = as.numeric(tapply(analysis$y == "Yes", g, mean)),
+  faults = as.numeric(table(g)))
+rate_by(analysis$TypeOfSteel_A300)
+rate_by(analysis$Steel_Plate_Thickness)
+par(mfrow = c(1, 2))
+boxplot(LogOfAreas ~ y, data = analysis, col = "#156082",
+  xlab = "Inspector's label", ylab = "LogOfAreas (stored scale)", main = "Fault size")
+boxplot(Steel_Plate_Thickness ~ y, data = analysis, col = "#156082",
+  xlab = "Inspector's label", ylab = "Thickness (unit not given)",
+  main = "Plate thickness")
+par(mfrow = c(1, 1))
+```
+
+<div class="hw-q">
+
+**Question 2.** Which pattern above points to the plate setting rather than to the fault itself? Use a share with its count and one of the plots.
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+# Grow and prune a classification tree
+
+A node's Gini impurity is the probability that two faults drawn at random from the node, with replacement, carry different labels. With $p$ the node's share of bumps,
+
+$$G = 2p(1-p).$$
+
+$G$ is 0 when the node holds only one label and largest, 0.5, when half are bumps. A split sends $n_L$ faults to the left child and $n_R$ to the right. Its weighted Gini impurity, and the drop from the parent node, are
+
+$$G_{\text{split}} = \frac{n_L G_L + n_R G_R}{n_L + n_R}, \qquad \text{drop} = G_{\text{parent}} - G_{\text{split}}.$$
+
+The tree takes the split with the largest drop.
+
+Cost-complexity pruning trades classification error against the number of leaves. The complexity parameter (CP) is the penalty for one more leaf in `rpart`, as a share of the root node's error. The code grows a large tree first, with `cp = 0`, and then prunes it back.
+
+Ten-fold cross-validation (CV) inside the analysis faults gives `xerror` and `xstd` for each subtree. `xerror` is the CV classification error divided by the error of the tree with no split. It is not AUC. `xstd` is its standard error. The one-standard-error (one-SE) rule takes the smallest subtree whose `xerror` is no more than the minimum `xerror` plus that minimum's `xstd`. The code below finds both subtrees from the table.
+
+```{r}
+#| label: trees
+tree_controls <- rpart.control(cp = 0, maxdepth = 30, minsplit = 20, minbucket = 7,
+                               xval = 10)
+set.seed(467)
+full <- rpart(y ~ ., data = analysis[, c("y", predictors)], method = "class",
+  parms = list(split = "gini"), control = tree_controls)
+ct <- full$cptable
+low <- which.min(ct[, "xerror"])
+pick <- min(which(ct[, "xerror"] <= ct[low, "xerror"] + ct[low, "xstd"]))
+# A CP just above the table value keeps exactly the subtree on that line.
+tree_min <- prune(full, cp = ct[low, "CP"] * (1 + 1e-9))
+tree_1se <- prune(full, cp = ct[pick, "CP"] * (1 + 1e-9))
+root_error <- min(mean(analysis$y == "Yes"), mean(analysis$y == "No"))
+round(ct, 5)
+tree_summary <- data.frame(rule = c("minimum CV", "one SE"),
+  splits = c(n_splits(tree_min), n_splits(tree_1se)), CP = ct[c(low, pick), "CP"],
+  CV_error = ct[c(low, pick), "xerror"] * root_error)
+tree_summary
+leaves <- ct[, "nsplit"] + 1
+plot(leaves, ct[, "xerror"], type = "b", log = "x", pch = 19,
+  ylim = range(ct[, "xerror"] - ct[, "xstd"], ct[, "xerror"] + ct[, "xstd"]),
+  xlab = "Leaves (log scale)", ylab = "CV error relative to the root")
+arrows(leaves, ct[, "xerror"] - ct[, "xstd"], leaves, ct[, "xerror"] + ct[, "xstd"],
+  angle = 90, code = 3, length = .03, col = "grey50")
+abline(h = ct[low, "xerror"] + ct[low, "xstd"], lty = 2, col = "#C41230")
+```
+
+<div class="hw-q">
+
+**Question 3.** Which pruned tree would you keep at this stage? Use its number of splits and the difference in cross-validated error rates, in percentage points, to defend the choice.
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+```{r}
+#| label: root-split
+# The first split of the full tree. All the predictors are numeric.
+# The sign of ncat says which side of the split value goes left.
+root_var <- full$frame$var[1]
+root_value <- full$splits[1, "index"]
+root_left <- if (full$splits[1, "ncat"] < 0) analysis[[root_var]] < root_value else
+  analysis[[root_var]] >= root_value
+root_children <- data.frame(child = c("left", "right"),
+  n = c(sum(root_left), sum(!root_left)),
+  p = c(mean(analysis$y[root_left] == "Yes"), mean(analysis$y[!root_left] == "Yes")))
+stopifnot(nrow(root_children) == 2, sum(root_children$n) == nrow(analysis),
+  all(root_children$n > 0))
+root_var
+root_value
+root_children
+root_p <- mean(analysis$y == "Yes")
+root_p
+```
+
+```{r}
+#| label: weighted-gini
+# WRITE YOUR CODE BELOW.
+# root_p is the share of bumps at the root. root_children has the count n
+# and the share of bumps p in each child.
+# Print the root Gini, the weighted Gini of the two children, and the drop.
+```
+
+<div class="hw-q">
+
+**Question 4.** How much does the first split reduce weighted Gini impurity? Use the child counts and shares above in your calculation.
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+```{r}
+#| label: tree-rules
+#| fig-width: 10
+#| fig-height: 6
+# Each node shows the predicted label, the probability of Yes and the share of faults.
+# The plot rounds the split values. print() and path.rpart() show them in full.
+rpart.plot(tree_1se, extra = 106, roundint = FALSE, faclen = 0, digits = 4,
+  main = "One-SE tree: probability of a bump")
+print(tree_1se)
+leaf_ids <- as.numeric(rownames(tree_1se$frame)[tree_1se$frame$var == "<leaf>"])
+path.rpart(tree_1se, nodes = leaf_ids)
+```
+
+<div class="hw-q">
+
+**Question 5.** What does one leaf of the one-SE tree tell an inspector? Write its full path as a rule, with its probability of a bump, and say which conditions describe the plate setting and which describe the fault.
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+# Bagging, a random forest and out-of-bag predictions
+
+Bagging grows many trees, each on a bootstrap sample of the analysis faults, and averages their probabilities. A random forest does the same, but each split may try only some of the predictors, drawn at random. `mtry` is the number of predictors a split may try. Bagging uses all $p$ predictors. The default forest uses $\lfloor\sqrt p\rfloor$. Neither can be read as rules the way the pruned tree can.
+
+Each bootstrap sample leaves out some faults. The out-of-bag (OOB) prediction for a fault averages only the trees that did not see it, so those averages estimate how the forest would score a new fault. With $\hat p_i$ the OOB probability of a bump for fault $i$, $y_i = 1$ for a bump and 0 otherwise, and $n$ analysis faults,
+
+$$\text{OOB error} = \frac{1}{n}\sum_{i=1}^{n} \mathbf{1}\big[(\hat p_i \ge 0.50) \ne (y_i = 1)\big], \qquad \text{Brier score} = \frac{1}{n}\sum_{i=1}^{n} (\hat p_i - y_i)^2.$$
+
+The OOB error counts wrong labels at the 0.50 threshold. The Brier score is the mean squared gap between the probability and the label, so a bump given 0.10 adds 0.81 and a bump given 0.45 adds 0.30. For a probability forest, ranger reports the Brier score as `prediction.error`. The code computes the OOB error itself.
+
+```{r}
+#| label: ensembles
+# num.threads = 1 and seed = 467 make a second run on your own computer
+# match the first. A neighbour on another operating system can differ in
+# the third decimal. Compare your bagging with your forest, not with a neighbour.
+p <- length(predictors)
+forest_mtry <- floor(sqrt(p))
+bag <- ranger(y ~ ., data = analysis[, c("y", predictors)], num.trees = 500,
+  mtry = p, probability = TRUE, seed = 467, num.threads = 1)
+forest <- ranger(y ~ ., data = analysis[, c("y", predictors)], num.trees = 500,
+  mtry = forest_mtry, probability = TRUE, importance = "permutation",
+  seed = 467, num.threads = 1)
+oob <- data.frame(model = c("bagging", "forest"), mtry = c(p, forest_mtry),
+  error = c(mean((bag$predictions[, "Yes"] >= .5) != (analysis$y == "Yes")),
+            mean((forest$predictions[, "Yes"] >= .5) != (analysis$y == "Yes"))),
+  Brier = c(bag$prediction.error, forest$prediction.error))
+oob
+```
+
+For Question 6, grow one more forest with an mtry of your choice. Every later comparison uses the default forest, with `forest_mtry`, not this one.
+
+```{r}
+#| label: extra-mtry
+# WRITE YOUR CODE BELOW.
+# Copy the forest's ranger call and change mtry to one whole number from 1 to p
+# that is neither p nor forest_mtry. Print its OOB error and Brier score.
+```
+
+<div class="hw-q">
+
+**Question 6.** Does limiting the predictors each split may try improve the OOB predictions here? Use the OOB error and Brier score for bagging, the default forest, and one additional mtry of your choice.
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+# Which measurements does the forest rely on?
+
+Permutation importance shuffles one predictor across the OOB faults and records how much the OOB Brier score rises. A large rise means the forest's predictions depend on that predictor. Read each bar against what that predictor measures. Some predictors share almost the same information.
+
+```{r}
+#| label: importance
+#| fig-width: 9
+#| fig-height: 5
+importance <- sort(forest$variable.importance, decreasing = TRUE)
+round(importance, 5)
+par(mar = c(4, 12, 2, 1))
+barplot(rev(head(importance, 10)), horiz = TRUE, las = 1, cex.names = .8,
+  col = "#156082", border = NA, xlab = "Increase in OOB Brier score")
+par(mar = c(5.1, 4.1, 4.1, 2.1))
+print(cor(analysis$Y_Minimum, analysis$Y_Maximum), digits = 12)
+```
+
+<div class="hw-q">
+
+**Question 7.** What can the quality team learn from the forest importance plot? Use its three largest values and the correlated Y measurements to explain the limit of that reading.
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+# Boosting and its learning rate
+
+Boosting adds small trees one after another. Each new tree is fit to the residuals left by the trees before it. The learning rate scales how much each new tree adds, and the depth limits the splits along any path. Keep depth 3 and compare rates 0.05 and 0.5 on the same five CV folds inside the analysis faults.
+
+Log-loss grades the probabilities. For one fault it is $-\log \hat p_i$ if the fault is a bump and $-\log(1-\hat p_i)$ if it is not, so a wrong probability near 0 or 1 adds much more than one near one half. Lower is better. `test_logloss_mean` is the mean loss on the held-out CV folds, not on the test faults. `train_logloss_mean` is the loss on the folds used to grow the trees.
+
+```{r}
+#| label: boost-cv
+dm <- xgb.DMatrix(analysis[, predictors], label = as.numeric(analysis$y == "Yes"))
+set.seed(467)
+cv_slow <- xgb.cv(params = list(objective = "binary:logistic", eval_metric = "logloss",
+  learning_rate = .05, max_depth = 3, nthread = 1), data = dm,
+  nrounds = 1000, nfold = 5, verbose = 0)
+set.seed(467)
+cv_fast <- xgb.cv(params = list(objective = "binary:logistic", eval_metric = "logloss",
+  learning_rate = .5, max_depth = 3, nthread = 1), data = dm,
+  nrounds = 1000, nfold = 5, verbose = 0)
+slow <- cv_slow$evaluation_log
+fast <- cv_fast$evaluation_log
+boost_table <- data.frame(rate = c(.05, .5),
+  rounds = c(which.min(slow$test_logloss_mean), which.min(fast$test_logloss_mean)),
+  min_logloss = c(min(slow$test_logloss_mean), min(fast$test_logloss_mean)),
+  loss_1000 = c(slow$test_logloss_mean[1000], fast$test_logloss_mean[1000]),
+  train_1000 = c(slow$train_logloss_mean[1000], fast$train_logloss_mean[1000]))
+boost_table
+plot(slow$iter, slow$test_logloss_mean, type = "l", col = "#156082",
+  ylim = range(slow$test_logloss_mean, fast$test_logloss_mean),
+  xlab = "Rounds", ylab = "Log-loss on held-out folds")
+lines(fast$iter, fast$test_logloss_mean, col = "#C41230")
+legend("topright", c("rate 0.05", "rate 0.5"), col = c("#156082", "#C41230"),
+  lty = 1, bty = "n")
+# The rate with the lower CV minimum, and the number of rounds at that minimum.
+k <- which.min(boost_table$min_logloss)
+boost_rate <- boost_table$rate[k]
+boost_rounds <- boost_table$rounds[k]
+set.seed(467)
+boost <- xgboost(x = analysis[, predictors], y = analysis$y, nrounds = boost_rounds,
+  learning_rate = boost_rate, max_depth = 3, nthreads = 1)
+```
+
+<div class="hw-q">
+
+**Question 8.** Which learning rate and number of rounds would you keep for boosting? Use the two CV minima, and what happens to the faster rate by 1,000 rounds, to defend when to stop.
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+# Compare the candidates on the same validation faults
+
+The area under the ROC curve (AUC), where ROC is the receiver operating characteristic, measures ranking. It is the probability that a randomly drawn bump gets a higher predicted probability than a randomly drawn other fault, with a tie counting as half. 0.5 is no better than random ordering and 1 is a perfect ordering. Yes is the second level of `y`, so `event_level = "second"`. Accuracy and the four counts use the fixed 0.50 threshold. The dataset gives no cost for a missed bump or a false one, so the threshold stays at 0.50.
+
+```{r}
+#| label: validation
+p_validation <- list(
+  tree_min = predict(tree_min, validation, type = "prob")[, "Yes"],
+  tree_1se = predict(tree_1se, validation, type = "prob")[, "Yes"],
+  bagging = predict(bag, validation, num.threads = 1)$predictions[, "Yes"],
+  forest = predict(forest, validation, num.threads = 1)$predictions[, "Yes"],
+  boosting = predict(boost, validation[, predictors]))
+validation_results <- data.frame(model = names(p_validation),
+  t(sapply(p_validation, function(pr) score(validation$y, pr))), row.names = NULL)
+stopifnot(all(rowSums(validation_results[c("TP", "FP", "FN", "TN")]) ==
+              nrow(validation)))
+validation_results
+c(always_No_accuracy = mean(validation$y == "No"))
+dotchart(setNames(validation_results$AUC, validation_results$model),
+  xlim = c(.5, 1), xlab = "Validation AUC", pch = 19, col = "#156082")
+```
+
+<div class="hw-q">
+
+**Question 9.** How much better do the combined models predict than one tree? Use the AUC gap between the best tree and the best combined model, the gap between the two best models, and the counts at 0.50.
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+For Question 10, compare the default forest with a forest that leaves out the three plate variables. The chunk uses the fixed lists `predictors_all` and `no_plate`, so this comparison does not change if you later change `predictors`.
+
+```{r}
+#| label: plate-comparison
+# WRITE YOUR CODE BELOW.
+# Compare two probability forests, one with predictors_all and one with
+# no_plate <- setdiff(predictors_all, plate_vars). For each, use 500 trees,
+# seed 467, one thread and mtry = floor(sqrt(length(its predictor list))).
+# Estimate each on the analysis faults, predict the validation faults,
+# and print score() for each.
+```
+
+<div class="hw-q">
+
+**Question 10.** Would you keep conveyor length, steel type and thickness as predictors? Compare the default forest with a forest without those plate variables on the same validation faults, and defend the predictors you will use from here on.
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+If you drop the plate variables, change `predictors` in the prepare chunk to `setdiff(predictors_all, plate_vars)`. Then rerun everything from there through the commit chunk, so every model uses the same predictors and the same split, before you run the test section.
+
+# Commit before using the test
+
+Record the model, its settings and your reason now, using only the validation table and your answers to Questions 3 to 10.
+
+```{r}
+#| label: commit
+# WRITE YOUR CODE BELOW. Replace both starting values with your model and reason.
+# Starting values are the highest-AUC model so the chunk knits; replace both before you commit.
+# The options are "tree_min", "tree_1se", "bagging", "forest" and "boosting".
+my_model <- validation_results$model[which.max(validation_results$AUC)]
+my_reason <- "Replace this sentence with your reason, in one sentence."
+# The settings that stay locked when the chosen model is estimated again.
+locked_cp <- if (my_model == "tree_min") ct[low, "CP"] else ct[pick, "CP"]
+locked <- list(model = my_model, predictors = predictors, CP = locked_cp,
+  mtry = if (my_model == "bagging") p else forest_mtry,
+  rate = boost_rate, rounds = boost_rounds, depth = 3)
+stopifnot(my_model %in% names(p_validation))
+locked
+my_reason
+```
+
+<div class="hw-q">
+
+**Question 11.** Which model are you committing to before the test? Defend it with the validation evidence and what you give up by losing rules an inspector can check. Record its settings and your reason in the chunk above.
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+# Check unseen settings inside training
+
+Run this after you have recorded your choice, and do not change the choice because of it. In the random split, most test faults share a setting with some training fault. The last number printed by the split chunk counts them. This check scores the models on validation faults whose setting no analysis fault has.
+
+The split below stays inside the training faults and keeps whole settings together, so no setting appears on both sides. It is the grouped split from the trees slides, `group_initial_split`, with the plate setting from the prepare chunk as the group.
+
+For comparison, the code grows and prunes a new one-SE tree on the grouped analysis faults. Your chosen model keeps its locked settings, so boosting keeps the rate and rounds from Question 8.
+
+```{r}
+#| label: grouped-check
+set.seed(467)
+grouped <- group_initial_split(train, group = setting, prop = .80)
+ga <- training(grouped)
+gv <- testing(grouped)
+stopifnot(length(intersect(unique(ga$setting), unique(gv$setting))) == 0,
+  nrow(ga) + nrow(gv) == nrow(train), !any(c(ga$row_id, gv$row_id) %in% test$row_id))
+group_counts <- c(analysis = nrow(ga), validation = nrow(gv),
+  analysis_Yes = sum(ga$y == "Yes"), validation_Yes = sum(gv$y == "Yes"),
+  shared_settings = length(intersect(unique(ga$setting), unique(gv$setting))))
+group_counts
+set.seed(467)
+gfull <- rpart(y ~ ., data = ga[, c("y", predictors)], method = "class",
+  control = tree_controls)
+gct <- gfull$cptable
+glow <- which.min(gct[, "xerror"])
+gpick <- min(which(gct[, "xerror"] <= gct[glow, "xerror"] + gct[glow, "xstd"]))
+gtree <- prune(gfull, cp = gct[gpick, "CP"] * (1 + 1e-9))
+p_group_tree <- predict(gtree, gv, type = "prob")[, "Yes"]
+if (my_model %in% c("tree_min", "tree_1se")) {
+  gi <- if (my_model == "tree_min") glow else gpick
+  gm <- prune(gfull, cp = gct[gi, "CP"] * (1 + 1e-9))
+  p_group <- predict(gm, gv, type = "prob")[, "Yes"]
+} else if (my_model %in% c("bagging", "forest")) {
+  gm <- ranger(y ~ ., data = ga[, c("y", predictors)], num.trees = 500,
+    mtry = locked$mtry, probability = TRUE, seed = 467, num.threads = 1)
+  p_group <- predict(gm, gv, num.threads = 1)$predictions[, "Yes"]
+} else {
+  set.seed(467)
+  gm <- xgboost(x = ga[, predictors], y = ga$y, nrounds = locked$rounds,
+    learning_rate = locked$rate, max_depth = 3, nthreads = 1)
+  p_group <- predict(gm, gv[, predictors])
+}
+group_results <- rbind(one_SE_tree = score(gv$y, p_group_tree),
+  chosen_model = score(gv$y, p_group))
+stopifnot(all(rowSums(group_results[, c("TP", "FP", "FN", "TN")]) == nrow(gv)))
+group_results
+c(tree_random_AUC = auc(validation$y, p_validation$tree_1se),
+  chosen_random_AUC = auc(validation$y, p_validation[[my_model]]))
+```
+
+<div class="hw-q">
+
+**Question 12.** How far would you trust your chosen model on a setting it has not seen? Use the grouped check, the one-SE tree and the original validation result, and say what this check cannot tell you.
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+# Report only the committed model on test faults
+
+Estimate only your chosen model again on all training faults, with its locked settings, and predict the test faults once. A tree keeps the CP from the analysis comparison. Do not score the other models on the test faults.
+
+```{r}
+#| label: test-once
+stopifnot(identical(predictors, locked$predictors), identical(my_model, locked$model))
+tr <- train[, c("y", locked$predictors)]
+if (my_model %in% c("tree_min", "tree_1se")) {
+  final_full <- rpart(y ~ ., data = tr, method = "class",
+    control = rpart.control(cp = 0, maxdepth = 30, minsplit = 20, minbucket = 7,
+                            xval = 0))
+  final_model <- prune(final_full, cp = locked$CP * (1 + 1e-9))
+  p_test <- predict(final_model, test, type = "prob")[, "Yes"]
+} else if (my_model %in% c("bagging", "forest")) {
+  final_model <- ranger(y ~ ., data = tr, num.trees = 500, mtry = locked$mtry,
+    probability = TRUE, seed = 467, num.threads = 1)
+  p_test <- predict(final_model, test, num.threads = 1)$predictions[, "Yes"]
+} else {
+  set.seed(467)
+  final_model <- xgboost(x = train[, locked$predictors], y = train$y,
+    nrounds = locked$rounds, learning_rate = locked$rate, max_depth = 3, nthreads = 1)
+  p_test <- predict(final_model, test[, locked$predictors])
+}
+test_results <- score(test$y, p_test)
+stopifnot(sum(test_results[c("TP", "FP", "FN", "TN")]) == nrow(test))
+my_model
+test_results
+# Predicted labels down the side, inspector labels across the top.
+table(predicted = factor(ifelse(p_test >= .5, "Yes", "No"), levels = c("No", "Yes")),
+  actual = test$y)
+baseline_results <- score(test$y, rep(0, nrow(test)))
+baseline_results
+```
+
+<div class="hw-q">
+
+**Question 13.** What does the test result tell the quality team about your model at the 0.50 threshold? Use its AUC and its four counts, next to naming no fault a bump.
+
+</div>
+
+**WRITE YOUR ANSWER BELOW**
+
+# The video
+
+Please record a video of at most five minutes, with at most six slides. The camera must be on. I need to see you delivering. Please refrain from reading the slides. That is a zero on the slides and the video. AI can assist you in preparing, but it should not be used to deliver the video. If you use AI to make the delivery for you, such as reading from a script, you will receive a zero for the video.
+
+**About AI.** AI is allowed on this homework with caution, as described in the syllabus. Use it to understand the methods and to fix errors in your code, and say at the end of the notebook how you used it. The answers and the recommendation have to be yours, in your own words. If the work reads as if AI wrote the answers, I will do what I said at the start of the semester: I will ask you to come to my office and explain the whole homework to me. Depending on how that conversation goes, the grade on this homework can go as low as 0 and you could be reported for an academic integrity violation.
+
+<div class="hw-q">
+
+**Question 14.** Imagine that you are recording a presentation of your analysis for the plant's quality team. Recommend a model for naming bumps and explain how far to trust it on plate settings it has not seen. Use the answers you have already written.
+
+</div>
+
+Before you record, answer these for yourself. Then use what you decided in the presentation.
+
+1. What decision will the quality team make with your model, and which model do you recommend?
+2. Which variables does your model use? Why did the seven inspector flags, the A400 steel type, and any other variable you left out stay out?
+3. How much better does your model rank the validation faults than the pruned tree? What do the inspectors lose without its rules?
+4. On the test faults, what are your model's AUC and four counts at 0.50, next to naming no fault a bump?
+5. What does the check on unseen settings say about using your model on a new plate setting? What can that check not tell you?
+6. Which graph carries your recommendation? How will you order the presentation so the decision is clear before the methods?
+
+**How you used AI.** If you used AI, say what you used it for, what you changed and what you checked. If you did not, say so.
+
+**WRITE YOUR ANSWER BELOW**
