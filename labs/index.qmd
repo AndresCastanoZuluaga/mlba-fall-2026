@@ -13,34 +13,37 @@ format:
 
 ::: {.sch-chip-row}
 <span class="sch-chip">Default: Wednesday lab</span>
-<span class="sch-chip">Starter + thinking questions</span>
+<span class="sch-chip">Last three labs on Mondays</span>
 <span class="sch-chip sch-chip-soft">Bring laptop</span>
 :::
 
-<p class="page-lead">On lab days, read the problem before you sit down. Bring a laptop to labs. On Wednesdays, laptops are required for R. You will get the problem before class and a starter notebook with parts already working. In the hour we work on approach, interpretation, figures, and what the results mean for the decision. <strong>Wednesday 26 Aug is still a lecture</strong> (linear regression, in R). The first lab is <strong>2 September</strong>. Nothing is posted yet. I will put each lab here before you need it.</p>
+<p class="page-lead">On lab days, read the problem before you sit down. Bring a laptop. You will get the problem before class and a starter notebook with parts already working. In the hour we work on approach, interpretation, figures, and what the results mean for the decision. Lab 6 is <strong>Monday 16 November</strong> (trees, forests and boosting).</p>
 
 ## Pattern
 
 | Pattern | When |
 |---------|------|
 | Default | Lab on **Wednesday** |
+| Last three labs | **Mon 16 Nov** (Lab 6), **Mon 23 Nov** (PCA), **Mon 30 Nov** (clustering) |
 | Exception | Midterm week, 11 Nov (no class), presentation week |
 | Midterm week | No lab (**Wed 7 Oct** = midterm) |
-| Presentation week | No lab (**30 Nov & 2 Dec**) |
+| Presentation day | No lab (**Wed 2 Dec**) |
 
 ## Lab index
 
 | Lab | Meeting | Focus | Status |
 |-----|---------|-------|--------|
-| L1 Regression | **Wed 2 Sep** | Linear regression lab | Not posted yet |
-| L2 Evaluation | Wed 9 Sep | Honest evaluation · leakage habits | Not posted yet |
-| L3 Regularization | Wed 23 Sep | Ridge/lasso in R | Not posted yet |
-| L4 CV / selection | Wed 30 Sep | CV · no leakage across folds | Not posted yet |
-| L5 Logistic | Wed 21 Oct | Logistic in R | Not posted yet |
-| L6 Metrics / cutoffs | Wed 28 Oct | ROC, AUC, **decision cutoffs** | Not posted yet |
-| L7 Trees | Wed 4 Nov | Trees in R | Not posted yet |
-| *(ensembles studio)* | Mon 9 Nov | Live R with concepts (no Wed lab) | Not posted yet |
-| L8 PCA | **Wed 18 Nov** | **PCA lab** (locked) | Not posted yet |
-| L9 Clustering + literacy | Wed 25 Nov | Clustering · short modern-AI talk | Not posted yet |
+| L1 Regression | **Wed 2 Sep** | Linear regression lab | [Case + data + starter](Lab01-Regression/) |
+| L2 Evaluation | **Wed 9 Sep** | Honest evaluation · leakage habits | [Case + data + starter](Lab02-Evaluation/) |
+| L3 Selection | **Mon 21 Sep** | Model selection in R | [Case + data + starter](Lab03-Selection/) |
+| L4 Regularization | **Wed 23 Sep** | Ridge and lasso in R | [Case + data + starter](Lab04-Regularization/) |
+| L5 Logistic | **Wed 28 Oct** | Logistic regression in R | [Case + data](Lab05-Logistic/) |
+| L6 Trees, forests, boosting | **Mon 16 Nov** | Trees, random forests and boosting in R | Not posted yet |
+| PCA lab | **Mon 23 Nov** | PCA in R | Not posted yet |
+| Clustering lab | **Mon 30 Nov** | Clustering in R | Not posted yet |
 
 See [Schedule](../schedule.qmd) for the full calendar.
+
+```{=html}
+<!-- labs-index 2026-09-21a -->
+```

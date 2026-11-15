@@ -16,6 +16,7 @@ format:
 <span class="sch-chip">Mon = concepts</span>
 <span class="sch-chip">Wed = R lab</span>
 <span class="sch-chip">Pair talks most Mondays</span>
+<span class="sch-chip">From 16 Nov, labs are on Mondays</span>
 <span class="sch-chip sch-chip-soft">Notes before · slides after</span>
 :::
 
@@ -25,18 +26,18 @@ format:
 
 | HW | Released | Deadline | Focus |
 |----|----------|----------|--------|
-| HW1 | **2 Sep** | **9 Sep** | Regression + metrics / basic evaluation |
-| HW2 | **21 Sep** | **28 Sep** | Train/test + regularization |
-| HW3 | **21 Oct** | **28 Oct** | Logistic + classification metrics |
-| HW4 | **2 Nov** | **9 Nov** | Trees + boosting + PCA if needed |
+| HW1 | **2 Sep** | **17 Sep** | Regression + metrics / basic evaluation |
+| HW2 | **27 Sep** | **4 Oct** | Train/test + regularization |
+| HW3 | **23 Oct** | **1 Nov** | Logistic regression and classification accuracy |
+| HW4 | **10 Nov** | **22 Nov** | Trees + forests / boosting |
 
 ### Quizzes (paper, ~10–15 min)
 
 | Quiz | Date |
 |------|------|
 | Q1 | **Mon 31 Aug** |
-| Q2 | **Mon 21 Sep** |
-| Q3 | **Wed 21 Oct** |
+| Q2 | **Wed 23 Sep** (end of class) |
+| Q3 | **Mon 26 Oct** (start of class) |
 | Q4 | **Wed 25 Nov** |
 
 ### Exam & project
@@ -45,9 +46,11 @@ format:
 |------|------|
 | Midterm review | **Mon 5 Oct** |
 | **Midterm** | **Wed 7 Oct** (closed notes; weeks 1–5 only) |
-| Project brief published | **Wed 28 Oct** |
-| Project checkpoint | **Wed 18 Nov** (PCA lab day; criteria with brief) |
-| Project presentations | **Mon 30 Nov & Wed 2 Dec** |
+| Project brief | **On Canvas** (one per pair) |
+| Project checkpoint | **Fri 20 Nov, 11:59 pm** (criteria with brief) |
+| Project checkpoint meeting | **Tue 24 Nov, 4–6 pm** (30 minutes per pair) |
+| Project final (notebook and slides) | **Tue 1 Dec, 11:59 pm** |
+| Project presentations | **Wed 2 Dec** (all three pairs) |
 
 <p class="sch-note-line"><strong>No homework/quiz/project dues:</strong> 5–7 Oct (midterm week).</p>
 
@@ -74,88 +77,89 @@ format:
 | Date | Type | Content | Due / out |
 |------|------|---------|-----------|
 | **Mon 7 Sep** | Concepts | Train/test; over/underfit; **leakage (primary)**; pair talks resume | — |
-| **Wed 9 Sep** | Lab | Honest evaluation in R (incl. leakage habits) | **HW1 due** |
+| **Wed 9 Sep** | Lab | Honest evaluation in R (incl. leakage habits) | — |
 
 ::: {.schedule-break}
 **Mon 14 Sep** · **No class**
 :::
 
-### Week 4 — Regularization
+### Week 4 — Model selection & regularization
 
 | Date | Type | Content | Due / out |
 |------|------|---------|-----------|
-| **Wed 16 Sep** | Concepts | Ridge/lasso; complexity | — |
-| **Mon 21 Sep** | Concepts | Shrinkage, λ, pitfalls; pair presentation | **Quiz 2** · **HW2 out** |
-| **Wed 23 Sep** | Lab | Ridge/lasso in R | — |
+| **Wed 16 Sep** | Concepts | Model selection + regularization | — |
+| **Mon 21 Sep** | Lab | Model selection in R (no pair talk) | — |
+| **Wed 23 Sep** | Lab | Regularization in R; **Quiz 2** at end of class | **Quiz 2** |
 
-### Week 5 — Cross-validation & model selection
+### Week 5 — Logistic regression
 
 | Date | Type | Content | Due / out |
 |------|------|---------|-----------|
-| **Mon 28 Sep** | Concepts | k-fold CV; selection vs test; **leakage reinforced**; pair presentation | **HW2 due** |
-| **Wed 30 Sep** | Lab | CV / selection in R (no leakage across folds) | — |
+| **Mon 28 Sep** | Concepts | Logistic; odds; classification decisions; pair presentation | — |
+| **Wed 30 Sep** | Concepts | Logistic discussion (continue from Mon); R lab after fall break | — |
 
 ### Week 6 — Midterm week (no other dues)
 
 | Date | Type | Content | Due / out |
 |------|------|---------|-----------|
-| **Mon 5 Oct** | **Review** | Weeks 1–5; interpret→decide; logistics; Q&A | — |
+| **Mon 5 Oct** | **Review** | Weeks 1–5 (incl. logistic); interpret→decide; logistics; Q&A | — |
 | **Wed 7 Oct** | **MIDTERM** | Closed notes, in class | **Midterm** |
 
 ::: {.schedule-break}
 **11–15 Oct** · **Fall break** · No classes
 :::
 
-### Week 7 — Logistic regression
+### Week 7 — Classification metrics & thresholds
 
 | Date | Type | Content | Due / out |
 |------|------|---------|-----------|
-| **Mon 19 Oct** | Concepts | Logistic; odds; classification decisions; pair presentation | — |
-| **Wed 21 Oct** | Lab | Logistic in R | **Quiz 3** · **HW3 out** |
+| **Mon 19 Oct** | Concepts | ROC, AUC; **cutoffs as decisions** (costs of being wrong); **prediction vs acting**; leakage / decision-time reminder; pair presentation | — |
+| **Wed 21 Oct** | Lab | Metrics / **decision cutoffs** in R | — |
 
-### Week 8 — Classification metrics & thresholds
-
-| Date | Type | Content | Due / out |
-|------|------|---------|-----------|
-| **Mon 26 Oct** | Concepts | ROC, AUC; **cutoffs as decisions** (costs of being wrong); **prediction vs acting**; leakage / decision-time reminder; pair presentation | — |
-| **Wed 28 Oct** | Lab | Metrics / **decision cutoffs** in R | **HW3 due** · **Project brief** |
-
-### Week 9 — Decision trees
+### Week 8 — Decision trees
 
 | Date | Type | Content | Due / out |
 |------|------|---------|-----------|
-| **Mon 2 Nov** | Concepts | Trees; pair presentation | **HW4 out** |
-| **Wed 4 Nov** | Lab | Trees in R | — |
+| **Mon 26 Oct** | Concepts | Trees; pair presentation | — |
+| **Wed 28 Oct** | Lab | Trees in R | — |
 
-### Week 10 — Random forests & boosting
+### Week 9 — Random forests & boosting
 
 | Date | Type | Content | Due / out |
 |------|------|---------|-----------|
-| **Mon 9 Nov** | Concepts + studio | Forests + boosting; **live R: start one ensemble** (no Wed lab this week); pair presentation | **HW4 due** |
+| **Mon 2 Nov** | Concepts | Forests + boosting; pair presentation | — |
+| **Wed 4 Nov** | Lab | Forests / boosting in R | — |
+
+### Week 10 — Forests and boosting
+
+| Date | Type | Content | Due / out |
+|------|------|---------|-----------|
+| **Mon 9 Nov** | Concepts | Trees deck continued: forests and boosting | **HW4 out Tue 10 Nov** |
 | **Wed 11 Nov** | — | **No class** | — |
 
-### Week 11 — PCA
+### Week 11 — Boosting wrap-up + PCA concepts
 
 | Date | Type | Content | Due / out |
 |------|------|---------|-----------|
-| **Mon 16 Nov** | Concepts | PCA for business / high-dim data | — |
-| **Wed 18 Nov** | Lab | **PCA lab** in R | **Project checkpoint** |
+| **Mon 16 Nov** | Concepts + lab | Finish boosting; start **Lab 6** (trees, forests, boosting); pair presentation: PCA (Altynay and Aljori) | **HW4 due Sun 22 Nov** |
+| **Wed 18 Nov** | Concepts | PCA concepts | — |
+| **Fri 20 Nov** | — | — | **Project checkpoint due, 11:59 pm** |
 
-### Week 12 — Clustering + short modern-AI talk
-
-| Date | Type | Content | Due / out |
-|------|------|---------|-----------|
-| **Mon 23 Nov** | Concepts | Clustering / segmentation; pair presentation | — |
-| **Wed 25 Nov** | Lab + module | Clustering lab; **short** modern-AI talk (neural nets + chatbots — literacy only) | **Quiz 4** |
-
-### Week 13 — Project presentations
+### Week 12 — PCA lab + clustering concepts
 
 | Date | Type | Content | Due / out |
 |------|------|---------|-----------|
-| **Mon 30 Nov** | Presentations | Individual project presentations + Q&A | Project |
-| **Wed 2 Dec** | Presentations | Remaining presentations + Q&A | Project |
+| **Mon 23 Nov** | Lab | PCA lab in R | **Checkpoint meeting Tue 24 Nov, 4–6 pm** |
+| **Wed 25 Nov** | Concepts | Clustering / segmentation | **Quiz 4** |
 
-<p class="schedule-footnote">Attendance expected both days (see syllabus for missed-session penalty on presentation grade).</p>
+### Week 13 — Clustering lab + project presentations
+
+| Date | Type | Content | Due / out |
+|------|------|---------|-----------|
+| **Mon 30 Nov** | Lab | Clustering lab in R, plus about 20 minutes for questions on the project | **Project final due Tue 1 Dec, 11:59 pm** |
+| **Wed 2 Dec** | Presentations | Pair project presentations + individual Q&A | Project |
+
+<p class="schedule-footnote">Attendance expected on Wed 2 Dec. If you miss the session, you get a zero on the presentation and Q&amp;A (40% of the project grade).</p>
 
 ---
 
@@ -165,18 +169,22 @@ format:
 |------|--------|
 | 31 Aug | Quiz 1 |
 | 2 Sep | HW1 released |
-| 9 Sep | HW1 deadline |
-| 21 Sep | Quiz 2 · HW2 released |
-| 28 Sep | HW2 deadline |
+| 17 Sep | HW1 deadline |
+| 27 Sep | HW2 released |
+| 23 Sep | Quiz 2 (end of class) |
+| 4 Oct | HW2 deadline |
 | 5 Oct | Midterm review |
 | 7 Oct | **Midterm** |
-| 21 Oct | Quiz 3 · HW3 released |
-| 28 Oct | HW3 deadline · Project brief published |
-| 2 Nov | HW4 released |
-| 9 Nov | HW4 deadline |
-| 18 Nov | Project checkpoint (PCA lab day) |
+| 23 Oct | HW3 released |
+| 26 Oct | Quiz 3 (start of class) |
+| 1 Nov | HW3 deadline |
+| 10 Nov | HW4 released |
+| 20 Nov | Project checkpoint (11:59 pm) |
+| 22 Nov | HW4 deadline (11:59 pm) |
+| 24 Nov | Project checkpoint meeting (4–6 pm) |
 | 25 Nov | Quiz 4 |
-| 30 Nov–2 Dec | Project presentations |
+| 1 Dec | Project final: notebook and slides (11:59 pm) |
+| 2 Dec | Project presentations |
 
 ```{=html}
 <script>

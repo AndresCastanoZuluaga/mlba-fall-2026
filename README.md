@@ -6,6 +6,8 @@ Student materials site. CMU-Q. Instructor: Andrés Castaño Zuluaga.
 
 Submissions and grades are on Canvas, not here.
 
+**RStudio:** File → Open Project → `site.Rproj`. Then Render a `.qmd` from there. If you Render from Academic or another course folder, Quarto will look for the file in the wrong place.
+
 ```bash
 cd site
 quarto render

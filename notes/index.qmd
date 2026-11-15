@@ -17,7 +17,7 @@ format:
 <span class="sch-chip sch-chip-soft">Slides PDF after class</span>
 :::
 
-<p class="page-lead">Lecture notes will appear here <strong>before class</strong>. They are notebooks: the ideas, short problems, and R you can run. Slides are what we use in the room; notes are what you keep. Nothing is posted yet. I will put each week up before you need it.</p>
+<p class="page-lead">Lecture notes are notebooks: the ideas, short problems, and R you can run. Slides are what we use in the room; notes are what you keep. I will put each week up as we go.</p>
 
 ## How to use notes
 
@@ -31,7 +31,7 @@ format:
 
 | Week | Topic (from schedule) | Status | Link |
 |------|----------------------|--------|------|
-| 01 | Launch + linear regression | Not yet built | — |
+| 01 | Launch + linear regression | Posted | [Week 1](week01-linear-regression.qmd) |
 | 02 | *(Lab week — see Labs; notes track evaluation path)* | Not yet built | — |
 | 03 | Train/test & generalization · **leakage primary** | Not yet built | — |
 | 04 | Regularization | Not yet built | — |
@@ -42,7 +42,7 @@ format:
 | 09 | Decision trees | Not yet built | — |
 | 10 | Random forests & boosting | Not yet built | — |
 | 11 | PCA | Not yet built | — |
-| 12 | Clustering · short modern-AI literacy | Not yet built | — |
+| 12 | Clustering | Not yet built | — |
 | 13 | Project presentations | n/a | — |
 
 Full meeting dates: [Schedule](../schedule.qmd).

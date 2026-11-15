@@ -26,7 +26,7 @@ format:
 
 Organizations that turn data into good decisions need people who can do more than just run scripts in a given software or use AI to do the job for them. They need analysts who can start from a business problem, choose an appropriate method, evaluate a model honestly, interpret the result carefully, and recommend an action, including what the model cannot do.
 
-This course introduces the core machine learning tools used in modern business analytics, with applications from marketing, finance, operations, and related areas. You will implement methods in R, work from real-world datasets, and practice professional communication through slide decks, recorded presentations, and an individual project presented in class at the end of the course. The course prepares you for consulting and analytics-oriented roles in finance, operations, marketing, and similar fields.
+This course introduces the core machine learning tools used in modern business analytics, with applications from marketing, finance, operations, and related areas. You will implement methods in R, work from real-world datasets, and practice professional communication through slide decks, recorded presentations, and a project done in pairs and presented in class at the end of the course. The course prepares you for consulting and analytics-oriented roles in finance, operations, marketing, and similar fields.
 
 Because generative AI is now part of how technical work gets done, you will also learn how to use it to improve your understanding of the methods and their software implementation, while remaining responsible for verification, judgment, and academic integrity.
 
@@ -74,9 +74,9 @@ Important note about leaving the room during a class session: If you need to lea
 
 This is a small class. Coming ready to discuss, engaging with the pair presentations, and working in the labs all matter. By mid-semester, I will share your participation and attendance standing so you have time to adjust in the second part of the term.
 
-**Project presentation week (30 November and 2 December):**
+**Project presentations (Wednesday 2 December):**
 
-Attendance is expected both days. Missing a presentation session carries a 15-point penalty on the presentation component of the project grade. Plan to attend both days, not only your own slot. The final wording of the penalty will be in the project guidelines.
+Attendance is expected on Wed 2 Dec. If you miss the presentation session, you get a zero on the presentation and Q&A component, which is 40% of the project grade. Plan to stay for the whole session, not only your own slot.
 
 ### Absence Policy
 
@@ -103,7 +103,7 @@ The final cumulative score for this class is computed using the categories below
 | Quizzes (4) | 16% | 4% each. In class, designed for 10–15 minutes. |
 | Pair presentations | 10% | About twice in the semester. 8–10 minutes and a short deck, introducing a topic in the context of a business problem. |
 | Midterm exam | 22% | Wednesday 7 October, in class, closed notes. Weeks 1–5 only. Monday 5 October is review. |
-| Final project | 20% | Individual. Brief 28 October. Checkpoint 18 November. Presentations 30 November and 2 December. No final exam. |
+| Final project | 20% | In pairs. Brief, codebook and data on Canvas. Checkpoint 20 November. Final 1 December. Presentations 2 December. No final exam. |
 | Attendance and participation | 8% | Come ready, contribute, and work in the labs. |
 
 ### Assessment Descriptions
@@ -118,7 +118,7 @@ You may study with classmates. The write-up, the code you submit, and the recomm
 
 **The midterm** will be in person during class on Wednesday 7 October (75 minutes). Closed notes. No electronic devices. The exam covers weeks 1–5 only: linear regression, metrics, train/test and generalization, regularization, and cross-validation/model selection.
 
-**Final project.** The final project is an individual project. It's based on a business problem coming from a real-world dataset. The student will then build models in R to better understand the problem, present a recommendation, and discuss the decisions in an in-class presentation at the end of the semester. I will publish the project brief (including data and problem options once they are ready) by 28 October. I will share exact instructions for what's expected at checkpoint 1 and during the final presentations later in the semester. Presentations are 30 November and 2 December.
+**Final project.** The final project is done in pairs. It's based on a business problem coming from a real-world dataset. Each pair will then build models in R to better understand the problem, present a recommendation, and discuss the decisions in an in-class presentation at the end of the semester. Each pair's brief, codebook and data are on Canvas. The brief says what you hand in at the checkpoint (20 November) and the final (1 December), and how the presentation is graded. Presentations are on 2 December.
 
 **Attendance and participation** are part of the grading and will be combined. Please come to each class ready to participate in the discussion of the material or bring questions that could benefit the rest of the group. By mid-semester, I will share your participation and attendance grades, so you have time to adjust appropriately during the second part of the semester, if needed.
 

@@ -46,3 +46,19 @@ format:
 
 [Open in Chrome](70-467_MLBA_2026-09-16_ModelSelectionAndRegularization.html) · [PDF](70-467_MLBA_2026-09-16_ModelSelectionAndRegularization.pdf)
 :::
+
+## Logistic regression
+
+::: {.sch-week-card}
+### Mon 19 Oct · Logistic regression
+
+[Open in Chrome](70-467_MLBA_2026-10-19_LogisticRegression.html) · [PDF](70-467_MLBA_2026-10-19_LogisticRegression.pdf)
+:::
+
+## Tree-based methods
+
+::: {.sch-week-card}
+### Thu 29 Oct · Tree-based methods
+
+[Open in Chrome](70-467_MLBA_2026-10-29_TreeBasedMethods.html) · [PDF](70-467_MLBA_2026-10-29_TreeBasedMethods.pdf)
+:::

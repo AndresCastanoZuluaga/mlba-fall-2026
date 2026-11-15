@@ -1,6 +1,39 @@
 project:
   type: website
   output-dir: _site
+  execute-dir: file
+  render:
+    - "*.qmd"
+    - "!labs/Lab01-Regression/lab01-corolla-problem-v2.qmd"
+    - "!labs/Lab01-Regression/lab01-corolla-v2.qmd"
+    - "!labs/Lab01-Regression/_instructor/"
+    - "!notes/week01-linear-regression.qmd"
+    - "!hw/HW01-Garment/hw1-garment-problem.qmd"
+    - "!hw/HW01-Garment/hw1-garment.qmd"
+    - "!hw/HW01-Garment/_instructor/"
+    - "!hw/HW02-Airfares/hw2-airfares-problem.qmd"
+    - "!hw/HW02-Airfares/hw2-airfares.qmd"
+    - "!hw/HW02-Airfares/_instructor/"
+    - "!hw/HW03-Taxi/hw3-taxi-problem.qmd"
+    - "!hw/HW03-Taxi/hw3-taxi.qmd"
+    - "!hw/HW03-Taxi/_instructor/"
+    - "!labs/Lab02-Evaluation/lab02-ames-problem.qmd"
+    - "!labs/Lab02-Evaluation/lab02-ames.qmd"
+    - "!labs/Lab02-Evaluation/_instructor/"
+    - "!labs/Lab02-Evaluation/_drafts/"
+    - "!labs/Lab03-Selection/lab03-credit-problem.qmd"
+    - "!labs/Lab03-Selection/lab03-credit.qmd"
+    - "!labs/Lab03-Selection/_instructor/"
+    - "!labs/Lab04-Regularization/lab04-browser-problem.qmd"
+    - "!labs/Lab04-Regularization/lab04-browser.qmd"
+    - "!labs/Lab04-Regularization/_instructor/"
+    - "!labs/Lab05-Logistic/lab05-churn-problem.qmd"
+    - "!labs/Lab05-Logistic/lab05-churn.qmd"
+    - "!labs/Lab05-Logistic/_instructor/"
+    - "!labs/Lab06-Trees/"
+    - "!hw/HW04-Steel/hw4-steel-problem.qmd"
+    - "!hw/HW04-Steel/hw4-steel.qmd"
+    - "!hw/HW04-Steel/_instructor/"
 
 website:
   title: "70-467 MLBA Fall 2026"
@@ -22,14 +55,34 @@ website:
         menu:
           - href: notes/index.qmd
             text: Overview
+          - href: notes/week01-linear-regression.qmd
+            text: Week 1
       - text: Labs
         menu:
           - href: labs/index.qmd
             text: Overview
+          - href: labs/Lab01-Regression/index.qmd
+            text: Lab 1
+          - href: labs/Lab02-Evaluation/index.qmd
+            text: Lab 2
+          - href: labs/Lab03-Selection/index.qmd
+            text: Lab 3
+          - href: labs/Lab04-Regularization/index.qmd
+            text: Lab 4
+          - href: labs/Lab05-Logistic/index.qmd
+            text: Lab 5
       - text: Homework
         menu:
           - href: hw/index.qmd
             text: Overview
+          - href: hw/HW01-Garment/index.qmd
+            text: Homework 1
+          - href: hw/HW02-Airfares/index.qmd
+            text: Homework 2
+          - href: hw/HW03-Taxi/index.qmd
+            text: Homework 3
+          - href: hw/HW04-Steel/index.qmd
+            text: Homework 4
       - href: project/index.qmd
         text: Project
   page-footer: |
