@@ -1,0 +1,943 @@
+---
+title: "Lab 6: Predicting busy bike-rental hours in Seoul"
+subtitle: "70-467 · Monday 16 November"
+author: "Andrés Castaño Zuluaga"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    toc-location: right
+    body-classes: "mlba-page"
+    code-fold: false
+    code-tools: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+<!--
+Student starter for the hour. Code is filled on purpose. Run each chunk
+and read the comments. We will talk through only some of the Question
+and Discuss prompts in the room. Every model is estimated on the
+analysis hours. The five models for High are compared once on the
+validation hours. You choose one model before the test hours are used,
+and you report only that model on the test hours.
+-->
+
+# Introduction to the Business Problem
+
+Ttareungyi, called Seoul Bike in English, is the public bike-share
+system of Seoul. A rider takes a bike at one rental station and returns
+it at any station in the city. The city wants bikes to be available in
+the hours when people ride. For that it needs a prediction for each
+hour: will the hour be High, meaning at least 500 bikes rented in that
+hour? The people who plan the bikes have to be able to follow that
+prediction.
+
+The dataset has one observation per hour from 1 December 2017 to
+30 November 2018, 8,760 hours. The system was closed in some hours, and
+we keep only the open hours. For each hour we know the hour of the day,
+the weather in that hour (temperature, humidity, wind speed,
+visibility, solar radiation, rainfall and snowfall), the season, and
+whether the day was a holiday. The outcome is `High`. The number of
+bikes rented, `count`, is the outcome in one short section on
+predicting the count. It is never used to predict `High`.
+
+The question for this lab: a pruned tree gives
+rules that a planner can read. Bagging, a random forest and boosting
+combine hundreds of trees, and nobody can read those as rules. How much
+better are the combined models on hours they have not seen, and is that
+worth giving up the readable rules?
+
+You estimate every model in this notebook. Nothing is loaded from a
+saved file. Keep the case PDF and the codebook open while you run code.
+
+**Before you run anything.** Suppose two models make about the same
+number of mistakes on hours they have not seen. One is a tree that a
+planner can read as a list of rules. The other averages 500 trees and
+gives only a probability for each hour. Which one would you give the
+planners, and what would you want to see before you decide? Talk this
+through with the person next to you. We come back to it in section 7.
+
+# Roadmap
+
+1. **Prepare the bike data and keep comparison hours separate.** Keep
+   the open hours, define High, and split the hours into analysis,
+   validation and test hours.
+2. **Grow, read and prune a tree.** A large tree on the analysis hours,
+   the complexity table, and two pruned trees. Follow two 8 am hours
+   down the tree.
+3. **Compare bagging with a random forest.** 500 trees each. Bagging
+   lets every split use all ten predictors; the forest lets each split
+   use three. Out-of-bag error.
+4. **Read variable importance.** Which predictors the forest relies on.
+5. **Estimate boosting and compare learning rates.** Cross-validated
+   log-loss for two learning rates, then one boosted model.
+6. **Predict the rental count.** A tree, a forest and boosting for the
+   number of bikes rented, against a simple average.
+7. **Compare class models and commit.** Five models for High on the
+   same validation hours. You choose one and write down why.
+8. **Report the chosen model on test hours.** Once, for the model you
+   chose.
+9. **After class: extra questions.** More values of mtry, learning rate
+   and depth, the count models, other splits, and importance.
+
+# 1. Prepare the bike data and keep comparison hours separate
+
+```{r}
+#| label: setup
+# rsample: initial_split() makes the stratified splits.
+# rpart: classification and regression trees. rpart.plot: tree plots.
+# ranger: bagging and random forests.
+# xgboost: boosting. This lab needs xgboost version 3 or later.
+# yardstick: roc_auc_vec() computes the area under the ROC curve.
+# This chunk stops if a package is missing. It does not install anything.
+needed <- c("rsample", "rpart", "rpart.plot", "ranger", "xgboost", "yardstick")
+missing <- needed[!vapply(needed, requireNamespace, logical(1), quietly = TRUE)]
+if (length(missing) > 0) {
+  stop(
+    "Install the missing packages in the Console, then render again:\n",
+    "install.packages(c(",
+    paste0('"', missing, '"', collapse = ", "), "))"
+  )
+}
+if (packageVersion("xgboost") < "3.0.0") {
+  stop("This lab needs xgboost version 3 or later. You have version ",
+       packageVersion("xgboost"), ".\n",
+       'Update it in the Console: install.packages("xgboost")')
+}
+
+library(rsample)
+library(rpart)
+library(rpart.plot)
+library(ranger)
+library(xgboost)
+library(yardstick)
+
+options(scipen = 999)
+```
+
+```{r}
+#| label: load-data
+# The file is in latin1 encoding because of the degree sign in two
+# variable names.
+raw <- read.csv("data/SeoulBikeData.csv", fileEncoding = "latin1",
+                check.names = FALSE)
+names(raw)
+
+# Why? The original names have spaces, brackets and symbols. This line
+# turns each run of those characters into one underscore, so that
+# "Temperature(°C)" becomes Temperature_C.
+names(raw) <- gsub("^_|_$", "", gsub("[^A-Za-z0-9]+", "_", names(raw)))
+names(raw)
+dim(raw)
+sum(is.na(raw))
+
+# Functioning_Day is No when the system was closed.
+table(raw$Functioning_Day)
+tapply(raw$Rented_Bike_Count, raw$Functioning_Day, max)
+
+# Question: How many hours was the system closed? What was the largest
+# number of rentals in a closed hour? Why do we drop those hours
+# instead of predicting them?
+```
+
+```{r}
+#| label: define-high
+bikes <- subset(raw, Functioning_Day == "Yes")
+
+# The outcome. Low is the first level and High the second, so every
+# probability in this lab is a probability of High.
+bikes$High <- factor(ifelse(bikes$Rented_Bike_Count >= 500, "High", "Low"),
+                     levels = c("Low", "High"))
+bikes$Seasons <- factor(bikes$Seasons,
+                        levels = c("Winter", "Spring", "Summer", "Autumn"))
+bikes$Holiday <- factor(bikes$Holiday)
+
+# The ten predictors, in this order, for every model in the lab.
+# Not predictors: the date, the dew point temperature, Functioning_Day,
+# and the count itself. The count defines High, so using it to predict
+# High would be using the answer.
+predictors <- c("Hour", "Temperature_C", "Humidity", "Wind_speed_m_s",
+                "Visibility_10m", "Solar_Radiation_MJ_m2", "Rainfall_mm",
+                "Snowfall_cm", "Seasons", "Holiday")
+bikes <- data.frame(count = bikes$Rented_Bike_Count, High = bikes$High,
+                    bikes[, predictors], date = bikes$Date)
+str(bikes)
+table(bikes$High)
+summary(bikes$count)
+length(unique(bikes$date))
+
+# Question: How many open hours are there, and how many of them are
+# High?
+#
+# Interpret: Hour is a number from 0 to 23 here. With two splits, a
+# tree can still pick out a range of hours, for example 7 to 9.
+```
+
+We use the hours in three groups, each for one job.
+
+```
+open hours
+├── training hours (70%)
+│   ├── analysis hours (80% of training)    estimate every model;
+│   │                                       cross-validation and
+│   │                                       out-of-bag error stay here
+│   └── validation hours (20% of training)  compare the five models
+│                                           for High, once each
+└── test hours (30%)                        report the one model you
+                                            chose, once
+```
+
+The slides in class already showed results on these same test hours,
+so today's test report is not a first look at them. It is still the
+only number from the test hours that you report.
+
+```{r}
+#| label: split
+# Why stratify? strata = High keeps the share of High hours almost the
+# same in each group. The seed is reset right before each split, so
+# everyone gets the same hours in each group.
+set.seed(467)
+outer_split <- initial_split(bikes, prop = 0.70, strata = High)
+train <- training(outer_split)
+test <- testing(outer_split)
+
+set.seed(467)
+inner_split <- initial_split(train, prop = 0.80, strata = High)
+analysis <- training(inner_split)
+validation <- testing(inner_split)
+
+groups <- list(analysis = analysis, validation = validation, test = test)
+sapply(groups, nrow)
+round(sapply(groups, function(d) mean(d$High == "High")), 4)
+
+# The split draws hours, not days. Count the dates that appear in both
+# the training hours and the test hours.
+length(unique(test$date))
+length(intersect(unique(train$date), unique(test$date)))
+
+# Benchmark: predict High for every hour.
+mean(analysis$High == "High")
+
+# Question: Predicting High for every analysis hour is right for what
+# share of them? Keep that number. It is the benchmark for accuracy.
+#
+# Discuss: Most test dates also appear in the training hours. If the
+# city wants a prediction for next week, why could this split look
+# better than that prediction will be?
+```
+
+# 2. Grow, read and prune a tree
+
+A classification tree splits the hours again and again on one
+predictor at a time. Each final group is a leaf. The leaf predicts the
+share of its analysis hours that were High: that is the tree's
+probability of High.
+
+We first grow a large tree with no penalty for size (cp = 0). The
+complexity parameter (CP) is how much a split must reduce the error to
+be kept. rpart also runs ten-fold cross-validation (CV) inside the
+analysis hours: it estimates the tree on nine tenths and checks the
+error on the last tenth, ten times.
+
+```{r}
+#| label: tree-grow
+#| fig-width: 10
+#| fig-height: 3.6
+tree_controls <- rpart.control(cp = 0, maxdepth = 30, minsplit = 20,
+                               minbucket = 7, xval = 10)
+set.seed(467)
+tree_full <- rpart(High ~ ., data = analysis[, c("High", predictors)],
+                   method = "class", control = tree_controls)
+
+n_splits <- function(fit) sum(fit$frame$var != "<leaf>")
+n_splits(tree_full)
+
+# Only the shape, without labels.
+plot(tree_full, uniform = TRUE, compress = TRUE, margin = 0.01,
+     main = paste("Full tree on the analysis hours:", n_splits(tree_full), "splits"))
+
+# Question: How many splits does the full tree have? Could a planner
+# use it as a list of rules?
+```
+
+```{r}
+#| label: cp-table
+cp_table <- tree_full$cptable
+round(cp_table, 5)
+
+# Interpret: Each line of the table is one subtree of the full tree.
+# nsplit: its number of splits. rel error: its error on the analysis
+# hours. xerror: its cross-validated error. xstd: the standard error of
+# xerror. Both errors are relative to the root, the tree with no split,
+# which predicts High for every hour.
+#
+# Question: As nsplit grows, rel error keeps falling. Does xerror keep
+# falling too?
+```
+
+Two ways to choose a subtree from the table. The **minimum-CV** tree
+has the lowest xerror. The **one-standard-error (one-SE)** tree is the
+smallest subtree whose xerror is within one standard error of that
+minimum. Both are computed from the table, as in class.
+
+```{r}
+#| label: prune
+low <- which.min(cp_table[, "xerror"])
+threshold_1se <- cp_table[low, "xerror"] + cp_table[low, "xstd"]
+pick <- min(which(cp_table[, "xerror"] <= threshold_1se))
+
+# prune() keeps the splits whose CP is above the value we give it.
+# Multiplying by a number just above 1 guards against rounding, so we
+# get exactly the subtree on that line of the table.
+tree_min <- prune(tree_full, cp = cp_table[low, "CP"] * (1 + 1e-9))
+tree_1se <- prune(tree_full, cp = cp_table[pick, "CP"] * (1 + 1e-9))
+
+cp_table[c(low, pick), ]
+c(full = n_splits(tree_full), min_cv = n_splits(tree_min),
+  one_se = n_splits(tree_1se))
+
+# xerror is relative to the root. Times the root error, it is a share
+# of analysis hours predicted wrong.
+root_error <- mean(analysis$High == "Low")
+round(c(min_cv = cp_table[low, "xerror"], one_se = cp_table[pick, "xerror"]) *
+        root_error, 4)
+
+# Question: How many splits do the two pruned trees have? How far apart
+# are their cross-validated error rates, in percentage points?
+```
+
+```{r}
+#| label: cv-error-plot
+#| fig-width: 8
+#| fig-height: 4.5
+leaves <- cp_table[, "nsplit"] + 1
+cv_error <- cp_table[, "xerror"]
+cv_se <- cp_table[, "xstd"]
+# The subtrees with 1 and 2 leaves have much larger errors (see the
+# table). They sit above the top of this plot.
+plot(leaves, cv_error, log = "x", type = "b", pch = 19, col = "#156082",
+     ylim = c(min(cv_error - cv_se), 0.35),
+     xlab = "Leaves in the subtree (log scale)",
+     ylab = "Cross-validated error, relative to the root",
+     main = "Ten-fold cross-validated error of each subtree")
+arrows(leaves, cv_error - cv_se, leaves, cv_error + cv_se,
+       angle = 90, code = 3, length = 0.02, col = "grey50")
+abline(h = threshold_1se, lty = 2, col = "#C41230")
+points(leaves[c(low, pick)], cv_error[c(low, pick)], pch = 1, cex = 2.2,
+       col = "#C41230", lwd = 2)
+
+# Interpret: The dashed line is the minimum xerror plus one standard
+# error. The circles are the minimum-CV subtree and the one-SE subtree.
+#
+# Question: To the right of the one-SE tree, how much does the error
+# fall as the tree grows? Is that fall larger than the bars?
+```
+
+```{r}
+#| label: tree-plot
+#| fig-width: 11
+#| fig-height: 7
+#| column: page
+# Each box: the predicted class, the probability of High, and the
+# percent of analysis hours that reach that box. Left is yes.
+rpart.plot(tree_1se, extra = 106, roundint = FALSE, faclen = 0,
+           main = paste("One-SE tree:", n_splits(tree_1se), "splits"))
+
+# Question: What is the first split? Which predictors appear in the
+# first two levels of the tree?
+```
+
+Now follow two real hours down the tree. Both are 8 am hours from the
+analysis hours, one in summer and one in winter.
+
+```{r}
+#| label: tree-path
+eight_am <- analysis[analysis$Hour == 8, ]
+two_hours <- rbind(eight_am[eight_am$Seasons == "Summer", ][1, ],
+                   eight_am[eight_am$Seasons == "Winter", ][1, ])
+two_hours[, c("date", "count", "High", "Temperature_C", "Humidity",
+              "Rainfall_mm", "Seasons")]
+
+# The probability of High from the tree, and the leaf (nn) each hour
+# reaches.
+leaf <- rpart.predict(tree_1se, two_hours, nn = TRUE)
+leaf
+# The conditions on the way to each leaf.
+path.rpart(tree_1se, nodes = leaf$nn)
+
+# Question: Write the summer hour's path as one rule a planner could
+# read: "If ..., the probability of High is ...".
+#
+# Question: Was the winter hour High? Does the tree predict that it
+# was? What does the tree not know about that hour?
+```
+
+The CP table measures error: the share of hours on the wrong side of
+the 0.50 threshold. In section 7 we also compare models by the area
+under the receiver operating characteristic (ROC) curve, the AUC, as in
+Lab 5. The AUC uses the probabilities: it is the probability that a
+random High hour gets a higher probability of High than a random Low
+hour.
+
+```{r}
+#| label: tree-probabilities
+# Every hour in a leaf gets the same probability. Count the different
+# probabilities each tree gives to the analysis hours.
+c(min_cv = length(unique(predict(tree_min, type = "prob")[, "High"])),
+  one_se = length(unique(predict(tree_1se, type = "prob")[, "High"])))
+
+# Question: Which tree can put the hours in a finer order from most to
+# least likely High? Before section 7, which tree do you expect to have
+# the higher AUC, and which the higher accuracy?
+```
+
+# 3. Compare bagging with a random forest
+
+One tree changes a lot when the hours change a little. Bagging grows
+many trees, each on a bootstrap sample of the analysis hours, and
+averages their probabilities. A random forest does the same, and at
+each split it also lets the tree choose only among a random subset of
+the predictors. `mtry` is the size of that subset: 10 means all ten
+predictors (bagging), and 3 means three of them, drawn again at every
+split (the forest).
+
+```{r}
+#| label: bootstrap
+# Why? A bootstrap sample draws as many hours as the analysis data has,
+# with replacement. Some hours are drawn more than once and some are
+# not drawn at all.
+set.seed(467)
+boot <- sample(nrow(analysis), replace = TRUE)
+mean(!(seq_len(nrow(analysis)) %in% boot))
+
+# Question: What share of the analysis hours did this one bootstrap
+# sample leave out?
+#
+# Interpret: For each tree, the hours its bootstrap sample left out are
+# its out-of-bag (OOB) hours. Each analysis hour is out of bag for
+# about that share of the 500 trees. Averaging only those trees gives
+# that hour an OOB prediction: a prediction from trees that never saw it.
+```
+
+```{r}
+#| label: forests
+# probability = TRUE: each forest predicts a probability of High.
+# num.threads = 1 and seed = 467 make a second run on your own
+# computer match the first. A neighbour on another operating system
+# can differ in the third decimal. Compare your bagging with your
+# forest, not with a neighbour.
+bag <- ranger(High ~ ., data = analysis[, c("High", predictors)],
+              num.trees = 500, mtry = 10, probability = TRUE,
+              seed = 467, num.threads = 1)
+forest <- ranger(High ~ ., data = analysis[, c("High", predictors)],
+                 num.trees = 500, mtry = 3, probability = TRUE,
+                 importance = "permutation", seed = 467, num.threads = 1)
+
+# The OOB probability of Low and of High for the first analysis hours.
+head(round(forest$predictions, 3))
+```
+
+```{r}
+#| label: oob-error
+# OOB classification error: the share of analysis hours whose OOB
+# probability of High is on the wrong side of 0.50.
+actual_high <- analysis$High == "High"
+oob_error_bag <- mean((bag$predictions[, "High"] >= 0.5) != actual_high)
+oob_error_forest <- mean((forest$predictions[, "High"] >= 0.5) != actual_high)
+round(c(bagging = oob_error_bag, forest = oob_error_forest), 4)
+
+# ranger also reports prediction.error. For a probability forest it is
+# NOT the share of hours predicted wrong. It is the Brier score: the
+# average squared difference between the probability of High and the
+# outcome (1 for High, 0 for Low). Lower is better.
+round(c(bagging = bag$prediction.error, forest = forest$prediction.error), 4)
+
+# Question: Which model has the lower OOB error? By how many
+# percentage points?
+#
+# Question: These OOB numbers use only the analysis hours. Why are they
+# still an honest check, like cross-validation?
+#
+# Discuss: Bagging can use the strongest predictor at every split. Why
+# could letting each split see only three predictors give a better
+# average of trees?
+```
+
+# 4. Read variable importance
+
+Permutation importance asks: if we shuffle one predictor across the
+OOB hours, so that it no longer matches its hour, how much worse do the
+OOB probabilities get? Here "worse" is the increase in the OOB Brier
+score.
+
+```{r}
+#| label: importance-plot
+#| fig-width: 8
+#| fig-height: 4.8
+importance <- sort(forest$variable.importance)
+par(mar = c(4.5, 12, 2.5, 1))
+barplot(importance, horiz = TRUE, las = 1, col = "#156082", border = NA,
+        xlim = c(0, 1.05 * max(importance)),
+        xlab = "Increase in OOB Brier score after shuffling the predictor",
+        main = "Permutation importance, random forest (mtry = 3)")
+par(mar = c(5.1, 4.1, 4.1, 2.1))
+round(sort(forest$variable.importance, decreasing = TRUE), 4)
+
+# Interpret: Each bar is the increase in the OOB Brier score when that
+# predictor is shuffled across the OOB hours.
+#
+# Question: Which three predictors matter most to the forest? Which
+# matter least?
+#
+# Discuss: Temperature and Seasons carry some of the same information.
+# How could that change the importance of each one?
+#
+# Question: Does the plot say whether warmer hours are more or less
+# likely to be High? Where in this notebook would you look to find
+# out?
+```
+
+# 5. Estimate boosting and compare learning rates
+
+Boosting grows small trees one after another. Each new tree corrects
+the current predictions a little. The learning rate is how much of each
+new tree is added. The number of rounds is how many trees. The depth is
+how many splits deep each tree may go; here it is 3 for both rates.
+
+We choose the number of rounds by five-fold cross-validation inside the
+analysis hours, using log-loss. Log-loss is the average of
+$-\log(p)$, where $p$ is the probability the model gave to what
+actually happened. A confident wrong probability costs a lot. Lower is
+better.
+
+The slide compared these two rates on the rental count, with root
+mean squared error. Here both rates predict High, and the score is
+log-loss.
+
+```{r}
+#| label: boost-cv
+x_analysis <- analysis[, predictors]
+d_analysis <- xgb.DMatrix(x_analysis, label = as.numeric(analysis$High == "High"))
+
+# The same seed before each run gives both rates the same five folds.
+set.seed(467)
+cv_slow <- xgb.cv(params = list(objective = "binary:logistic", eval_metric = "logloss",
+                                learning_rate = 0.05, max_depth = 3, nthread = 1),
+                  data = d_analysis, nrounds = 1000, nfold = 5, verbose = 0)
+set.seed(467)
+cv_fast <- xgb.cv(params = list(objective = "binary:logistic", eval_metric = "logloss",
+                                learning_rate = 0.5, max_depth = 3, nthread = 1),
+                  data = d_analysis, nrounds = 1000, nfold = 5, verbose = 0)
+
+# One line per round. test_logloss_mean is the average over the five
+# held-out folds of the ANALYSIS hours. It is not our test hours.
+head(cv_slow$evaluation_log, 3)
+```
+
+```{r}
+#| label: boost-curves
+#| fig-width: 8
+#| fig-height: 4.8
+slow <- cv_slow$evaluation_log
+fast <- cv_fast$evaluation_log
+# The first rounds start above the top of the plot.
+plot(slow$iter, slow$test_logloss_mean, type = "l", lwd = 2, col = "#156082",
+     ylim = c(0, 0.5), xlab = "Boosting rounds (trees)",
+     ylab = "Log-loss", main = "Five-fold cross-validated log-loss, depth 3")
+lines(fast$iter, fast$test_logloss_mean, lwd = 2, col = "#C41230")
+lines(slow$iter, slow$train_logloss_mean, lwd = 1, lty = 2, col = "#156082")
+lines(fast$iter, fast$train_logloss_mean, lwd = 1, lty = 2, col = "#C41230")
+legend("topright", bty = "n", lwd = c(2, 2, 1, 1), lty = c(1, 1, 2, 2),
+       col = c("#156082", "#C41230", "#156082", "#C41230"),
+       legend = c("rate 0.05, held-out folds", "rate 0.5, held-out folds",
+                  "rate 0.05, training folds", "rate 0.5, training folds"))
+
+# Interpret: Solid lines are the held-out folds. Dashed lines are the
+# folds each model was estimated on.
+#
+# Question: Which rate reaches its lowest held-out log-loss in fewer
+# rounds? What happens to the red solid line after that?
+```
+
+```{r}
+#| label: boost-table
+boost_table <- data.frame(
+  rate = c(0.05, 0.5),
+  best_round = c(which.min(slow$test_logloss_mean), which.min(fast$test_logloss_mean)),
+  min_cv_logloss = c(min(slow$test_logloss_mean), min(fast$test_logloss_mean)),
+  cv_logloss_1000 = c(slow$test_logloss_mean[1000], fast$test_logloss_mean[1000]),
+  train_logloss_1000 = c(slow$train_logloss_mean[1000], fast$train_logloss_mean[1000])
+)
+boost_table
+
+# Question: Compare the two minimum log-losses. Then compare the two
+# log-losses after 1,000 rounds. Which comparison shows the difference
+# between the rates?
+#
+# Discuss: Look at train_logloss_1000 for rate 0.5. What does that
+# number say about the probabilities on the training folds, and what
+# does the held-out line say?
+```
+
+```{r}
+#| label: boost-fit
+# The rate with the lower minimum CV log-loss, and its best round.
+boost_rate <- boost_table$rate[which.min(boost_table$min_cv_logloss)]
+boost_rounds <- boost_table$best_round[which.min(boost_table$min_cv_logloss)]
+c(rate = boost_rate, rounds = boost_rounds)
+
+# y is the factor High. xgboost predicts the probability of its second
+# level, High.
+set.seed(467)
+boost <- xgboost(x = x_analysis, y = analysis$High, nrounds = boost_rounds,
+                 learning_rate = boost_rate, max_depth = 3, nthreads = 1)
+
+# Question: How many trees does the boosted model have? Why not stop at
+# 1,000, or at the round where the training log-loss is lowest?
+```
+
+# 6. Predict the rental count
+
+The same three ideas also predict the number of bikes rented. The
+code is supplied and runs in a few seconds. The outcome is `count`, the
+predictors are the same ten, and the hours are the same analysis hours.
+We read one number for each model: the root mean squared error (RMSE)
+on the validation hours, in rentals. The benchmark predicts the
+average count of the analysis hours for every hour.
+
+```{r}
+#| label: count-models
+count_data <- analysis[, c("count", predictors)]
+
+# Regression tree, pruned with the one-SE rule, as in section 2.
+set.seed(467)
+count_full <- rpart(count ~ ., data = count_data, method = "anova",
+                    control = tree_controls)
+count_cp <- count_full$cptable
+count_low <- which.min(count_cp[, "xerror"])
+count_pick <- min(which(count_cp[, "xerror"] <=
+                          count_cp[count_low, "xerror"] + count_cp[count_low, "xstd"]))
+count_tree <- prune(count_full, cp = count_cp[count_pick, "CP"] * (1 + 1e-9))
+
+# Regression forest, 500 trees, mtry = 3.
+count_forest <- ranger(count ~ ., data = count_data, num.trees = 500, mtry = 3,
+                       seed = 467, num.threads = 1)
+
+# Boosting, rate 0.05, depth 3, rounds chosen by five-fold CV RMSE.
+d_count <- xgb.DMatrix(x_analysis, label = analysis$count)
+set.seed(467)
+count_cv <- xgb.cv(params = list(objective = "reg:squarederror", eval_metric = "rmse",
+                                 learning_rate = 0.05, max_depth = 3, nthread = 1),
+                   data = d_count, nrounds = 1000, nfold = 5, verbose = 0)
+count_rounds <- which.min(count_cv$evaluation_log$test_rmse_mean)
+set.seed(467)
+count_boost <- xgboost(x = x_analysis, y = analysis$count, nrounds = count_rounds,
+                       learning_rate = 0.05, max_depth = 3, nthreads = 1)
+
+c(tree_splits = n_splits(count_tree), boosting_rounds = count_rounds)
+```
+
+```{r}
+#| label: count-rmse
+rmse <- function(actual, predicted) sqrt(mean((actual - predicted)^2))
+count_results <- data.frame(
+  model = c("analysis_mean", "tree_1se", "forest", "boosting"),
+  RMSE = c(rmse(validation$count, mean(analysis$count)),
+           rmse(validation$count, predict(count_tree, validation)),
+           rmse(validation$count,
+                predict(count_forest, validation, num.threads = 1)$predictions),
+           rmse(validation$count, predict(count_boost, validation[, predictors])))
+)
+count_results
+
+# Question: By how many rentals per hour does each model improve on the
+# average? Which two models are closest?
+#
+# Question: The count tree has many more splits than the one-SE tree
+# for High. Would you show it to the planners as rules?
+#
+# Discuss: Could an AUC for High and an RMSE in rentals ever say which
+# model is better? What does each one measure?
+```
+
+# 7. Compare class models and commit
+
+Five models for High, all estimated on the analysis hours. Now each one
+predicts the same validation hours. AUC uses the probabilities.
+Accuracy uses a fixed threshold of 0.50: predict High when the
+probability of High is at least 0.50. The 0.50 is fixed for everyone
+so the models can be compared. It is not a claim about the best
+threshold for the city.
+
+```{r}
+#| label: validation-compare
+p_validation <- list(
+  tree_min = predict(tree_min, validation, type = "prob")[, "High"],
+  tree_1se = predict(tree_1se, validation, type = "prob")[, "High"],
+  bagging = predict(bag, validation, num.threads = 1)$predictions[, "High"],
+  forest = predict(forest, validation, num.threads = 1)$predictions[, "High"],
+  boosting = predict(boost, validation[, predictors])
+)
+# TP: High hours predicted High. FP: Low hours predicted High.
+# FN: High hours predicted Low. TN: Low hours predicted Low.
+four_counts <- function(actual, p) {
+  predicted_high <- p >= 0.5
+  actual_high <- actual == "High"
+  c(TP = sum(predicted_high & actual_high), FP = sum(predicted_high & !actual_high),
+    FN = sum(!predicted_high & actual_high), TN = sum(!predicted_high & !actual_high))
+}
+validation_results <- data.frame(
+  model = names(p_validation),
+  AUC = sapply(p_validation, function(p)
+    roc_auc_vec(validation$High, p, event_level = "second")),
+  accuracy = sapply(p_validation, function(p)
+    mean((p >= 0.5) == (validation$High == "High"))),
+  t(sapply(p_validation, function(p) four_counts(validation$High, p))),
+  row.names = NULL
+)
+transform(validation_results, AUC = round(AUC, 5), accuracy = round(accuracy, 4))
+
+# Question: Rank the five models by AUC, then by accuracy. Is it the
+# same order? Compare the two trees with what you expected in
+# section 2.
+#
+# Question: How large is the AUC gap between the best tree and the
+# best combined model? Between the top two models?
+#
+# Discuss: Would a difference in the fourth or fifth decimal of the
+# AUC still be there with a different validation split? See
+# after-class question 4.
+```
+
+**Before you commit.** Talk with the person next to you. The planners
+want to know which hours will be High, and they want to be able to
+follow the prediction. A tree can be printed as rules. The three
+combined models cannot. Decide which model you would give them, using
+only the validation table and what you know about each model. Then
+write it down. Do not open the test hours to make this choice.
+
+```{r}
+#| label: commit
+# Starting point only, so the chunk runs: the model with the highest
+# validation AUC. Replace it with your choice, in quotes. The options
+# are "tree_min", "tree_1se", "bagging", "forest" and "boosting".
+my_model <- validation_results$model[which.max(validation_results$AUC)]
+my_reason <- "Replace this sentence with your reason, in one sentence."
+
+# The settings that stay locked for each model when it is estimated
+# again on all the training hours.
+locked <- data.frame(
+  model = c("tree_min", "tree_1se", "bagging", "forest", "boosting"),
+  settings = c(paste("classification tree, CP =", signif(cp_table[low, "CP"], 6)),
+               paste("classification tree, CP =", signif(cp_table[pick, "CP"], 6)),
+               "500 trees, mtry = 10, seed 467",
+               "500 trees, mtry = 3, seed 467",
+               paste("learning rate", boost_rate, "depth 3,", boost_rounds, "rounds"))
+)
+stopifnot(my_model %in% locked$model)
+locked[locked$model == my_model, ]
+my_reason
+
+# Discuss: Choosing the highest validation AUC is one rule, not the
+# only one. What are you giving up with the model you chose, and what
+# are you getting?
+```
+
+# 8. Report the chosen model on test hours
+
+The choice is made. Now estimate only that model again on all
+`r nrow(train)` training hours (analysis and validation together),
+with its locked settings, and predict the test hours once. On the
+board: your model, its test AUC, accuracy, and the four counts, and
+your one sentence.
+
+```{r}
+#| label: report-test
+# Do not change my_model after reading these test results.
+train_data <- train[, c("High", predictors)]
+if (my_model %in% c("tree_min", "tree_1se")) {
+  locked_cp <- if (my_model == "tree_min") cp_table[low, "CP"] else cp_table[pick, "CP"]
+  final_full <- rpart(High ~ ., data = train_data, method = "class",
+                      control = rpart.control(cp = 0, maxdepth = 30, minsplit = 20,
+                                              minbucket = 7, xval = 0))
+  final_model <- prune(final_full, cp = locked_cp * (1 + 1e-9))
+  p_test <- predict(final_model, test, type = "prob")[, "High"]
+} else if (my_model %in% c("bagging", "forest")) {
+  final_model <- ranger(High ~ ., data = train_data, num.trees = 500,
+                        mtry = if (my_model == "bagging") 10 else 3,
+                        probability = TRUE, seed = 467, num.threads = 1)
+  p_test <- predict(final_model, test, num.threads = 1)$predictions[, "High"]
+} else {
+  set.seed(467)
+  final_model <- xgboost(x = train[, predictors], y = train$High,
+                         nrounds = boost_rounds, learning_rate = boost_rate,
+                         max_depth = 3, nthreads = 1)
+  p_test <- predict(final_model, test[, predictors])
+}
+
+test_auc <- roc_auc_vec(test$High, p_test, event_level = "second")
+test_accuracy <- mean((p_test >= 0.5) == (test$High == "High"))
+my_model
+round(c(test_AUC = test_auc, test_accuracy = test_accuracy,
+        always_High = mean(test$High == "High")), 4)
+
+# Predictions run down the left side; actual hours run across the top.
+test_confusion <- table(
+  predicted = factor(ifelse(p_test >= 0.5, "High", "Low"), levels = c("Low", "High")),
+  actual = test$High
+)
+test_confusion
+sum(test_confusion)
+
+# Question: How many test hours did your model predict High that were
+# Low? How many High hours did it miss?
+#
+# Question: How much does your model add over predicting High for
+# every test hour?
+#
+# Discuss: Name one thing this test report does not tell the city.
+# Think about the dates in the test hours, where the weather inputs
+# would come from for tomorrow, and the stations.
+#
+# Business implication: This is one report for one model chosen before
+# the test hours were used. Estimating other models on the test hours
+# now and keeping the best one would make this number a second choice,
+# not a test.
+```
+
+# 9. After class: extra questions
+
+Work these on your own after the hour. They use only the analysis and
+validation hours. Do not change the model you reported on the board,
+and do not use the test hours.
+
+1. **More values of mtry.** The forest used 3 predictors per split and
+   bagging used 10. Estimate the forest for every mtry from 1 to 10 and
+   compare the OOB error and the OOB Brier score. Do the two measures
+   choose the same mtry? Is the difference between 3 and the best value
+   large?
+
+2. **Learning rate and depth.** Repeat the cross-validation for depths
+   1, 3 and 6, at learning rates 0.05 and 0.1. Which setting has the
+   lowest minimum log-loss, and at how many rounds? Does a deeper tree
+   need more rounds or fewer?
+
+3. **A fuller count recommendation.** Use each count model's predicted
+   count as a score for High: predict High when the predicted count is
+   at least 500, the same definition as the outcome. Compare the AUC and
+   accuracy on the validation hours with the class models in section 7.
+   How many validation hours get a negative predicted count? Write two
+   sentences for the planners: which count model would you use, and
+   would you use it to flag High hours?
+
+4. **Other splits.** Make five other analysis and validation splits of
+   the same training hours (seeds 1 to 5). For each one, repeat the
+   one-SE tree, bagging, the forest and boosting with the settings from
+   class, and compare their validation AUCs. Is the same model highest
+   every time? What does that say about the gap you saw in section 7?
+
+5. **Importance in bagging.** Compute permutation importance for
+   bagging and compare it with the forest. Then look at the average
+   temperature by season. Why could Seasons matter differently when
+   every split can use Temperature_C?
+
+```{r}
+#| label: after-class-mtry
+#| eval: false
+# After class, change eval to true. Do not run these in the 75 minutes.
+mtry_results <- do.call(rbind, lapply(1:10, function(m) {
+  f <- ranger(High ~ ., data = analysis[, c("High", predictors)], num.trees = 500,
+              mtry = m, probability = TRUE, seed = 467, num.threads = 1)
+  data.frame(mtry = m,
+             oob_error = mean((f$predictions[, "High"] >= 0.5) != actual_high),
+             oob_brier = f$prediction.error)
+}))
+round(mtry_results, 4)
+```
+
+```{r}
+#| label: after-class-rate-depth
+#| eval: false
+# After class, change eval to true. Do not run these in the 75 minutes.
+grid <- expand.grid(rate = c(0.05, 0.1), depth = c(1, 3, 6))
+rate_depth <- do.call(rbind, lapply(seq_len(nrow(grid)), function(i) {
+  set.seed(467)
+  cv <- xgb.cv(params = list(objective = "binary:logistic", eval_metric = "logloss",
+                             learning_rate = grid$rate[i], max_depth = grid$depth[i],
+                             nthread = 1),
+               data = d_analysis, nrounds = 1000, nfold = 5, verbose = 0)
+  e <- cv$evaluation_log$test_logloss_mean
+  data.frame(rate = grid$rate[i], depth = grid$depth[i], best_round = which.min(e),
+             min_cv_logloss = round(min(e), 4), cv_logloss_1000 = round(e[1000], 4))
+}))
+rate_depth
+```
+
+```{r}
+#| label: after-class-count
+#| eval: false
+# After class, change eval to true. Do not run these in the 75 minutes.
+p_count <- list(
+  tree_1se = predict(count_tree, validation),
+  forest = predict(count_forest, validation, num.threads = 1)$predictions,
+  boosting = predict(count_boost, validation[, predictors])
+)
+data.frame(
+  model = names(p_count),
+  AUC = round(sapply(p_count, function(p)
+    roc_auc_vec(validation$High, p, event_level = "second")), 4),
+  accuracy_at_500 = round(sapply(p_count, function(p)
+    mean((p >= 500) == (validation$High == "High"))), 4),
+  negative_counts = sapply(p_count, function(p) sum(p < 0)),
+  row.names = NULL
+)
+```
+
+```{r}
+#| label: after-class-stability
+#| eval: false
+# After class, change eval to true. Do not run these in the 75 minutes.
+stability <- do.call(rbind, lapply(1:5, function(s) {
+  set.seed(s)
+  sp <- initial_split(train, prop = 0.80, strata = High)
+  a <- training(sp)
+  v <- testing(sp)
+  set.seed(467)
+  ft <- rpart(High ~ ., data = a[, c("High", predictors)], method = "class",
+              control = tree_controls)
+  ct <- ft$cptable
+  lo <- which.min(ct[, "xerror"])
+  pk <- min(which(ct[, "xerror"] <= ct[lo, "xerror"] + ct[lo, "xstd"]))
+  t1 <- prune(ft, cp = ct[pk, "CP"] * (1 + 1e-9))
+  fb <- ranger(High ~ ., data = a[, c("High", predictors)], num.trees = 500, mtry = 10,
+               probability = TRUE, seed = 467, num.threads = 1)
+  ff <- ranger(High ~ ., data = a[, c("High", predictors)], num.trees = 500, mtry = 3,
+               probability = TRUE, seed = 467, num.threads = 1)
+  set.seed(467)
+  fx <- xgboost(x = a[, predictors], y = a$High, nrounds = boost_rounds,
+                learning_rate = boost_rate, max_depth = 3, nthreads = 1)
+  auc_v <- function(p) roc_auc_vec(v$High, p, event_level = "second")
+  data.frame(seed = s,
+             tree_1se = auc_v(predict(t1, v, type = "prob")[, "High"]),
+             bagging = auc_v(predict(fb, v, num.threads = 1)$predictions[, "High"]),
+             forest = auc_v(predict(ff, v, num.threads = 1)$predictions[, "High"]),
+             boosting = auc_v(predict(fx, v[, predictors])))
+}))
+round(stability, 4)
+```
+
+```{r}
+#| label: after-class-importance
+#| eval: false
+# After class, change eval to true. Do not run these in the 75 minutes.
+bag_importance <- ranger(High ~ ., data = analysis[, c("High", predictors)],
+                         num.trees = 500, mtry = 10, probability = TRUE,
+                         importance = "permutation", seed = 467, num.threads = 1)
+round(cbind(forest = forest$variable.importance,
+            bagging = bag_importance$variable.importance), 4)
+round(tapply(analysis$Temperature_C, analysis$Seasons, mean), 1)
+```
