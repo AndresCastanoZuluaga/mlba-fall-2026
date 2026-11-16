@@ -38,7 +38,7 @@ format:
 | L3 Selection | **Mon 21 Sep** | Model selection in R | [Case + data + starter](Lab03-Selection/) |
 | L4 Regularization | **Wed 23 Sep** | Ridge and lasso in R | [Case + data + starter](Lab04-Regularization/) |
 | L5 Logistic | **Wed 28 Oct** | Logistic regression in R | [Case + data](Lab05-Logistic/) |
-| L6 Trees, forests, boosting | **Mon 16 Nov** | Trees, random forests and boosting in R | Not posted yet |
+| L6 Trees, forests, boosting | **Mon 16 Nov** | Trees, random forests and boosting in R | [Case + data + starter](Lab06-Trees/) |
 | PCA lab | **Mon 23 Nov** | PCA in R | Not posted yet |
 | Clustering lab | **Mon 30 Nov** | Clustering in R | Not posted yet |
 

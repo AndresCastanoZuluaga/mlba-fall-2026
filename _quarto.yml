@@ -30,7 +30,9 @@ project:
     - "!labs/Lab05-Logistic/lab05-churn-problem.qmd"
     - "!labs/Lab05-Logistic/lab05-churn.qmd"
     - "!labs/Lab05-Logistic/_instructor/"
-    - "!labs/Lab06-Trees/"
+    - "!labs/Lab06-Trees/lab06-seoul-problem.qmd"
+    - "!labs/Lab06-Trees/lab06-seoul.qmd"
+    - "!labs/Lab06-Trees/_instructor/"
     - "!hw/HW04-Steel/hw4-steel-problem.qmd"
     - "!hw/HW04-Steel/hw4-steel.qmd"
     - "!hw/HW04-Steel/_instructor/"
@@ -71,6 +73,8 @@ website:
             text: Lab 4
           - href: labs/Lab05-Logistic/index.qmd
             text: Lab 5
+          - href: labs/Lab06-Trees/index.qmd
+            text: Lab 6
       - text: Homework
         menu:
           - href: hw/index.qmd
