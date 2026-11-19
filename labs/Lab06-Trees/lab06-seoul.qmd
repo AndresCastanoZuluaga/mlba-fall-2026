@@ -332,9 +332,17 @@ cp_table[c(low, pick), ]
 c(full = n_splits(tree_full), min_cv = n_splits(tree_min),
   one_se = n_splits(tree_1se))
 
-# xerror is relative to the root. Times the root error, it is a share
-# of analysis hours predicted wrong. The root predicts High for every
-# hour, so it is wrong on the Low hours. That share is the root error.
+# The xerror column divides the cross-validated error by the root
+# error. Suppose one entry is 0.20. It still has to be multiplied by
+# the root error before it is a share of hours:
+#   cross-validated error rate = xerror * root_error
+# With a root error of 0.50, that 0.20 becomes 0.20 * 0.50 = 0.10:
+# 10 of every 100 analysis hours predicted wrong.
+# The root predicts High for every hour, so it is wrong on the Low
+# hours. root_error is that share. min_cv and one_se below are the
+# cross-validated error rates of the two pruned trees. Subtract the
+# smaller rate from the larger one and multiply by 100. That is the
+# gap in percentage points.
 root_error <- mean(analysis$High == "Low")
 round(c(min_cv = cp_table[low, "xerror"], one_se = cp_table[pick, "xerror"]) *
         root_error, 4)
@@ -342,6 +350,17 @@ round(c(min_cv = cp_table[low, "xerror"], one_se = cp_table[pick, "xerror"]) *
 # Question: How many splits do the two pruned trees have? How far apart
 # are their cross-validated error rates, in percentage points?
 ```
+
+This plot is the complexity table drawn as a curve. The horizontal axis
+is the number of leaves, one more than the number of splits, on a log
+scale. The vertical axis is xerror, the cross-validated error divided
+by the root error. The print above multiplied xerror by the root error
+to get a share of hours. This axis leaves xerror as it stands in the
+table. The two smallest trees, with 1 and 2 leaves, have much larger
+errors and sit above the top of the plot. The grey bars are xerror plus
+and minus one standard error. The dashed line is the lowest xerror plus
+one standard error. The open circles are the minimum-CV subtree and the
+one-SE subtree.
 
 ```{r}
 #| label: cv-error-plot
