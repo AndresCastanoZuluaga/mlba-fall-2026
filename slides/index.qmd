@@ -62,3 +62,11 @@ format:
 
 [Open in Chrome](70-467_MLBA_2026-10-29_TreeBasedMethods.html) · [PDF](70-467_MLBA_2026-10-29_TreeBasedMethods.pdf)
 :::
+
+## Principal component analysis
+
+::: {.sch-week-card}
+### Mon 23 Nov · Principal component analysis
+
+[Open in Chrome](70-467_MLBA_2026-11-23_PCA.html) · [PDF](70-467_MLBA_2026-11-23_PCA.pdf)
+:::
