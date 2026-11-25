@@ -17,14 +17,14 @@ format:
 <span class="sch-chip sch-chip-soft">Bring laptop</span>
 :::
 
-<p class="page-lead">On lab days, read the problem before you sit down. Bring a laptop. You will get the problem before class and a starter notebook with parts already working. In the hour we work on approach, interpretation, figures, and what the results mean for the decision. Lab 6 is <strong>Monday 16 November</strong> (trees, forests and boosting).</p>
+<p class="page-lead">On lab days, read the problem before you sit down. Bring a laptop. You will get the problem before class and a starter notebook with parts already working. In the hour we work on approach, interpretation, figures, and what the results mean for the decision. Lab 7 is <strong>Wednesday 25 November</strong> (principal component analysis).</p>
 
 ## Pattern
 
 | Pattern | When |
 |---------|------|
 | Default | Lab on **Wednesday** |
-| Last three labs | **Mon 16 Nov** (Lab 6), **Mon 23 Nov** (PCA), **Mon 30 Nov** (clustering) |
+| Last three labs | **Mon 16 Nov** (Lab 6), **Wed 25 Nov** (Lab 7), **Mon 30 Nov** (clustering) |
 | Exception | Midterm week, 11 Nov (no class), presentation week |
 | Midterm week | No lab (**Wed 7 Oct** = midterm) |
 | Presentation day | No lab (**Wed 2 Dec**) |
@@ -39,7 +39,7 @@ format:
 | L4 Regularization | **Wed 23 Sep** | Ridge and lasso in R | [Case + data + starter](Lab04-Regularization/) |
 | L5 Logistic | **Wed 28 Oct** | Logistic regression in R | [Case + data](Lab05-Logistic/) |
 | L6 Trees, forests, boosting | **Mon 16 Nov** | Trees, random forests and boosting in R | [Case + data + starter](Lab06-Trees/) |
-| PCA lab | **Mon 23 Nov** | PCA in R | Not posted yet |
+| L7 PCA | **Wed 25 Nov** | PCA in R | [Case + data + starter](Lab07-PCA/) |
 | Clustering lab | **Mon 30 Nov** | Clustering in R | Not posted yet |
 
 See [Schedule](../schedule.qmd) for the full calendar.

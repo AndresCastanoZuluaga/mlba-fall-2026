@@ -33,6 +33,9 @@ project:
     - "!labs/Lab06-Trees/lab06-seoul-problem.qmd"
     - "!labs/Lab06-Trees/lab06-seoul.qmd"
     - "!labs/Lab06-Trees/_instructor/"
+    - "!labs/Lab07-PCA/lab07-country-problem.qmd"
+    - "!labs/Lab07-PCA/lab07-country.qmd"
+    - "!labs/Lab07-PCA/_instructor/"
     - "!hw/HW04-Steel/hw4-steel-problem.qmd"
     - "!hw/HW04-Steel/hw4-steel.qmd"
     - "!hw/HW04-Steel/_instructor/"
@@ -75,6 +78,8 @@ website:
             text: Lab 5
           - href: labs/Lab06-Trees/index.qmd
             text: Lab 6
+          - href: labs/Lab07-PCA/index.qmd
+            text: Lab 7
       - text: Homework
         menu:
           - href: hw/index.qmd
