@@ -1,0 +1,729 @@
+---
+title: "Lab 7: Principal Component Analysis (PCA)"
+subtitle: "70-467 · Wednesday 25 November"
+author: "Andrés Castaño Zuluaga"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    toc-location: right
+    body-classes: "mlba-page"
+    code-fold: false
+    code-tools: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+<!--
+Student starter for the hour. The code is filled in on purpose. Run each
+chunk and read the comments. In class we will discuss only some of the
+Question and Discuss prompts. This lab has no outcome variable and nothing
+to predict. You will look at the map, choose how many components to keep,
+name the first two, and write down your choices in section 8.
+-->
+
+# Introduction to the Business Problem
+
+HELP International is an aid organization.
+
+**The problem.** HELP has to decide which countries need its money
+most, and it has to explain that choice to its donors.
+If you had to rank these 167 countries by need, how would you do it, and
+how would you explain your choice to HELP's donors?
+
+The dataset has one observation per country, 167 countries. For each country
+we have its name and nine variables: deaths of children under 5, exports,
+spending on health, imports, income per person, inflation, life expectancy,
+children per woman, and GDP per person. Three are shares of GDP and two are
+in dollars per person. The other four are in deaths per 1,000 live births,
+percent per year, years, and children per woman. The codebook gives the unit
+of each variable. The file does not say which year the data are from.
+
+The question for this lab: how can HELP compare 167 countries on nine
+variables at once, in a way it can explain to its donors? How few summary
+measures does it need, and what does each one measure? Which countries are
+similar? Would HELP send aid in the order this comparison gives, and what
+would that order miss?
+
+Keep the case PDF and the
+codebook open while you run code.
+
+**Before you run anything.** Suppose HELP lets you keep only one of
+the nine variables to rank the countries by need. Which one would you
+keep? Name one country that your variable would put in the wrong place,
+and say why. Talk this through with the person next to you. We come
+back to it in section 8.
+
+# Roadmap
+
+1. **Load the country data and look at the units.** Keep the country name as
+   a label. Compare the standard deviations (SDs) of the nine variables.
+2. **Run PCA on the variables in their original units.** See which variables
+   dominate.
+3. **Standardize the variables.** Run PCA again. Read how much of the spread
+   (variance) each component explains, the proportion of variance explained
+   (PVE), and decide how many components to keep.
+4. **Name PC1 from its loadings and the countries at each end.** Fix its
+   sign first.
+5. **Name PC2 the same way.**
+6. **Place every country on the map.** First the biplot, then the map, a
+   plot of PC1 against PC2, with the Gulf countries marked.
+7. **Check one extreme value before you trust the map:** one country's
+   inflation.
+8. **Rank the countries and check the list.** Write down how many components
+   you keep and your names for PC1 and PC2, then check the ranking of the
+   countries on PC1.
+
+We stop there in class. Section 9 has seven more questions to work on after
+class.
+
+# 1. Load the country data and look at the units
+
+```{r}
+#| label: setup
+# This lab uses base R only. There is nothing to install.
+options(scipen = 999)
+```
+
+```{r}
+#| label: load-data
+countries <- read.csv("data/country_data.csv")
+# dim() prints the number of countries and the number of variables.
+# sum(is.na()) counts missing values in all the data.
+dim(countries)
+sum(is.na(countries))
+# str() shows each variable and its type.
+str(countries)
+
+# Question: How many countries are there? Is any value missing? Which
+# variable is text?
+```
+
+```{r}
+#| label: nine-variables
+# Why? PCA works only with numeric variables. The country name is text, so
+# it stays out of the PCA. We keep it as a label: rownames() attaches the
+# names to X, so every table and plot below shows them.
+vars <- c("child_mort", "exports", "health", "imports", "income",
+          "inflation", "life_expec", "total_fer", "gdpp")
+X <- countries[, vars]
+rownames(X) <- countries$country
+head(X)
+
+# summary() gives the smallest value, the quartiles, the mean and the
+# largest value of each variable.
+summary(X)
+
+# The SD of each variable, from smallest to largest, and the ratio of the
+# largest SD to the smallest.
+var_sd <- sapply(X, sd)
+round(sort(var_sd), 2)
+max(var_sd) / min(var_sd)
+
+# Question: Which two variables have the largest SDs, and what is their
+# unit? Which has the smallest SD, and in what unit? Look at the
+# codebook: health, exports and imports are shares of GDP. Can a share
+# of GDP ever have an SD close to that of income?
+```
+
+```{r}
+#| label: inflation
+# Inflation is the yearly change in prices, in percent. It is most likely
+# the change in the GDP deflator, a price index for everything the country
+# produces. The file does not say so, and the highest value is far above the
+# World Bank figure for that country, so treat this as likely, not certain.
+# Below: the five highest values, and the number of countries with inflation
+# below zero.
+X[order(X$inflation, decreasing = TRUE)[1:5], "inflation", drop = FALSE]
+sum(X$inflation < 0)
+
+# Question: Which country has the highest inflation? How far is it above the
+# second highest? Keep this country in mind. We will come back to it in
+# section 7.
+```
+
+```{r}
+#| label: correlation
+#| fig-width: 7
+#| fig-height: 6.5
+# Why? Before the PCA, look at which variables are correlated. If several
+# variables are strongly correlated, one component could summarize them.
+# cor() gives the correlation between every two variables. Blue is positive,
+# red is negative, and a darker cell is a stronger correlation.
+R <- cor(X)
+par(mar = c(7, 7, 3, 1))
+image(1:9, 1:9, R[, 9:1], zlim = c(-1, 1), axes = FALSE, xlab = "", ylab = "",
+      col = colorRampPalette(c("#C41230", "white", "#1F5FA8"))(100),
+      main = "Correlation between every two variables")
+axis(1, at = 1:9, labels = vars, las = 2, tick = FALSE)
+axis(2, at = 1:9, labels = rev(vars), las = 1, tick = FALSE)
+text(rep(1:9, 9), rep(1:9, each = 9), sprintf("%.2f", R[, 9:1]), cex = 0.75)
+par(mar = c(5, 4, 4, 2))
+
+# Question: Which variables are strongly correlated with each other? Which
+# look unrelated to the rest?
+#
+# Discuss: If you had to summarize the nine variables with fewer measures,
+# which variables would you expect to end up together?
+```
+
+# 2. Run PCA on the variables in their original units
+
+```{r}
+#| label: pca-raw
+# prcomp() always centers each variable: it subtracts the mean. Without
+# scale. = TRUE it does not divide by the SD, so each variable keeps its
+# original unit. The first row of summary() is the SD of each component, not
+# of any variable.
+pca_raw <- prcomp(X)
+summary(pca_raw)
+# The loadings of PC1 and PC2. R stores the loadings in rotation.
+round(pca_raw$rotation[, 1:2], 3)
+
+# Question: What share of the spread does PC1 explain? Which two variables
+# have loadings on PC1 that are far from zero?
+#
+# Interpret: In their original units, the variables with the largest spread
+# dominate PC1. Name the two variables with large loadings, and give their
+# unit.
+#
+# Question: Find inflation in the loadings. Does Nigeria's extreme
+# inflation matter at all in this PCA? Why not?
+#
+# Discuss: If income were recorded in thousands of dollars instead of
+# dollars, would PC1 still be about income? What does that tell you about
+# running PCA on variables in their original units?
+```
+
+# 3. Standardize the variables
+
+A z-score is (value − mean) / SD. It tells us how many SDs a country is
+above or below the mean of all countries. `scale()` turns every variable
+into z-scores, so each variable has mean 0 and SD 1.
+
+```{r}
+#| label: z-scores
+Z <- scale(X)
+# Qatar and Nigeria as z-scores. All nine variables are now in the same
+# unit, SDs.
+round(Z[c("Qatar", "Nigeria"), ], 2)
+# Every SD is 1.
+round(apply(Z, 2, sd), 2)
+
+# Question: How many SDs above the average is Qatar's income? Nigeria's
+# inflation? Which of the two is more extreme?
+```
+
+```{r}
+#| label: units-vs-sds
+#| fig-width: 10
+#| fig-height: 4
+# The nine variables in their own units (left) and in SDs (right).
+par(mfrow = c(1, 2), mar = c(7, 4, 3, 1))
+boxplot(X, las = 2, main = "In their own units", cex.axis = 0.8)
+boxplot(Z, las = 2, main = "In SDs (z-scores)", cex.axis = 0.8)
+abline(h = 0, lty = 3)
+par(mfrow = c(1, 1))
+
+# Interpret: On the left, income and gdpp are so large that the other seven
+# variables are hard to see. On the right, all nine are on the same scale.
+# Standardizing does not remove extreme values: a country that is extreme in
+# its own unit is still extreme as a z-score.
+```
+
+```{r}
+#| label: pca-scaled
+# scale. = TRUE standardizes each variable before running PCA.
+pca <- prcomp(X, scale. = TRUE)
+summary(pca)
+
+# Why? Each standardized variable has variance 1, so the total variance of
+# the nine is 9. The proportion of variance explained (PVE) by a component
+# is its variance divided by 9.
+pve <- pca$sdev^2 / sum(pca$sdev^2)
+cum_pve <- cumsum(pve)
+round(rbind(PVE = pve, cumulative = cum_pve), 4)
+
+# Question: What is the PVE of PC1 now? Compare it with section 2.
+```
+
+```{r}
+#| label: scree
+#| fig-width: 7
+#| fig-height: 4.2
+# Scree plot: the PVE of each component as bars, the cumulative PVE as a
+# line, and dashed lines at 80% and 90%.
+bars <- barplot(100 * pve, names.arg = paste0("PC", 1:9), ylim = c(0, 100),
+                col = "grey80", ylab = "Percent of the spread",
+                main = "Share of the spread each component explains")
+lines(bars, 100 * cum_pve, type = "b", pch = 19, col = "#C41230")
+abline(h = c(80, 90), lty = 2, col = "grey40")
+
+# Question: What is the cumulative PVE of PC1 and PC2? How many components
+# do you need to pass 80%? And 90%?
+#
+# Discuss: The map shows only PC1 and PC2. How much of the spread does it
+# leave out? To rank countries by need, would HELP be fine with two
+# components, or would it need more?
+```
+
+# 4. Name PC1 from its loadings and the countries at each end
+
+```{r}
+#| label: loadings-r
+# The loadings of PC1 and PC2, with the signs R gives.
+round(pca$rotation[, 1:2], 3)
+
+# Question: Which variables have the largest loadings on PC1, ignoring the
+# sign? Which loadings have a minus sign?
+#
+# Interpret: The sign of a component has no meaning on its own. A set of
+# loadings and the same set with every sign flipped describe the same line.
+# Flipping the signs of PC1 mirrors the map from left to right. Another
+# computer can print the opposite signs for the same data.
+```
+
+```{r}
+#| label: set-direction
+# Why? So that everyone in the room reads the same map. If needed, we flip
+# the signs of PC1 so that its loading on life expectancy is positive, and
+# the signs of PC2 so that its loading on imports is positive. A flip
+# changes the signs of the loadings and of the countries' positions
+# together. No distance between two countries changes.
+if (pca$rotation["life_expec", "PC1"] < 0) {
+  pca$rotation[, "PC1"] <- -pca$rotation[, "PC1"]
+  pca$x[, "PC1"] <- -pca$x[, "PC1"]
+}
+if (pca$rotation["imports", "PC2"] < 0) {
+  pca$rotation[, "PC2"] <- -pca$rotation[, "PC2"]
+  pca$x[, "PC2"] <- -pca$x[, "PC2"]
+}
+round(pca$rotation[, 1:2], 3)
+```
+
+```{r}
+#| label: pc1-loadings
+#| fig-width: 7
+#| fig-height: 4
+# The PC1 loadings, sorted: the most positive at the top, the most negative
+# at the bottom. Positive loadings are blue, negative are red. The dashed
+# lines at -0.33 and 0.33 show the loading each variable would have if all
+# nine counted the same.
+load_pc1 <- sort(pca$rotation[, "PC1"])
+par(mar = c(4, 7, 3, 1))
+barplot(load_pc1, horiz = TRUE, las = 1, xlim = c(-0.7, 0.7),
+        col = ifelse(load_pc1 > 0, "#1F5FA8", "#C41230"),
+        xlab = "Loading on PC1", main = "Loadings on PC1")
+abline(v = 0)
+abline(v = c(-1, 1) / 3, lty = 2, col = "grey40")
+par(mar = c(5, 4, 4, 2))
+
+# Question: Which variables move a country to the right on PC1? Which move
+# it to the left? Which are inside the dashed lines?
+```
+
+```{r}
+#| label: pc1-ends
+# pca$x holds each country's position on each component. The book calls
+# these positions the principal component scores. Below: the five countries
+# lowest on PC1 and the five highest.
+pc1 <- sort(pca$x[, "PC1"])
+round(head(pc1, 5), 2)
+round(tail(pc1, 5), 2)
+# Their values on the nine variables, so you can check your name against the
+# data.
+X[c(names(head(pc1, 5)), names(tail(pc1, 5))), ]
+
+# Question: Give PC1 a short name a donor would understand. Does your
+# name fit both the loadings and the countries at each end?
+#
+# Discuss: Is the lowest country on PC1 also the lowest in income? In
+# life expectancy? How can a country end up lowest on PC1?
+```
+
+# 5. Name PC2 the same way
+
+```{r}
+#| label: pc2-loadings
+#| fig-width: 7
+#| fig-height: 4
+# The PC2 loadings, sorted: the most positive at the top, the most negative
+# at the bottom. Positive loadings are blue, negative are red. The dashed
+# lines at -0.33 and 0.33 show the loading each variable would have if all
+# nine counted the same.
+load_pc2 <- sort(pca$rotation[, "PC2"])
+par(mar = c(4, 7, 3, 1))
+barplot(load_pc2, horiz = TRUE, las = 1, xlim = c(-0.7, 0.7),
+        col = ifelse(load_pc2 > 0, "#1F5FA8", "#C41230"),
+        xlab = "Loading on PC2", main = "Loadings on PC2")
+abline(v = 0)
+abline(v = c(-1, 1) / 3, lty = 2, col = "grey40")
+par(mar = c(5, 4, 4, 2))
+
+pc2 <- sort(pca$x[, "PC2"])
+round(head(pc2, 5), 2)
+round(tail(pc2, 5), 2)
+X[c(names(head(pc2, 5)), names(tail(pc2, 5))), c("exports", "imports", "health", "income")]
+
+# Question: Which two variables have the largest loadings on PC2? What do
+# the countries at the top have in common? And the countries at the bottom?
+#
+# Question: Give PC2 a short name. Is PC2 about how rich a country is?
+# Check the loading of income.
+#
+# Discuss: Find one rich country near the top of PC2 and one near the
+# bottom. How do their exports and imports compare?
+```
+
+# 6. Place every country on the map
+
+```{r}
+#| label: biplot
+#| fig-width: 8
+#| fig-height: 7
+# A biplot shows the countries and the loadings together. scale = 0 plots
+# the positions without rescaling them. The names come from rownames(X).
+biplot(pca, scale = 0, cex = c(0.5, 0.8), col = c("grey40", "#C41230"),
+       xlab = "PC1", ylab = "PC2")
+
+# Interpret: Each name is a country. Each red arrow is one of the nine
+# variables, drawn from its loadings on PC1 and PC2. Countries tend to lie
+# in the direction of the arrows of the variables on which they are high.
+# With 167 names, the middle of the plot is hard to read.
+```
+
+```{r}
+#| label: on-map
+#| fig-width: 7
+#| fig-height: 4
+# Why? The map shows PC1 and PC2 only. Some variables are shown well on it
+# and some are not.
+# For each variable, this is the share of its spread that the map shows. The
+# factoextra package calls this cos2, the quality of representation. The
+# dashed line is the share the map shows for all nine variables together.
+on_map <- 100 * rowSums((pca$rotation[, 1:2] %*% diag(pca$sdev[1:2]))^2)
+round(sort(on_map), 1)
+par(mar = c(4, 7, 3, 1))
+barplot(sort(on_map), horiz = TRUE, las = 1, col = "grey60", xlim = c(0, 100),
+        xlab = "Share of the variable's spread on the map (%)",
+        main = "How well the map shows each variable")
+abline(v = 100 * cum_pve[2], lty = 2, col = "#C41230", lwd = 1.5)
+par(mar = c(5, 4, 4, 2))
+
+# Question: Which variables does the map show poorly? Find them on the
+# biplot above. What do you notice about their arrows?
+#
+# Discuss: If HELP cares about one of those variables, what should it look
+# at besides the map?
+```
+
+```{r}
+#| label: map
+#| fig-width: 8
+#| fig-height: 6.5
+# The same positions, with only some countries labeled: the six Gulf
+# Cooperation Council (GCC) countries in red, and the countries at the ends
+# of PC1 and PC2.
+gcc <- c("Bahrain", "Kuwait", "Oman", "Qatar", "Saudi Arabia",
+         "United Arab Emirates")
+ends <- setdiff(c(names(head(pc1, 4)), names(tail(pc1, 4)),
+                  names(head(pc2, 3)), names(tail(pc2, 3))), gcc)
+plot(pca$x[, "PC1"], pca$x[, "PC2"], pch = 19, col = "grey75",
+     xlim = range(pca$x[, "PC1"]) * 1.15, ylim = range(pca$x[, "PC2"]) * 1.1,
+     xlab = paste0("PC1 (", sprintf("%.1f", 100 * pve[1]), "% of the spread)"),
+     ylab = paste0("PC2 (", sprintf("%.1f", 100 * pve[2]), "% of the spread)"),
+     main = "167 countries on PC1 and PC2")
+abline(h = 0, v = 0, lty = 3, col = "grey50")
+# Names go above a point when it is above zero on PC2, below otherwise.
+text(pca$x[ends, "PC1"], pca$x[ends, "PC2"], ends,
+     pos = ifelse(pca$x[ends, "PC2"] < 0, 1, 3), cex = 0.7)
+points(pca$x[gcc, "PC1"], pca$x[gcc, "PC2"], pch = 19, col = "#C41230")
+text(pca$x[gcc, "PC1"], pca$x[gcc, "PC2"], gcc, pos = c(4, 4, 2, 4, 1, 4), cex = 0.7, col = "#C41230")
+
+# The positions and ranks of the six Gulf countries. A rank of 1 is the
+# highest of the 167.
+gcc_table <- data.frame(PC1 = pca$x[gcc, "PC1"], rank_PC1 = rank(-pca$x[, "PC1"])[gcc],
+                        PC2 = pca$x[gcc, "PC2"], rank_PC2 = rank(-pca$x[, "PC2"])[gcc])
+round(gcc_table, 2)
+
+# Question: Where is Qatar on PC1 among 167 countries? Are the six Gulf
+# countries close together on the map? Which one is farthest from the
+# others, and on which component?
+#
+# Discuss: Qatar has the highest income in the data. Why is it not
+# first on PC1?
+```
+
+# 7. Check one extreme value before you trust the map
+
+Find the country at the bottom of PC1 and look at its values on the nine
+variables. Is it at the bottom because of all nine, or mostly because of
+one?
+
+```{r}
+#| label: nigeria-contrib
+# This is the sum we did by hand for the Plain Bagel on Monday. Multiply
+# each loading by the country's z-score on that variable. The result is that
+# variable's contribution to the country's position on PC1. Add the nine
+# contributions and you get the country's position on PC1. Careful with the
+# letters: on Monday, z was the position. Here Z is the matrix of z-scores,
+# and the position is pca$x.
+contrib <- pca$rotation[, "PC1"] * Z["Nigeria", ]
+round(cbind(loading = pca$rotation[, "PC1"], z = Z["Nigeria", ], contribution = contrib), 2)
+round(c(sum_of_contrib = sum(contrib), position_PC1 = pca$x["Nigeria", "PC1"]), 2)
+
+# How many countries would sit below Nigeria without its inflation contribution?
+sum(pca$x[rownames(X) != "Nigeria", "PC1"] < sum(contrib) - contrib["inflation"])
+
+# Question: Which contribution to PC1 is the largest, ignoring the sign? Is
+# it large because of the loading or because of the z-score?
+#
+# Discuss: Take the inflation contribution out of Nigeria's position. Where
+# would Nigeria be on PC1, counting from the bottom? Would you still put it
+# first?
+```
+
+```{r}
+#| label: pc1-share
+#| fig-width: 7
+#| fig-height: 4
+# Why? The table above explains one country. This plot is about PC1
+# itself, across all 167 countries. A variable's share of PC1 is 100
+# times its loading squared. The nine shares add up to 100.
+share_pc1 <- 100 * pca$rotation[, "PC1"]^2
+round(sort(share_pc1, decreasing = TRUE), 1)
+sum(share_pc1)
+par(mar = c(4, 7, 3, 1))
+barplot(sort(share_pc1), horiz = TRUE, las = 1, col = "grey60",
+        xlim = c(0, 20), xlab = "Share of PC1 (%)",
+        main = "Each variable's share of PC1")
+# The dashed line is 100 / 9 = 11.1%, the share each variable would have
+# if all nine counted the same.
+abline(v = 100 / 9, lty = 2, col = "#C41230", lwd = 1.5)
+par(mar = c(5, 4, 4, 2))
+
+# Note: The factoextra package calls this share the "contribution" of a
+# variable, and fviz_contrib() draws this plot. In this lab, contribution
+# to PC1 always means loading times z-score for one country, as in the
+# table above.
+#
+# Question: Is inflation above or below the dashed line? Compare that
+# with the size of Nigeria's inflation contribution in the table above.
+#
+# Discuss: To explain why one country sits where it does on PC1, which
+# helps more: each variable's share of PC1, or that country's
+# contributions? What should HELP check before it trusts one country's
+# position?
+```
+
+```{r}
+#| label: without-nigeria
+# The same PCA without Nigeria. Flip the signs the same way as in section 4.
+pca_wo <- prcomp(X[rownames(X) != "Nigeria", ], scale. = TRUE)
+if (pca_wo$rotation["life_expec", "PC1"] < 0) pca_wo$rotation[, "PC1"] <- -pca_wo$rotation[, "PC1"]
+if (pca_wo$rotation["imports", "PC2"] < 0) pca_wo$rotation[, "PC2"] <- -pca_wo$rotation[, "PC2"]
+round(cbind(all_PC1 = pca$rotation[, "PC1"], without_PC1 = pca_wo$rotation[, "PC1"],
+            all_PC2 = pca$rotation[, "PC2"], without_PC2 = pca_wo$rotation[, "PC2"]), 3)
+# The largest change in any loading, on PC1 and on PC2.
+loading_change <- apply(abs(pca_wo$rotation[, 1:2] - pca$rotation[, 1:2]), 2, max)
+round(loading_change, 3)
+pve_wo <- pca_wo$sdev^2 / sum(pca_wo$sdev^2)
+round(rbind(all = pve[1:4], without_Nigeria = pve_wo[1:4]), 4)
+
+# Question: Did dropping Nigeria change the loadings of PC1 or PC2? Did the
+# PVEs change?
+#
+# Discuss: The file does not say exactly what this inflation variable
+# measures, or for which year. Is Nigeria the country in most need, or the
+# country with the most extreme inflation value? What would you check before
+# you report to HELP?
+```
+
+# 8. Rank the countries and check the list
+
+**Before you decide.** Talk with the person next to you. Look at the scree
+plot, your names for PC1 and PC2, and what you found about Nigeria in
+section 7. Decide how many components you would keep for HELP, and write a
+short name for PC1 and for PC2. Then give your reason in one sentence.
+Finally, go back to the one variable you chose at the start to rank the
+countries: does it rank them in about the same order as PC1?
+
+```{r}
+#| label: commit
+# Type the number of components you keep, without quotes. Type the two
+# names and your reason between the quotes.
+my_k <- NA
+pc1_name <- ""
+pc2_name <- ""
+my_reason <- ""
+
+if (length(my_k) == 1 && is.numeric(my_k) && my_k %in% 1:9) {
+  cat("Components kept:", my_k, "\n")
+  cat("Share of the spread on the map:", round(cum_pve[my_k], 4), "\n")
+  cat("Share left out:", round(1 - cum_pve[my_k], 4), "\n")
+  cat("PC1:", pc1_name, "| PC2:", pc2_name, "\n")
+  cat("Reason:", my_reason, "\n")
+} else {
+  cat("No number of components chosen yet. Type a number from 1 to 9 in",
+      "my_k, then run this chunk again.\n")
+}
+
+# The ten countries lowest on PC1, with their values on the nine variables.
+shortlist <- names(pc1)[1:10]
+X[shortlist, ]
+
+# Question: Would you send aid in this order? Which country on the
+# list would you check first, and with which of the nine variables?
+#
+# Discuss: PCA uses no outcome variable. Nothing in this dataset says how
+# much past aid helped, what aid costs, or who would receive it. What does
+# the map not tell HELP?
+```
+
+**Stop here.** This is the end of the lab in class.
+
+# 9. After class: extra questions
+
+Work on these on your own after class. They use the same data. Run question
+1 first, because question 5 uses the distances it computes.
+
+1. **The countries closest to Qatar.** Find the five countries nearest to
+   Qatar on the map (PC1 and PC2), and the five nearest on all nine
+   standardized variables. Are they the same countries? What does the map
+   hide about Qatar?
+
+2. **What PC3 and PC4 add.** Use your scree plot from section 3. Read the
+   loadings of PC3 and PC4 and the countries at each end. Where is Nigeria
+   on PC3? Compare the PC3 loadings with and without Nigeria. Do they change
+   more than the PC1 and PC2 loadings did in section 7?
+
+3. **Is it only the dollar variables?** Run PCA on the variables in their
+   original units, leaving out income and gdpp. Which variable dominates PC1
+   now, and why?
+
+4. **The shortlist without inflation.** Run the PCA on the eight
+   standardized variables other than inflation. Where does Nigeria rank on
+   PC1 now? How many of the ten countries are on both shortlists?
+
+5. **Close on the map, close in the data?** Among pairs of countries less
+   than 0.1 apart on the map, find the pair that is farthest apart on all
+   nine standardized variables. Compare their values. How far apart are
+   they, compared with the median distance between two countries?
+
+6. **The correlations and PC1.** Look back at the correlation heatmap
+   from section 1. Are the variables that are strongly correlated with
+   each other the ones with the largest loadings on PC1?
+
+7. **Drop every extreme value?** A common rule drops any observation
+   with a z-score above 3 or below -3 on any variable. How many countries
+   does the rule drop? How many of them are on your shortlist from
+   section 8? Run the PCA without them. Does PC1 change? Would you use
+   this rule for HELP?
+
+```{r}
+#| label: after-class-qatar
+#| eval: false
+# After class, change eval to true. Do not run these in class.
+# dist() gives the straight-line (Euclidean) distance between every pair of
+# countries: on the map (PC1 and PC2), and on the nine standardized
+# variables.
+d_map <- as.matrix(dist(pca$x[, c("PC1", "PC2")]))
+d_all <- as.matrix(dist(Z))
+near_map <- names(sort(d_map["Qatar", ]))[2:6]
+near_all <- names(sort(d_all["Qatar", ]))[2:6]
+near_map
+near_all
+round(rbind(map = d_map["Qatar", near_map], all_nine = d_all["Qatar", near_map]), 2)
+X[unique(c("Qatar", near_map, near_all)), ]
+```
+
+```{r}
+#| label: after-class-pc3-pc4
+#| eval: false
+# After class, change eval to true. Do not run these in class.
+# Same rule as in section 4: flip PC3 so its loading on health is positive,
+# and PC4 so its loading on gdpp is positive.
+if (pca$rotation["health", "PC3"] < 0) {
+  pca$rotation[, "PC3"] <- -pca$rotation[, "PC3"]
+  pca$x[, "PC3"] <- -pca$x[, "PC3"]
+}
+if (pca$rotation["gdpp", "PC4"] < 0) {
+  pca$rotation[, "PC4"] <- -pca$rotation[, "PC4"]
+  pca$x[, "PC4"] <- -pca$x[, "PC4"]
+}
+round(pca$rotation[, 3:4], 3)
+round(head(sort(pca$x[, "PC3"]), 4), 2)
+round(tail(sort(pca$x[, "PC3"]), 4), 2)
+round(head(sort(pca$x[, "PC4"]), 4), 2)
+round(tail(sort(pca$x[, "PC4"]), 4), 2)
+round(pca$x["Nigeria", 1:4], 2)
+if (pca_wo$rotation["health", "PC3"] < 0) pca_wo$rotation[, "PC3"] <- -pca_wo$rotation[, "PC3"]
+round(cbind(all_PC3 = pca$rotation[, "PC3"], without_PC3 = pca_wo$rotation[, "PC3"]), 3)
+round(max(abs(pca_wo$rotation[, "PC3"] - pca$rotation[, "PC3"])), 3)
+```
+
+```{r}
+#| label: after-class-dollars
+#| eval: false
+# After class, change eval to true. Do not run these in class.
+pca_raw7 <- prcomp(X[, setdiff(vars, c("income", "gdpp"))])
+summary(pca_raw7)
+round(pca_raw7$rotation[, 1:2], 3)
+round(sort(sapply(X[, setdiff(vars, c("income", "gdpp"))], sd)), 2)
+```
+
+```{r}
+#| label: after-class-no-inflation
+#| eval: false
+# After class, change eval to true. Do not run these in class.
+pca8 <- prcomp(X[, setdiff(vars, "inflation")], scale. = TRUE)
+if (pca8$rotation["life_expec", "PC1"] < 0) {
+  pca8$rotation[, "PC1"] <- -pca8$rotation[, "PC1"]
+  pca8$x[, "PC1"] <- -pca8$x[, "PC1"]
+}
+summary(pca8)
+shortlist8 <- names(sort(pca8$x[, "PC1"]))[1:10]
+shortlist8
+# Nigeria's rank on PC1, counting from the bottom, and the countries on both
+# shortlists.
+rank(pca8$x[, "PC1"])["Nigeria"]
+intersect(shortlist, shortlist8)
+```
+
+```{r}
+#| label: after-class-same-spot
+#| eval: false
+# After class, change eval to true. Do not run these in class.
+# Uses d_map and d_all from after-class question 1.
+close <- which(upper.tri(d_map) & d_map < 0.1, arr.ind = TRUE)
+far <- close[which.max(d_all[close]), ]
+same_spot <- c(rownames(d_map)[far[1]], colnames(d_map)[far[2]])
+same_spot
+round(c(map = d_map[far[1], far[2]], all_nine = d_all[far[1], far[2]],
+        median_all_nine = median(d_all[upper.tri(d_all)])), 3)
+X[same_spot, ]
+round(pca$x[same_spot, 1:4], 2)
+```
+
+```{r}
+#| label: after-class-three-sds
+#| eval: false
+# After class, change eval to true. Do not run these in class.
+# TRUE for a country with any z-score above 3 or below -3.
+extreme <- rowSums(abs(Z) > 3) > 0
+sum(extreme)
+names(which(extreme))
+intersect(shortlist, names(which(extreme)))
+# The same PCA without them. Flip the sign of PC1 the same way as in section 4.
+pca_trim <- prcomp(X[!extreme, ], scale. = TRUE)
+if (pca_trim$rotation["life_expec", "PC1"] < 0) {
+  pca_trim$rotation[, "PC1"] <- -pca_trim$rotation[, "PC1"]
+  pca_trim$x[, "PC1"] <- -pca_trim$x[, "PC1"]
+}
+round(cbind(all = pca$rotation[, "PC1"], trimmed = pca_trim$rotation[, "PC1"]), 3)
+pve_trim <- pca_trim$sdev^2 / sum(pca_trim$sdev^2)
+round(rbind(all = pve[1:4], trimmed = pve_trim[1:4]), 4)
+```
