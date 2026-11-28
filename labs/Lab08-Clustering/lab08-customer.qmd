@@ -1,0 +1,847 @@
+---
+title: "Lab 8: Clustering"
+subtitle: "70-467 · Monday 30 November"
+author: "Andrés Castaño Zuluaga"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    toc-location: right
+    body-classes: "mlba-page"
+    code-fold: false
+    code-tools: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+<!--
+Student starter for the hour. The code is filled in on purpose. Run each
+chunk and read the comments. In class we will discuss only some of the
+Question and Discuss prompts. This lab has no outcome variable and nothing
+to predict. You will split the customers into two segments, read the
+k-means output, check the number of groups, name the segments, choose an
+offer and a channel for each, and check them with a second method.
+-->
+
+# Introduction to the Business Problem
+
+A store sells fruit, meat, fish, sweets and gold products. Customers buy
+in person, on the store's website and through its catalog.
+
+**The problem.** The store's marketing team has the budget for two
+campaigns next quarter. It wants to aim each campaign at a different
+group of customers, with its own offer and its own channel: the store,
+the website or the catalog. If you had to split these customers into
+two groups for those two campaigns, how would you do it, and how would
+you explain the groups to the marketing team?
+
+The dataset has one observation per customer, 2,240 customers. For each
+customer we have an ID, the year of birth, annual household income, the
+number of children and of teenagers at home, the days since the last
+purchase, four counts of purchases (with a discount, on the website,
+from the catalog and in the store), the visits to the website in a
+month, and the amounts spent on fruit, meat, fish, sweets and gold
+products over the last two years. The file also has education, marital
+status, a date, and flags for marketing campaigns and complaints. We do
+not use them. Wine spending is not in this file.
+
+**Why clustering?** The store wants groups of customers who look alike
+on income, children and how they buy. With 15 variables at once, nobody
+can sort the customers by hand, and many of the variables move together.
+K-means does the sorting from the distances between customers. Each
+group it finds is a segment.
+
+The question for this lab: can these 15 variables split the customers
+into two segments that the store can name and act on? Which variables
+separate the two segments? Does a second method find the same two groups?
+What can this file not tell the store?
+
+In this lab we use two groups. Section 4 shows two checks for the number
+of groups. With real data we do not know the true number of groups, so
+the checks help us choose a number and cannot prove it.
+
+Keep the case PDF and the codebook open while you run code.
+
+**Before you run anything.** Suppose you may use only income and the
+number of children at home to split the customers into two groups. What
+would you name the two groups? Name one kind of customer this split would
+put in the wrong group, and say why. Talk this through with the person
+next to you. We come back to it in section 7.
+
+# Roadmap
+
+1. **Load, summarize and look at correlations.** Find the missing
+   incomes, check that wine spending is not in the file, drop the
+   customers the lab does not use, keep the 15 variables, compare their
+   standard deviations (SDs), and see which variables move together.
+2. **Standardize the variables.** Why clustering needs z-scores, and what
+   k-means does on the variables in their original units.
+3. **Run k-means with two groups and read its output.** The parts of the
+   `kmeans()` result one by one: `$cluster`, `$size`, `$centers`,
+   `$withinss`, `$tot.withinss`, `$totss` and `$betweenss`.
+4. **How many groups?** The elbow (1 to 8 groups) and the silhouette
+   (2 to 8 groups) with `fviz_nbclust()`, then the silhouette of each
+   customer with `fviz_silhouette()`. The lab keeps two.
+5. **Profile and name the segments.** The group means in the original
+   units, the two centers as a chart, and the two segments on income and
+   meat spending with `fviz_cluster()`. Name each segment and choose the
+   offer and the channel for its campaign.
+6. **A second method: hierarchical clustering.** Ward linkage, cut
+   into two groups, compared with k-means, and plotted as a dendrogram
+   with `fviz_dend()`.
+7. **What can the grouping not tell the store?** Write down one limit,
+   then go back to the split from the start.
+
+We stop there in class. Section 8 has six more questions to work on after
+class.
+
+# 1. Load, summarize and look at correlations
+
+```{r}
+#| label: setup
+# This lab uses four packages. If you have not installed them, run this
+# line once in the console, not in the notebook:
+# install.packages(c("cluster", "factoextra", "dendextend", "ggplot2"))
+library(cluster)     # silhouette()
+library(factoextra)  # fviz_nbclust(), fviz_silhouette(), fviz_cluster(), fviz_dend()
+library(dendextend)  # fviz_dend() uses it; its startup messages are expected
+library(ggplot2)     # the plots
+options(scipen = 999)
+```
+
+```{r}
+#| label: load-data
+cust <- read.csv("data/customer_personality.csv")
+# dim() prints the number of customers and the number of variables.
+dim(cust)
+# colSums(is.na()) counts the missing values in each variable. We print
+# only the variables with at least one.
+na_count <- colSums(is.na(cust))
+na_count[na_count > 0]
+# str() shows each variable and its type.
+str(cust)
+# Is wine spending in the file? The spending variables all start with Mnt.
+"MntWines" %in% names(cust)
+grep("^Mnt", names(cust), value = TRUE)
+
+# Question: How many customers are there, and how many variables? How
+# many values are missing, and in which variable? Is wine spending in the
+# file?
+```
+
+```{r}
+#| label: row-rule
+# Why? K-means needs a value for every variable, so a customer with no
+# income cannot be clustered. Look also at the three highest incomes and
+# the five earliest years of birth.
+head(sort(cust$Income, decreasing = TRUE), 3)
+head(sort(cust$Year_Birth), 5)
+
+# The rule for this lab: drop the customers with no income and the one
+# income of 666,666. The three earliest years of birth (1893, 1899 and
+# 1900) stay in. After-class question 3 drops them and reruns k-means.
+keep <- !is.na(cust$Income) & cust$Income != 666666
+cust2 <- cust[keep, ]
+nrow(cust2)
+sum(!keep)
+
+# Question: How many customers remain? How far is 666,666 from the second
+# highest income? Would you believe a customer born in 1893?
+```
+
+```{r}
+#| label: fifteen-variables
+# Why? Clustering uses distances, and a distance needs numbers. ID is a
+# label: rownames() attaches it to X, so the tables below show it.
+# Education, marital status, the date, the campaign and complaint flags,
+# Z_CostContact, Z_Revenue and Response stay out of the clustering.
+vars <- c("Year_Birth", "Income", "Kidhome", "Teenhome", "Recency",
+          "NumDealsPurchases", "NumWebPurchases", "NumCatalogPurchases",
+          "NumStorePurchases", "NumWebVisitsMonth", "MntFruits",
+          "MntMeatProducts", "MntFishProducts", "MntSweetProducts",
+          "MntGoldProds")
+X <- cust2[, vars]
+rownames(X) <- cust2$ID
+dim(X)
+sum(is.na(X))
+
+# summary() gives the smallest value, the quartiles, the mean and the
+# largest value of each variable. head() shows the first customers: each
+# observation is one customer's profile.
+summary(X)
+head(X)
+
+# The SD of each variable, from smallest to largest, and the ratio of the
+# largest SD to the smallest.
+var_sd <- sapply(X, sd)
+round(sort(var_sd), 2)
+max(var_sd) / min(var_sd)
+
+# Question: Which variable has the largest SD, and in what unit? Which has
+# the smallest, and in what unit? If we measured the distance between two
+# customers with these numbers as they are, which variable would decide
+# who is close to whom?
+```
+
+```{r}
+#| label: correlations
+#| fig-width: 8
+#| fig-height: 6.5
+# Why? When two variables move together, the distance between two
+# customers counts the same difference twice. cor() gives the correlation r
+# of every pair of variables, from -1 to 1.
+# Student Note: as a rule of thumb, |r| above 0.5 is a strong relationship.
+R <- cor(X)
+# The five pairs with the strongest correlation, positive or negative.
+idx <- which(upper.tri(R), arr.ind = TRUE)
+cor_pairs <- data.frame(var1 = rownames(R)[idx[, 1]], var2 = colnames(R)[idx[, 2]],
+                        r = round(R[idx], 2))
+head(cor_pairs[order(-abs(cor_pairs$r)), ], 5)
+# The whole matrix as a heatmap: blue is positive, red is negative, and a
+# darker cell is a stronger correlation.
+cor_long <- data.frame(var1 = factor(rep(vars, times = length(vars)), levels = vars),
+                       var2 = factor(rep(vars, each = length(vars)), levels = rev(vars)),
+                       r = as.vector(R))
+ggplot(cor_long, aes(x = var1, y = var2, fill = r)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient2(low = "#C41230", mid = "white", high = "#1F5FA8",
+                       limits = c(-1, 1)) +
+  labs(x = NULL, y = NULL, fill = "r",
+       title = "Correlations between the 15 variables") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Question: Which variables move together? Which variables move against
+# income and the spending variables?
+#
+# Business Insight: When several variables rise together, a split of the
+# customers will likely run along all of them at once. Keep the variables
+# you found in mind when you read the centers in section 3.
+```
+
+# 2. Standardize the variables
+
+**Why?** K-means measures how far apart two customers are and adds up the
+differences on all 15 variables. In the original units, one dollar of
+income counts as much as one child at home, and incomes run into the tens
+of thousands, so income alone would decide who is close to whom.
+
+**Formula.** For each variable, z = (x − mean) / SD.
+
+**Intuition.** A z-score says how many SDs a customer is above or below
+the mean of all customers. After standardizing, "high income" and "many
+children" are on the same scale, and each variable has mean 0 and SD 1.
+
+```{r}
+#| label: z-scores
+# scale() turns every variable into z-scores.
+Xs <- scale(X)
+# Check: every mean is 0 and every SD is 1.
+round(colMeans(Xs), 2)
+round(apply(Xs, 2, sd), 2)
+# Income and meat spending for the first three customers, in their own
+# units and in SDs.
+X[1:3, c("Income", "MntMeatProducts")]
+round(Xs[1:3, c("Income", "MntMeatProducts")], 2)
+
+# Question: The first customer's income and meat spending are both above
+# the average. Which of the two is further above it, counted in SDs?
+#
+# Student Note: Standardizing is a data preparation step, as in the
+# principal component analysis (PCA) lab. Methods that use distances need
+# it when the variables are in different units.
+```
+
+```{r}
+#| label: units-vs-sds
+# Why? K-means puts each customer with the nearest center, so the units
+# decide what "near" means. Two groups, once on the variables in their
+# original units and once in SDs. set.seed(467) and nstart = 20, as in the
+# clustering slides.
+set.seed(467)
+km_raw <- kmeans(X, centers = 2, nstart = 20)
+set.seed(467)
+km_z <- kmeans(Xs, centers = 2, nstart = 20)
+# The lowest and the highest income in each group of the run in the
+# original units.
+tapply(X$Income, km_raw$cluster, range)
+# How many customers the two runs put together: the run in the original
+# units down the side, the run in SDs across the top. The group numbers of
+# the two runs are not matched, so the customers who change group are the
+# two smaller counts.
+table(original_units = km_raw$cluster, sds = km_z$cluster)
+
+# Question: Do the income ranges of the two groups in the original units
+# overlap? Which variable decided those groups?
+#
+# Discuss: On the Starbucks menu, without SDs the groups were calorie
+# bands. Is it the same here? How many customers would change group if we
+# moved to SDs? From now on we cluster in SDs.
+```
+
+# 3. Run k-means and read its output
+
+**Why k-means?** It is fast on thousands of customers, and each group is
+described by its center (also known as the centroid), the mean of
+its customers, which is easy to explain to a marketing team.
+
+**Intuition.** K-means starts from k centers chosen at random, where k is
+the number of groups (here 2). It puts each customer with the nearest
+center, moves each center to the mean of its customers, and repeats until
+no customer changes group.
+
+```{r}
+#| label: kmeans-k2
+# Why? One random start can stop at a worse grouping. nstart = 20 runs 20
+# random starts and keeps the one with the smallest total within-group sum
+# of squares. set.seed(467) makes the random starts the same on every
+# computer.
+set.seed(467)
+km <- kmeans(Xs, centers = 2, nstart = 20)
+```
+
+```{r}
+#| label: fix-labels
+# Why? R numbers the groups 1 and 2 in the order it happens to find them.
+# The numbers are labels only, and another computer can swap them. So that
+# everyone in the room reads the same output, group 1 is the group with
+# the lower mean income. If R found them the other way around, we swap the
+# labels in every part of km. Swapping the labels moves no customer to
+# another group.
+if (km$centers[1, "Income"] > km$centers[2, "Income"]) {
+  km$cluster <- 3L - km$cluster
+  km$centers <- km$centers[2:1, ]
+  rownames(km$centers) <- 1:2
+  km$size <- km$size[2:1]
+  km$withinss <- km$withinss[2:1]
+}
+group <- km$cluster
+table(group)
+```
+
+```{r}
+#| label: kmeans-groups
+# kmeans() returns a list. These are the parts that describe the groups.
+#
+# $cluster: the group of each customer, 1 or 2, in the order of the observations.
+# The names are the customer IDs. These are the segment labels.
+head(km$cluster, 10)
+# $size: the number of customers in each group.
+km$size
+# $centers: the mean of each variable in each group, in SDs. One line per
+# group, one number per variable.
+round(km$centers, 2)
+
+# Question: How many customers are in each group? On which variables are
+# the two centers farthest apart? On which are they almost the same?
+#
+# Interpret: A center of 1 on Income would mean that the group's mean
+# income is one SD above the mean of all customers. We go back to the
+# original units in section 5.
+#
+# Business Insight: A segment is only useful if it is large enough to be
+# worth its own campaign. Is either group too small for that?
+```
+
+```{r}
+#| label: kmeans-sums
+# These parts say how tight the groups are.
+#
+# $withinss: for each group, the squared distance of each customer to the
+# group's center, added up. Divided by the size, it is the spread per
+# customer, which does not grow with the size of the group.
+round(km$withinss, 1)
+round(km$withinss / km$size, 2)
+# $tot.withinss: the two added together. This is the number k-means makes
+# as small as it can.
+km$tot.withinss
+# $totss: the same sum around the mean of all customers, before any
+# grouping. In SDs it is (number of customers - 1) times 15.
+km$totss
+# $betweenss: totss minus tot.withinss, the part of the spread that lies
+# between the groups. Its share of totss says how much of the spread the
+# two groups explain.
+km$betweenss
+km$betweenss / km$totss
+
+# Question: Which group is tighter, per customer? What share of the spread
+# lies between the two groups?
+#
+# Student Note: A higher share is not always better. With one group per
+# customer the share would be 1, and the store would learn nothing.
+```
+
+# 4. How many groups?
+
+There is no outcome to check the groups against, so we use two checks.
+`fviz_nbclust()` runs `kmeans()` for each number of groups, k, with the
+`nstart` we give it, and plots the result.
+
+```{r}
+#| label: elbow
+#| fig-width: 7
+#| fig-height: 4
+# Why? The elbow: the total within-group sum of squares for each k. It
+# always falls as k grows, so we look for the k after which it falls much
+# less: the bend in the curve. At k = 1 the total is totss.
+# This chunk and the next take a few seconds each.
+set.seed(467)
+elbow_plot <- fviz_nbclust(Xs, kmeans, method = "wss", k.max = 8, nstart = 20)
+elbow_plot + labs(title = "Elbow method", x = "Number of groups, k",
+                  y = "Total within-group sum of squares")
+# The numbers behind the plot, and how much the total falls from one k to
+# the next.
+wss <- setNames(elbow_plot$data$y, elbow_plot$data$clusters)
+round(wss, 1)
+round(-diff(wss), 1)
+
+# Question: Where does the curve bend? How does the fall from 2 to 3
+# groups compare with the fall from 1 to 2?
+```
+
+```{r}
+#| label: silhouette
+#| fig-width: 7
+#| fig-height: 4
+# Why? The silhouette of a customer compares a, its average distance to
+# the customers of its own group, with b, its average distance to the
+# customers of the nearest other group:
+#   s = (b - a) / max(a, b), from -1 to 1.
+# Near 1, the customer sits well inside its group. Near 0, it sits on the
+# edge between two groups. Below 0, it is closer to the other group. The
+# plot shows the mean over all customers for each k; the dashed line
+# marks the highest.
+# Student Note: as a rough guide, a mean above 0.5 means reasonable
+# structure, a mean between 0.25 and 0.5 means weak structure that could
+# be an accident of the method, and a mean below 0.25 means little or no
+# structure.
+set.seed(467)
+sil_plot <- fviz_nbclust(Xs, kmeans, method = "silhouette", k.max = 8, nstart = 20)
+sil_plot + labs(title = "Silhouette method", x = "Number of groups, k",
+                y = "Mean silhouette width")
+# The numbers behind the plot, for k = 2 to 8 (a silhouette needs at
+# least two groups).
+sil <- setNames(sil_plot$data$y, sil_plot$data$clusters)
+round(sil, 3)
+
+# Question: At which k is the mean silhouette highest? Do the elbow and
+# the silhouette point to the same k? Where do these values fall on the
+# rough guide?
+#
+# Discuss: The two checks need not agree, and with real data we do not
+# know the true number of groups. Besides these two plots, what should
+# decide how many segments the store works with? The lab uses k = 2.
+```
+
+```{r}
+#| label: silhouette-k2
+#| fig-width: 8
+#| fig-height: 4
+# Why? The mean hides how well each customer sits in its group.
+# fviz_silhouette() plots one bar per customer, sorted within each group,
+# and prints the mean of each group. The dashed line is the mean over all
+# customers.
+# dist() computes the distance between every two customers once.
+# silhouette() needs it, and so does hierarchical clustering in section 6.
+d <- dist(Xs)
+sil2 <- silhouette(group, d)
+fviz_silhouette(sil2, palette = c("#1F5FA8", "#C41230"))
+# The number of customers with a negative silhouette, in each group.
+table(group = group, negative = sil2[, "sil_width"] < 0)
+
+# Question: Which group is tighter? In which group are the customers with
+# a negative silhouette?
+#
+# Business Insight: Customers with a negative silhouette are closer to the
+# other segment than to their own. An offer designed for their segment may
+# not suit them.
+```
+
+# 5. Profile and name the segments
+
+**Why?** K-means gives the group means, and we choose the names. A
+segment becomes useful to the marketing team when it has a name that
+matches its means in the original units and an offer and a channel for
+its campaign.
+
+```{r}
+#| label: group-means
+# The group means in the original units: group 1, group 2 and, last, all
+# customers.
+profile <- cbind(sapply(split(X, group), colMeans), all = colMeans(X))
+round(profile, 1)
+# The share of customers in each group with at least one child or
+# teenager at home.
+round(tapply(X$Kidhome + X$Teenhome > 0, group, mean), 2)
+# The share with at least one small child at home (Kidhome above 0).
+round(tapply(X$Kidhome > 0, group, mean), 2)
+
+# Which variables separate the two groups? For each variable, the share of
+# its spread (its sum of squares) that lies between the two group means.
+# Near 1, the two groups differ a lot. Near 0, they have almost the same
+# mean.
+between <- sapply(X, function(v) {
+  within <- sum(tapply(v, group, function(z) sum((z - mean(z))^2)))
+  1 - within / sum((v - mean(v))^2)
+})
+round(sort(between, decreasing = TRUE), 3)
+
+# Question: Name each group in two or three words. Which variables does
+# your name rest on? Which variables barely differ between the two
+# groups? Do not build a name on those.
+```
+
+```{r}
+#| label: centers-plot
+#| fig-width: 8
+#| fig-height: 5.5
+# Why? The two centers from section 3 as a chart, variable by variable, in
+# SDs. A bar to the right means the group is above the mean of all
+# customers; a bar to the left means it is below.
+centers_long <- data.frame(
+  variable = factor(rep(colnames(km$centers), each = 2), levels = rev(vars)),
+  group = factor(rep(1:2, times = ncol(km$centers))),
+  z = as.vector(km$centers))
+ggplot(centers_long, aes(x = variable, y = z, fill = group)) +
+  geom_col(position = "dodge") +
+  coord_flip() +
+  scale_fill_manual(values = c("1" = "#1F5FA8", "2" = "#C41230")) +
+  labs(x = NULL, y = "Center (SDs from the mean of all customers)",
+       fill = "Group", title = "The two centers, variable by variable") +
+  theme_minimal()
+
+# Question: On which variables do the two bars point in opposite
+# directions? Among website, catalog and store purchases, which group
+# buys more? Which group visits the website more?
+```
+
+```{r}
+#| label: segment-plot
+#| fig-width: 7.5
+#| fig-height: 5
+# Why? The clustering used 15 variables, and we cannot plot 15 axes.
+# fviz_cluster() with choose.vars plots two of the file's own variables,
+# in SDs, the units k-means worked in: income, the variable that differs
+# most between the two groups, and meat spending, the spending variable
+# that differs most. Each point is a customer, the large symbol is the
+# group's center, and the ellipse covers the area where most of a group's
+# points would fall if they spread like a normal distribution.
+# ellipse.type = "convex" would plot the outline of each group instead.
+# Student Note: without choose.vars, fviz_cluster() plots the groups on
+# principal components (the PCA lab) instead of the variables in the file.
+# The caption turns one SD back into dollars.
+segment_plot <- fviz_cluster(list(data = Xs, cluster = group),
+                             choose.vars = c("Income", "MntMeatProducts"),
+                             geom = "point", ellipse.type = "norm",
+                             palette = c("#1F5FA8", "#C41230"),
+                             main = "Two segments on income and meat spending",
+                             xlab = "Income (SDs from the mean)",
+                             ylab = "Meat spending (SDs from the mean)",
+                             ggtheme = theme_minimal())
+segment_plot + labs(color = "Group", fill = "Group", shape = "Group") +
+  labs(caption = paste0(
+    "One SD of income is $", format(round(sd(X$Income)), big.mark = ","),
+    ". One SD of meat spending is $", format(round(sd(X$MntMeatProducts)), big.mark = ","),
+    ". K-means grouped customers in these standardized units."))
+
+# Question: Where do the two groups overlap? Find a point of group 2 with
+# a low income. What else could put that customer in group 2?
+#
+# Discuss: The picture shows 2 of the 15 variables. When a point sits
+# among the other group's points, the other 13 variables are the reason.
+# Do your names still describe most of the points of each color?
+```
+
+**Before you decide.** Talk with the person next to you. Look at the group
+means, the centers chart and the picture. Write a short name for each
+segment, the offer for its campaign, and the channel you would use to
+reach it: the store, the website or the catalog.
+
+```{r}
+#| label: commit
+# Type a name, an offer and a channel for each segment between the quotes.
+name_1 <- ""
+name_2 <- ""
+offer_1 <- ""
+offer_2 <- ""
+channel_1 <- ""
+channel_2 <- ""
+
+if (all(nchar(c(name_1, name_2, offer_1, offer_2, channel_1, channel_2)) > 0)) {
+  cat("Segment 1:", name_1, "|", km$size[1], "customers | Offer:", offer_1, "| Channel:", channel_1, "\n")
+  cat("Segment 2:", name_2, "|", km$size[2], "customers | Offer:", offer_2, "| Channel:", channel_2, "\n")
+} else {
+  cat("Missing entries. Type a name, an offer and a channel for each segment",
+      "between the quotes, then run this chunk again.\n")
+}
+
+# Business Insight: A good offer and channel use what the segment already
+# does and how it differs from the other segment: where it visits and
+# buys, what it buys, and how much it spends. Do not build them on
+# variables that barely differ.
+```
+
+# 6. A second method: hierarchical clustering
+
+**Why?** If a second method finds the same two groups, they are less
+likely to be an accident of one method. Ward linkage, used below, works
+with the same within-group sum of squares as k-means, so its groups are
+easy to compare with k-means. Hierarchical clustering does not need k up
+front. Each customer
+starts as its own group. Then the two closest groups are joined, again
+and again, until all customers are in one group. The dendrogram is a tree
+diagram that records every join. With most linkages, the height of a join
+is the distance between the two groups. With Ward linkage, used here, the
+height is a merge cost: it grows with how much the join raises the
+within-group sum of squares.
+
+```{r}
+#| label: hclust
+# The linkage is the rule for choosing which two groups to join next:
+#   "complete": the largest distance between a customer of one group and
+#               a customer of the other
+#   "average":  the average of all those distances
+#   "ward.D2":  join the two groups that raise the within-group sum of
+#               squares the least, the number k-means makes small
+# The linkage is one setting: after class, change it here and run section
+# 6 again to see another dendrogram. We reuse d, the distances from section 4.
+# The Session 8 slides used "average" linkage. Here we use "ward.D2"
+# because it aims at the same thing as k-means, so its two groups are
+# easy to compare with section 3. After-class question 4 tries the others.
+linkage <- "ward.D2"
+hc <- hclust(d, method = linkage)
+# Cut the dendrogram into two groups.
+hc_group <- cutree(hc, k = 2)
+table(hc_group)
+
+# Question: How many customers are in each branch of the dendrogram?
+```
+
+```{r}
+#| label: compare
+# K-means down the side, hierarchical clustering across the top.
+table(kmeans = group, hclust = hc_group)
+# The mean of each variable in each branch.
+round(sapply(split(X, hc_group), colMeans), 1)
+# If one branch is very small, look at its customers one by one. With Ward
+# both branches are large, so this prints nothing in class; it matters in
+# after-class question 4.
+small <- names(hc_group)[hc_group == names(which.min(table(hc_group)))]
+if (length(small) <= 10) X[small, ]
+
+# Question: Do k-means and hierarchical clustering find the same two
+# groups? Hierarchical clustering numbers its branches its own way.
+# Which branch goes with which k-means group, and how many customers
+# do the two methods put in different groups? Which k-means group holds
+# most of the customers they disagree on?
+#
+# Discuss: Which grouping would you take to the marketing team, and what
+# would you tell them about the other one?
+```
+
+```{r}
+#| label: dendrogram
+#| fig-width: 9
+#| fig-height: 5
+#| eval: false
+# Shown on the projector in class. After class, change eval to true.
+# fviz_dend() plots the dendrogram with its two branches in color. It is
+# slow on 2,215 customers: one to three minutes. The colors are not the
+# k-means colors, because these two groups come from hierarchical
+# clustering.
+fviz_dend(hc, k = 2, show_labels = FALSE,
+          k_colors = c("#2E7D32", "#E69F00"),
+          main = paste("Dendrogram with", linkage, "linkage, cut into two groups"),
+          ylab = "Height")
+
+# Question: Where would a horizontal line cut the dendrogram into two
+# groups? Is the cut near the top or far below it?
+```
+
+# 7. What can the grouping not tell the store?
+
+**Before you write.** Look back at your names, offers and channels from section 5
+and at what hierarchical clustering found in section 6. Write one limit
+of this grouping. Then go back to the split you made at the start with
+income and children only.
+
+```{r}
+#| label: limit
+# Type one limit of this grouping between the quotes.
+my_limit <- ""
+if (nchar(my_limit) > 0) cat("Limit:", my_limit, "\n") else
+  cat("No limit yet. Type one between the quotes, then run this chunk again.\n")
+
+# One way to write the split from the start as a rule: customers with an
+# income at or above the median and no small children at home (Kidhome is
+# 0; teenagers do not count) go in group 2, everyone else in group 1.
+simple <- ifelse(X$Income >= median(X$Income) & X$Kidhome == 0, 2, 1)
+table(kmeans = group, simple = simple)
+# The customers the rule puts in a different group from k-means: their
+# means on six variables, by their k-means group.
+moved <- simple != group
+moved_means <- aggregate(X[moved, c("Income", "Kidhome", "Teenhome",
+                                    "NumCatalogPurchases", "NumWebVisitsMonth",
+                                    "MntMeatProducts")],
+                         by = list(kmeans_group = group[moved]), FUN = mean)
+moved_means[-1] <- round(moved_means[-1], 2)
+moved_means
+
+# Question: How many customers does the simple rule put in a different
+# group from k-means? What kind of customer does it misplace?
+#
+# Discuss: Clustering uses no outcome variable. The file records whether
+# each customer accepted six past campaigns. We left those flags out, and
+# the file does not say what those offers were, which channel they used
+# or what they cost. Nothing here says whether a customer bought more
+# after an offer. What does the grouping not tell the store?
+```
+
+**Stop here.** This is the end of the lab in class.
+
+# 8. After class: extra questions
+
+Work on these on your own after class. They use the same data and the
+objects from sections 1 to 7.
+
+1. **One start or twenty?** Run k-means with one start from 100 different
+   seeds, at k = 2 and at k = 4. How many of the 100 runs reach the total
+   within-group sum of squares of the 20-start run from section 4? How
+   far off is the worst run?
+
+2. **The original units, at more length.** Look at the groups from the
+   run in the original units in section 2. What are their means? What
+   share of the total sum of squares does income hold in the original
+   units? Why does that decide the groups?
+
+3. **The three early years of birth.** Drop the customers born in 1893,
+   1899 and 1900, put the variables in SDs again, and rerun k-means with
+   two groups. How many customers change group? Do your names change?
+
+4. **The other linkages.** Cut the dendrogram at two groups with Ward
+   (`"ward.D2"`), complete, average and single linkage. Which linkage
+   agrees most with k-means? Which ones split off a small branch of a
+   few customers, and who are they? To plot one of the dendrograms, set
+   `linkage` in section 6 and run section 6 again.
+
+5. **Three groups.** Run k-means with k = 3 and name the three groups from
+   their means. Which of your two segments splits, and is the split one
+   the store could use?
+
+6. **Another picture of the segments.** Plot the two segments with
+   `fviz_cluster()` on catalog purchases and website visits a month.
+   Which channel would you use to reach each segment? Why do the points
+   line up on a grid?
+
+```{r}
+#| label: after-class-starts
+#| eval: false
+# After class, change eval to true. Do not run these in class.
+# One start from each of 100 seeds, at k = 2 and at k = 4.
+one_start <- function(k) sapply(1:100, function(s) {
+  set.seed(s)
+  kmeans(Xs, centers = k, nstart = 1)$tot.withinss
+})
+wss_one2 <- one_start(2)
+wss_one4 <- one_start(4)
+# Runs out of 100 that reach the 20-start total from section 4, and the
+# worst total, at k = 2 and k = 4.
+c(k2 = sum(round(wss_one2, 1) == round(wss[["2"]], 1)),
+  k4 = sum(round(wss_one4, 1) == round(wss[["4"]], 1)))
+round(rbind(best_of_20 = wss[c("2", "4")], worst_one_start = c(max(wss_one2), max(wss_one4))), 1)
+# The group sizes of the worst one-start run at k = 2.
+set.seed(which.max(wss_one2))
+kmeans(Xs, centers = 2, nstart = 1)$size
+```
+
+```{r}
+#| label: after-class-units
+#| eval: false
+# After class, change eval to true. Do not run these in class.
+# The run in the original units from section 2, with group 1 the group with
+# the lower mean income, as in section 3.
+raw_group <- km_raw$cluster
+if (km_raw$centers[1, "Income"] > km_raw$centers[2, "Income"]) raw_group <- 3 - raw_group
+round(sapply(split(X, raw_group), colMeans), 1)
+table(original_units = raw_group, sds = group)
+# Each variable's share of the total sum of squares in the original units,
+# in percent: the three largest.
+round(sort(100 * var_sd^2 / sum(var_sd^2), decreasing = TRUE)[1:3], 3)
+```
+
+```{r}
+#| label: after-class-birth-years
+#| eval: false
+# After class, change eval to true. Do not run these in class.
+early <- X$Year_Birth %in% c(1893, 1899, 1900)
+X_b <- X[!early, ]
+nrow(X_b)
+set.seed(467)
+km_b <- kmeans(scale(X_b), centers = 2, nstart = 20)
+group_b <- km_b$cluster
+if (km_b$centers[1, "Income"] > km_b$centers[2, "Income"]) group_b <- 3 - group_b
+# The same customers, with all 2,215 and without the three.
+table(with_all = group[!early], without_three = group_b)
+# The three customers' groups in section 3, and the mean year of birth of
+# each group, with and without them.
+group[early]
+round(rbind(with_all = tapply(X$Year_Birth, group, mean),
+            without_three = tapply(X_b$Year_Birth, group_b, mean)), 1)
+```
+
+```{r}
+#| label: after-class-linkages
+#| eval: false
+# After class, change eval to true. Do not run these in class.
+# The same distances, four linkages, each cut into two groups.
+linkages <- c("ward.D2", "complete", "average", "single")
+link_groups <- lapply(setNames(linkages, linkages), function(m)
+  cutree(hclust(d, method = m), k = 2))
+link_tab <- lapply(link_groups, function(g) table(kmeans = group, hclust = g))
+link_tab
+# Number of customers in the smaller branch for each linkage.
+sapply(link_groups, function(g) sum(g == names(which.min(table(g)))))
+# Who is in the small branch? Complete linkage is shown; average and single
+# split off the same customers.
+small_branch <- link_groups$complete ==
+  names(which.min(table(link_groups$complete)))
+X[small_branch, ]
+```
+
+```{r}
+#| label: after-class-three
+#| eval: false
+# After class, change eval to true. Do not run these in class.
+set.seed(467)
+km_k3 <- kmeans(Xs, centers = 3, nstart = 20)
+# Order the three groups by mean income, so group 1 has the lowest.
+group_k3 <- match(km_k3$cluster, order(km_k3$centers[, "Income"]))
+table(group_k3)
+round(sapply(split(X, group_k3), colMeans), 1)
+table(two_groups = group, three_groups = group_k3)
+```
+
+```{r}
+#| label: after-class-channels
+#| eval: false
+# After class, change eval to true. Do not run these in class.
+channel_plot <- fviz_cluster(list(data = Xs, cluster = group),
+                             choose.vars = c("NumCatalogPurchases", "NumWebVisitsMonth"),
+                             geom = "point", ellipse.type = "norm",
+                             palette = c("#1F5FA8", "#C41230"),
+                             main = "Two segments on catalog purchases and website visits",
+                             xlab = "Catalog purchases (SDs from the mean)",
+                             ylab = "Website visits a month (SDs from the mean)",
+                             ggtheme = theme_minimal())
+# As in section 5, the caption turns one SD back into the original units.
+channel_plot + labs(color = "Group", fill = "Group", shape = "Group") +
+  labs(caption = paste0(
+    "One SD of catalog purchases is ", round(sd(X$NumCatalogPurchases), 1),
+    " purchases. One SD of web visits is ", round(sd(X$NumWebVisitsMonth), 1),
+    " visits a month.\nK-means grouped customers in these standardized units."))
+# The two variables in their own units, by group.
+round(sapply(split(X[, c("NumCatalogPurchases", "NumWebVisitsMonth")], group), colMeans), 1)
+```
