@@ -70,3 +70,11 @@ format:
 
 [Open in Chrome](70-467_MLBA_2026-11-23_PCA.html) · [PDF](70-467_MLBA_2026-11-23_PCA.pdf)
 :::
+
+## Clustering
+
+::: {.sch-week-card}
+### Clustering
+
+[Open in Chrome](70-467_MLBA_Clustering.html) · [PDF](70-467_MLBA_Clustering.pdf) · [Problem (PDF)](70-467_MLBA_Clustering_problem.pdf)
+:::
